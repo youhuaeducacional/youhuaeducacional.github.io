@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>You Hua Educacional</title>
+<style>
+:root{--g:#1b7a3d;--g2:#2e9e57;--bg:#eef7f0;--c:#fff;--t:#16301e;--m:#5b7a65}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1d14;--c:#173222;--t:#e6f3ea;--m:#9bbba5}}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--t)}
+header{background:var(--g);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:1.3rem;cursor:pointer}
+.xp{min-width:200px}.bar{height:10px;background:#ffffff40;border-radius:9px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:#ffe27a}
+main{max-width:900px;margin:0 auto;padding:18px}
+h2{color:var(--g2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.card{background:var(--c);border-radius:12px;padding:14px;box-shadow:0 1px 4px #0002}
+.les{cursor:pointer;border:2px solid transparent}.les:hover{border-color:var(--g2)}
+.les b{display:block;color:var(--g2)}.les small{color:var(--m)}
+button{background:var(--g);color:#fff;border:0;border-radius:10px;padding:11px 18px;font-size:1rem;cursor:pointer}
+button.o{background:var(--c);color:var(--t);border:2px solid var(--g2);width:100%;margin:6px 0;text-align:left}
+button.ok{background:#2e9e57;color:#fff}button.bad{background:#c0392b;color:#fff}
+button.s{background:transparent;color:var(--g2);border:2px solid var(--g2)}
+.fc{text-align:center;padding:30px 16px}.hz{font-size:4.5rem;line-height:1.1}.py{font-size:1.5rem;color:var(--g2)}.pt{font-size:1.8rem;margin-top:18px;font-weight:600}.us{color:var(--m);margin-top:12px}
+.row{display:flex;justify-content:space-between;gap:8px;margin-top:16px}
+.lock{opacity:.6}
+</style></head><body>
+<header><h1 onclick="home()">🌿 You Hua Educacional</h1><div class="xp" id="xp"></div></header>
+<main id="app"></main>
+<script>
+const D=[
+["Saudações","",`你好|nǐ hǎo|Olá
+谢谢|xièxie|Obrigado
+不客气|bú kèqi|De nada
+请|qǐng|Por favor
+对不起|duìbuqǐ|Desculpe
+再见|zàijiàn|Tchau
+早上好|zǎoshang hǎo|Bom dia
+晚安|wǎn'ān|Boa noite
+是|shì|Sim / ser
+不|bù|Não`],
+["Pessoas","",`我|wǒ|Eu
+你|nǐ|Você
+他|tā|Ele
+她|tā|Ela
+我们|wǒmen|Nós
+男人|nánrén|Homem
+女人|nǚrén|Mulher
+男孩|nánhái|Menino
+女孩|nǚhái|Menina
+朋友|péngyou|Amigo`],
+["Família","",`爸爸|bàba|Pai
+妈妈|māma|Mãe
+哥哥|gēge|Irmão mais velho
+弟弟|dìdi|Irmão mais novo
+姐姐|jiějie|Irmã mais velha
+妹妹|mèimei|Irmã mais nova
+爷爷|yéye|Avô (paterno)
+奶奶|nǎinai|Avó (paterna)
+儿子|érzi|Filho
+女儿|nǚ'ér|Filha`],
+["Números 1–10","",`一|yī|Um
+二|èr|Dois
+三|sān|Três
+四|sì|Quatro
+五|wǔ|Cinco
+六|liù|Seis
+七|qī|Sete
+八|bā|Oito
+九|jiǔ|Nove
+十|shí|Dez`],
+["Cores","",`红色|hóngsè|Vermelho
+蓝色|lánsè|Azul
+绿色|lǜsè|Verde
+黄色|huángsè|Amarelo
+黑色|hēisè|Preto
+白色|báisè|Branco
+粉色|fěnsè|Rosa
+紫色|zǐsè|Roxo
+橙色|chéngsè|Laranja (cor)
+灰色|huīsè|Cinza`],
+["Verbos 1","v",`看|kàn|Ver
+吃|chī|Comer
+喝|hē|Beber
+去|qù|Ir
+来|lái|Vir
+做|zuò|Fazer
+说|shuō|Falar
+听|tīng|Ouvir
+玩|wán|Brincar
+笑|xiào|Rir`],
+["Comida e bebida","",`水|shuǐ|Água
+米饭|mǐfàn|Arroz
+面包|miànbāo|Pão
+牛奶|niúnǎi|Leite
+鸡蛋|jīdàn|Ovo
+肉|ròu|Carne
+鱼|yú|Peixe
+苹果|píngguǒ|Maçã
+咖啡|kāfēi|Café
+茶|chá|Chá`],
+["Animais","",`狗|gǒu|Cachorro
+猫|māo|Gato
+鸟|niǎo|Pássaro
+马|mǎ|Cavalo
+牛|niú|Vaca
+猪|zhū|Porco
+鸡|jī|Galinha
+兔子|tùzi|Coelho
+老虎|lǎohǔ|Tigre
+熊猫|xióngmāo|Panda`],
+["Objetos da casa","",`门|mén|Porta
+窗户|chuānghu|Janela
+桌子|zhuōzi|Mesa
+椅子|yǐzi|Cadeira
+床|chuáng|Cama
+冰箱|bīngxiāng|Geladeira
+电视|diànshì|Televisão
+灯|dēng|Lâmpada
+钥匙|yàoshi|Chave
+书|shū|Livro`],
+["Adjetivos 1","a",`大|dà|Grande
+小|xiǎo|Pequeno
+好|hǎo|Bom
+坏|huài|Ruim
+新|xīn|Novo
+旧|jiù|Velho (objeto)
+热|rè|Quente
+冷|lěng|Frio
+快|kuài|Rápido
+慢|màn|Lento`],
+["Verbos 2","v",`买|mǎi|Comprar
+卖|mài|Vender
+写|xiě|Escrever
+读|dú|Ler
+学|xué|Estudar
+睡觉|shuìjiào|Dormir
+走|zǒu|Andar
+跑|pǎo|Correr
+坐|zuò|Sentar
+站|zhàn|Ficar de pé`],
+["Transporte","",`车|chē|Carro
+公共汽车|gōnggòng qìchē|Ônibus
+地铁|dìtiě|Metrô
+飞机|fēijī|Avião
+火车|huǒchē|Trem
+自行车|zìxíngchē|Bicicleta
+船|chuán|Barco
+出租车|chūzūchē|Táxi
+路|lù|Rua
+机场|jīchǎng|Aeroporto`],
+["Corpo humano","",`头|tóu|Cabeça
+眼睛|yǎnjing|Olho
+耳朵|ěrduo|Orelha
+鼻子|bízi|Nariz
+嘴|zuǐ|Boca
+手|shǒu|Mão
+脚|jiǎo|Pé
+腿|tuǐ|Perna
+心|xīn|Coração
+肚子|dùzi|Barriga`],
+["Tempo","",`今天|jīntiān|Hoje
+明天|míngtiān|Amanhã
+昨天|zuótiān|Ontem
+现在|xiànzài|Agora
+早上|zǎoshang|Manhã
+下午|xiàwǔ|Tarde
+晚上|wǎnshang|Noite
+年|nián|Ano
+月|yuè|Mês
+星期|xīngqī|Semana`],
+["Lugares","",`家|jiā|Casa
+学校|xuéxiào|Escola
+医院|yīyuàn|Hospital
+商店|shāngdiàn|Loja
+餐厅|cāntīng|Restaurante
+银行|yínháng|Banco
+公园|gōngyuán|Parque
+城市|chéngshì|Cidade
+国家|guójiā|País
+中国|Zhōngguó|China`],
+["Perguntas","",`什么|shénme|O quê
+谁|shéi|Quem
+哪里|nǎlǐ|Onde
+为什么|wèishénme|Por quê
+怎么|zěnme|Como
+几|jǐ|Quantos
+多少|duōshao|Quanto
+什么时候|shénme shíhou|Quando
+吗|ma|Partícula de pergunta
+哪个|nǎge|Qual`],
+["Roupas e acessórios","",`衣服|yīfu|Roupa
+裤子|kùzi|Calça
+鞋|xié|Sapato
+帽子|màozi|Chapéu
+裙子|qúnzi|Saia
+袜子|wàzi|Meia
+外套|wàitào|Casaco
+衬衫|chènshān|Camisa
+包|bāo|Bolsa
+眼镜|yǎnjìng|Óculos`],
+["Adjetivos 2","a",`高兴|gāoxìng|Feliz
+难过|nánguò|Triste
+累|lèi|Cansado
+饿|è|Com fome
+渴|kě|Com sede
+忙|máng|Ocupado
+漂亮|piàoliang|Bonito
+贵|guì|Caro
+便宜|piányi|Barato
+对|duì|Certo`],
+["Verbos 3","v",`爱|ài|Amar
+喜欢|xǐhuan|Gostar
+帮助|bāngzhù|Ajudar
+找|zhǎo|Procurar
+给|gěi|Dar
+开|kāi|Abrir
+关|guān|Fechar
+等|děng|Esperar
+洗|xǐ|Lavar
+哭|kū|Chorar`],
+["Natureza","",`太阳|tàiyáng|Sol
+月亮|yuèliang|Lua
+星星|xīngxing|Estrela
+雨|yǔ|Chuva
+风|fēng|Vento
+山|shān|Montanha
+河|hé|Rio
+海|hǎi|Mar
+树|shù|Árvore
+花|huā|Flor`],
+["Escola e trabalho","",`老师|lǎoshī|Professor
+学生|xuésheng|Aluno
+工作|gōngzuò|Trabalho
+医生|yīshēng|Médico
+笔|bǐ|Caneta
+纸|zhǐ|Papel
+电脑|diànnǎo|Computador
+手机|shǒujī|Celular
+钱|qián|Dinheiro
+课|kè|Aula`],
+["Frutas e verduras","",`香蕉|xiāngjiāo|Banana
+橙子|chéngzi|Laranja (fruta)
+西瓜|xīguā|Melancia
+葡萄|pútao|Uva
+草莓|cǎoméi|Morango
+西红柿|xīhóngshì|Tomate
+土豆|tǔdòu|Batata
+青菜|qīngcài|Verdura
+洋葱|yángcōng|Cebola
+玉米|yùmǐ|Milho`],
+["Posições e direções","",`上|shàng|Em cima
+下|xià|Embaixo
+左|zuǒ|Esquerda
+右|yòu|Direita
+前|qián|Frente
+后|hòu|Atrás
+里|lǐ|Dentro
+外|wài|Fora
+这|zhè|Isto
+那|nà|Aquilo`],
+["Adjetivos 3","a",`长|cháng|Comprido
+短|duǎn|Curto
+高|gāo|Alto
+矮|ǎi|Baixo
+多|duō|Muito
+少|shǎo|Pouco
+远|yuǎn|Longe
+近|jìn|Perto
+容易|róngyì|Fácil
+难|nán|Difícil`],
+["Frases úteis","",`我爱你|wǒ ài nǐ|Eu te amo
+没问题|méi wèntí|Sem problema
+我不懂|wǒ bù dǒng|Não entendo
+请再说一次|qǐng zài shuō yí cì|Repita, por favor
+多少钱|duōshao qián|Quanto custa
+很好|hěn hǎo|Muito bom
+我是巴西人|wǒ shì Bāxīrén|Sou brasileiro
+欢迎|huānyíng|Bem-vindo
+祝你好运|zhù nǐ hǎoyùn|Boa sorte
+没关系|méi guānxi|Não tem problema`]
+];
+const A=D.map((d,i)=>d[2].split('\n').map(l=>{const[h,p,t]=l.split('|');let u='';
+if(d[1]=='v')u=`Em ação: 在${h} · Passado: ${h}了 · Futuro: 要${h}`;
+if(d[1]=='a')u=`很${h} = muito ${t.toLowerCase()} · 不${h} = não é ${t.toLowerCase()}`;
+return{h,p,t,u,l:i}}));
+const ALL=A.flat();
+let S={best:{},inter:false};try{S=Object.assign(S,JSON.parse(localStorage.getItem('yh')))}catch(e){}
+const save=()=>{try{localStorage.setItem('yh',JSON.stringify(S))}catch(e){}};
+const xpT=()=>Object.values(S.best).reduce((a,b)=>a+b,0);
+const lvl=()=>Math.floor(xpT()/10);
+const app=document.getElementById('app');
+const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+function hud(){const x=xpT();document.getElementById('xp').innerHTML=`<b>Level ${lvl()}</b> · ${x} XP<div class="bar"><i style="width:${(x%10)*10}%"></i></div>`}
+function home(){hud();const L=lvl();
+let h=`<h2>Classe Iniciante</h2><div class="grid">`+A.map((w,i)=>`<div class="card les" onclick="lesson(${i})"><b>Aula ${i+1}</b>${D[i][0]}<br><small>${S.best[i]!=null?'Melhor: '+S.best[i]+'/10':'Não feita'}</small></div>`).join('')+`</div><h2>Classe Intermediário</h2><div class="card ${S.inter?'':'lock'}">`;
+if(S.inter)h+=`✅ Acesso liberado! O conteúdo do Intermediário estará disponível em breve.`;
+else if(L>=13)h+=`Você chegou ao level 13! Faça a prova de 30 palavras (mínimo 21 acertos) para liberar.<br><br><button onclick="quiz(sh(ALL).slice(0,30),'t')">Fazer a prova de acesso</button>`;
+else h+=`🔒 Requer level 13 (você está no ${L}) e a prova de 30 palavras.`;
+app.innerHTML=h+`</div>`}
+let cur=0,k=0;
+function lesson(i){cur=i;k=0;card()}
+function card(){const w=A[cur][k];
+app.innerHTML=`<button class="s" onclick="home()">← Voltar</button><p>Aula ${cur+1} · ${D[cur][0]} · ${k+1}/10</p><div class="card fc"><div class="hz">${w.h}</div><div class="py">${w.p}</div><div class="pt">${w.t}</div><div class="us">${w.u}</div></div><div class="row"><button ${k?'':'disabled style="opacity:.4"'} onclick="k--;card()">← Anterior</button>${k<9?'<button onclick="k++;card()">Próxima →</button>':'<button onclick="quiz(sh(A[cur]),'+cur+')">Fazer a prova ✍️</button>'}</div>`}
+function quiz(ws,mode){let q=0,sc=0;
+function show(){if(q>=ws.length)return end();const w=ws[q],zh=Math.random()<.5;
+const ds=sh(ALL.filter(x=>x.t!=w.t&&x.h!=w.h)).slice(0,3),op=sh([w,...ds]);
+app.innerHTML=`<p>Questão ${q+1}/${ws.length}</p><div class="card fc"><div class="${zh?'hz':'pt'}">${zh?w.h:w.t}</div>${zh?`<div class="py">${w.p}</div>`:''}</div><p>${zh?'Qual é o significado em português?':'Qual é a palavra em chinês?'}</p><div id="o">`+op.map((o,j)=>`<button class="o" data-j="${j}">${zh?o.t:o.h+' <small>('+o.p+')</small>'}</button>`).join('')+`</div>`;
+document.querySelectorAll('#o button').forEach((b,j)=>b.onclick=()=>{const r=op[j]==w;if(r)sc++;b.className='o '+(r?'ok':'bad');document.querySelectorAll('#o button').forEach((c,m)=>{c.onclick=null;if(op[m]==w)c.className='o ok'});q++;setTimeout(show,1000)})}
+function end(){let m='';
+if(mode=='t'){const p=sc>=21;if(p){S.inter=true;save()}m=p?'🎉 Aprovado! Classe Intermediário liberada.':'Você precisa de 21 acertos. Tente novamente!'}
+else{const g=Math.max(0,sc-(S.best[mode]||0)),l0=lvl();S.best[mode]=Math.max(sc,S.best[mode]||0);save();m=`+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}`+(lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:'')}
+app.innerHTML=`<div class="card fc"><div class="hz">${sc}/${ws.length}</div><p>${m}</p><button onclick="home()">Início</button></div>`;hud()}
+show()}
+home();
+</script></body></html>
