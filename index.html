@@ -133,6 +133,29 @@ html,body{overflow-x:hidden}
 .tile{font:inherit;font-weight:800;font-size:1.05rem;background:var(--c);color:var(--t);border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:8px 12px;cursor:pointer}
 .tile.used{visibility:hidden}
 .tile.zh{font-size:1.35rem}
+/* Aviso "está com dúvida?" */
+.idle{position:fixed;left:0;right:0;bottom:0;z-index:8;background:#ddf4ff;color:#1a5a7a;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -2px 0 #b7e3fa;animation:up .25s ease-out}
+.idle .in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.idle .in>img,.idle .in>.emo{width:46px;height:46px;font-size:2.4rem;flex:0 0 auto}
+.idle .tx{flex:1 1 200px;display:flex;flex-direction:column}
+.idle .tx b{font-size:1.1rem;font-weight:900}
+.idle .btn{padding:10px 16px;font-size:.85rem}
+@media(prefers-color-scheme:dark){.idle{background:#16384a;color:#cdeeff;box-shadow:0 -2px 0 #1d4d66}}
+/* Nome e ranking */
+@media(max-width:560px){.tabs{flex-wrap:wrap}.tab{flex:1 1 40%}}
+.inp{font:inherit;font-weight:800;font-size:1.2rem;width:100%;max-width:360px;padding:12px 16px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--t);text-align:center;margin:6px 0}
+.inp:focus{outline:none;border-color:var(--blue)}
+.err{color:var(--bad)}
+.rrow{display:flex;align-items:center;gap:12px;background:var(--c);border:2px solid var(--line);border-radius:16px;padding:10px 14px;margin-bottom:8px}
+.rrow.me{border-color:var(--blue);background:rgba(28,176,246,.08)}
+.rrow>img,.rrow>.emo{width:30px;height:30px;font-size:1.6rem;flex:0 0 auto}
+.rrow .pos{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:var(--bg);color:var(--m);flex:0 0 auto}
+.rrow .pos.p1{background:#ffc800;color:#fff}.rrow .pos.p2{background:#b8c2cc;color:#fff}.rrow .pos.p3{background:#cd7f32;color:#fff}
+.rrow .nm{flex:1;min-width:0;font-weight:900;overflow-wrap:anywhere}
+.rrow .nm em{font-style:normal;color:var(--blue);font-weight:800}
+.rrow .nm small{display:block;color:var(--m);font-weight:700;font-size:.78rem}
+.rrow .xp{font-weight:900;font-size:1.2rem;text-align:right}
+.rrow .xp small{display:block;font-size:.7rem;color:var(--m)}
 /* Medalhas */
 .stats .medal img,.stats .medal .emo{width:20px;height:20px;font-size:1.1rem}
 .stats .medal small{font-weight:700;opacity:.85;font-size:.75rem}
@@ -636,13 +659,17 @@ const SPK='<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.
 // ---------- Progresso ----------
 let S={best:{},inter:false,streak:0,last:''};try{S=Object.assign(S,JSON.parse(localStorage.getItem('yh')))}catch(e){}
 const save=()=>{try{localStorage.setItem('yh',JSON.stringify(S))}catch(e){}};
+// Identificação do aluno no ranking: id público + chave secreta (só este aparelho pode atualizar a linha dele)
+const rid=()=>Math.random().toString(36).slice(2,10);
+if(!S.id){S.id=rid()+rid();S.key=rid()+rid()+rid();save()}
 const xpT=()=>Object.values(S.best).reduce((a,b)=>a+b,0);
 const lvl=()=>Math.floor(xpT()/10);
 // Medalhas: o máximo de XP é 10 por aula (Iniciante + Intermediário). Diamante = todas as aulas com 10/10.
 const TIERS=[['Bronze','铜牌','🥉',0,'#cd7f32'],['Prata','银牌','🥈',1/3,'#9aa8b5'],['Ouro','金牌','🥇',2/3,'#ffc800'],['Diamante','钻石','💎',1,'#1cb0f6']];
 const XPM=()=>(D.length+DI.length)*10;
 const tierXP=i=>Math.ceil(XPM()*TIERS[i][3]);
-const tier=()=>{let t=0;TIERS.forEach((_,i)=>{if(xpT()>=tierXP(i))t=i});return t};
+const tierFor=x=>{let t=0;TIERS.forEach((_,i)=>{if(x>=tierXP(i))t=i});return t};
+const tier=()=>tierFor(xpT());
 const tierUp=t0=>tier()>t0?`<br>${TIERS[tier()][2]} Nova medalha: <b>${TIERS[tier()][0]} · ${TIERS[tier()][1]}</b>!`:'';
 function tierCard(){const t=tier(),x=xpT(),T=TIERS[t],nx=TIERS[t+1];
 const pct=nx?(x-tierXP(t))/(tierXP(t+1)-tierXP(t))*100:100;
@@ -669,11 +696,21 @@ for(let i=ui*5;i<ui*5+5&&i<list.length;i++){const b=S.best[key(i)],st=starsOf(b)
 h+=`<div class="node ${cls} ${nx?'next':''}" style="--o:${ZZ[i%8]};--uc:${u[1]};--ud:${u[2]}" ${locked?'':`onclick="${fn}(${i})"`}>${nx?`<div class="bubble">${first?'Começar':'Próxima'}</div>`:''}
 <div class="dot">${img(list[i][1])}</div><div class="lb">Aula ${i+1} · ${list[i][0]}<small>${locked?'🔒 Bloqueada':b!=null?`<span class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</span> ${b}/10`:'Não feita'}</small></div></div>`}
 h+=`</div>`});return h}
-const tabs=()=>`<div class="tabs"><button class="tab ${S.tab!='i'&&S.tab!='f'?'on':''}" onclick="setTab('b')">🌱 Iniciante <small>初级</small></button><button class="tab ${S.tab=='i'?'on':''}" onclick="setTab('i')">🌳 Intermediário <small>中级</small>${iOpen()?'':' 🔒'}</button><button class="tab ${S.tab=='f'?'on':''}" onclick="setTab('f')">🎤 Fala <small>口语</small></button></div>`;
-function setTab(t){S.tab=t;save();home()}
-function home(){hud();window.speechSynthesis&&speechSynthesis.cancel();scrollTo(0,0);
+const tabs=()=>`<div class="tabs"><button class="tab ${!['i','f','r'].includes(S.tab)?'on':''}" onclick="setTab('b')">🌱 Iniciante <small>初级</small></button><button class="tab ${S.tab=='i'?'on':''}" onclick="setTab('i')">🌳 Intermediário <small>中级</small>${iOpen()?'':' 🔒'}</button><button class="tab ${S.tab=='f'?'on':''}" onclick="setTab('f')">🎤 Fala <small>口语</small></button><button class="tab ${S.tab=='r'?'on':''}" onclick="setTab('r')">🏆 Ranking <small>排行榜</small></button></div>`;
+function setTab(t){S.tab=t;save();if(t=='r'){RK=null;RKerr=false}home()}
+// Prova: depois de 15 segundos sem resposta, oferece repetir o áudio da pergunta
+const IDLE_S=15;let idleT=null;
+function idleStop(){clearTimeout(idleT);idleT=null;const x=document.getElementById('idle');if(x)x.remove()}
+function idleStart(sp){idleStop();idleT=setTimeout(()=>{const f=document.getElementById('fb');if(!f||f.innerHTML)return;
+f.insertAdjacentHTML('beforebegin',`<div id="idle" class="idle"><div class="in">${img('🐼')}<div class="tx"><b>Está com dúvida? Quer que eu repita?</b><span lang="zh-CN">有疑问吗？要我再说一遍吗？</span></div>
+<button class="btn blue" id="idr">🔊 Repetir · 再听</button><button class="btn ghost" id="idn">Não, obrigado · 不用</button></div></div>`);
+document.getElementById('idr').onclick=()=>{sp();idleStart(sp)};document.getElementById('idn').onclick=idleStop},IDLE_S*1000)}
+function home(){hud();idleStop();window.speechSynthesis&&speechSynthesis.cancel();scrollTo(0,0);
+if(!S.name)return askName();
+if(S.taken&&S.taken==S.name)return askName(true);
 if(S.tab=='i')return ihome();
 if(S.tab=='f')return fhome();
+if(S.tab=='r')return rhome();
 const n=nextL(),nd=D.filter((_,i)=>done(i)).length,L=lvl(),first=xpT()==0;
 let h=tabs()+`<div class="card hero"><img class="banner" src="${PANDA}" alt="Panda lendo um livro"><div class="txt">
 <h2>${first?'你好! Bem-vindo!':'加油! Continue assim!'}</h2>
@@ -716,9 +753,9 @@ if(zh)h+=`<p class="q">O que significa?</p><div class="qbox"><button class="snd"
 else h+=`<p class="q">Como se diz em chinês?</p><div class="qbox"><div class="pic" style="background:${u[3]}">${img(w.e)}</div><div class="wrow"><button class="snd sm" id="qs" title="Ouvir">${SPK}</button><div class="pt">${w.t}</div></div></div>
 <div class="opts" id="o">`+op.map(o=>`<button class="o"><span class="ohz">${o.h}</span> <small>${o.p}</small></button>`).join('');
 app.innerHTML=h+`</div><div id="fb"></div>`;
-const sp=()=>zh?sayZh(w):sayPt(w);document.getElementById('qs').onclick=sp;sp();
+const sp=()=>zh?sayZh(w):sayPt(w);document.getElementById('qs').onclick=sp;sp();idleStart(sp);
 const bs=[...document.querySelectorAll('#o button')];
-bs.forEach((b,j)=>b.onclick=()=>{const r=op[j]==w;if(r)sc++;
+bs.forEach((b,j)=>b.onclick=()=>{idleStop();const r=op[j]==w;if(r)sc++;
 bs.forEach((c,m)=>{c.onclick=null;if(op[m]==w)c.classList.add('ok')});if(!r)b.classList.add('bad');
 sayZh(w);
 document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div class="in"><div><h3>${r?'Muito bem! 太棒了!':'Resposta correta:'}</h3><p>${w.h} (${w.p}) = ${w.t}</p></div><button class="btn ${r?'':'red'}" id="nx">Continuar</button></div></div>`;
@@ -726,7 +763,7 @@ const nx=document.getElementById('nx');nx.focus();nx.onclick=()=>{q++;show()}})}
 function end(){let m='',ok=true;scrollTo(0,0);
 if(mode=='t'){ok=sc>=TEST_OK;if(ok){S.inter=true;save()}m=ok?`🎉 Aprovado! Classe Intermediário liberada.<br><br><button class="btn" onclick="setTab('i')">Ir para o Intermediário →</button>`:`Você precisa de ${TEST_OK} acertos. Tente novamente!`}
 else{const g=Math.max(0,sc-(S.best[mode]||0)),l0=lvl(),t0=tier();S.best[mode]=Math.max(sc,S.best[mode]||0);
-bump();save();
+bump();save();rankPush();
 m=`+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}`+(lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:'')+tierUp(t0);ok=sc>=6}
 const st=mode=='t'?0:starsOf(sc);
 app.innerHTML=`<div class="card end"><img src="${tw(ok?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${ws.length}</div>
@@ -1249,17 +1286,17 @@ app.innerHTML=h+`<div id="fb"></div>`;
 const cls='tile'+(zh?' zh':''),A_=document.getElementById('ans'),B_=document.getElementById('bank'),C_=document.getElementById('chk');
 function rt(){A_.innerHTML=sel.map((i,j)=>`<button class="${cls}" data-j="${j}">${tiles[i].t}</button>`).join('');
 B_.innerHTML=tiles.map((x,i)=>`<button class="${cls} ${x.u?'used':''}" data-i="${i}">${x.t}</button>`).join('');
-A_.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(lock)return;const j=+b.dataset.j;tiles[sel[j]].u=false;sel.splice(j,1);rt()});
-B_.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(lock)return;const i=+b.dataset.i;if(tiles[i].u)return;tiles[i].u=true;sel.push(i);rt()});
+A_.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(lock)return;const j=+b.dataset.j;tiles[sel[j]].u=false;sel.splice(j,1);rt();idleStart(sp)});
+B_.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(lock)return;const i=+b.dataset.i;if(tiles[i].u)return;tiles[i].u=true;sel.push(i);rt();idleStart(sp)});
 C_.disabled=!sel.length}
 rt();
 C_.onclick=()=>{lock=true;C_.disabled=true;const j=zh?'':' ';fb(lc(sel.map(i=>tiles[i].t).join(j))==lc(ans.join(j)))}}
-const sp=()=>ansZh?ptS(s):zhS(s);document.getElementById('qs').onclick=sp;sp();
-function fb(r){if(r)sc++;ansZh?zhS(s):ptS(s);
+const sp=()=>ansZh?ptS(s):zhS(s);document.getElementById('qs').onclick=sp;sp();idleStart(sp);
+function fb(r){idleStop();if(r)sc++;ansZh?zhS(s):ptS(s);
 document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div class="in"><div><h3>${r?'Muito bem! 太棒了!':'Resposta correta · 正确答案:'}</h3><p>${s.zh} (${s.p})<br>${s.pt}${s.f?`<br><small>Formal: ${s.f}</small>`:''}</p></div><button class="btn ${r?'':'red'}" id="nx">Continuar</button></div></div>`;
 const nx=document.getElementById('nx');nx.focus();nx.onclick=()=>{q++;show()}}}
 function end(){scrollTo(0,0);const key=ik(li),g=Math.max(0,sc-(S.best[key]||0)),l0=lvl(),t0=tier();
-S.best[key]=Math.max(sc,S.best[key]||0);bump();save();
+S.best[key]=Math.max(sc,S.best[key]||0);bump();save();rankPush();
 const ok=sc>=6,st=starsOf(sc);
 app.innerHTML=`<div class="card end"><img src="${tw(ok?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${ws.length}</div>
 <div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}${lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:''}${tierUp(t0)}</p>
@@ -1353,5 +1390,55 @@ app.innerHTML=`<div class="card end"><img src="${tw(avg>=60?'🏆':'💪')}" alt
 <div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>Média de pronúncia nesta aula · 本课发音平均分<br><small>Itens que você pulou contam como 0%. · 跳过的题目按0分计算。</small></p>
 <div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="fstart(${F.li})">Repetir · 再练一次</button>
 ${F.li<n-1?`<button class="btn" onclick="fstart(${F.li+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
+
+// ======================= NOME E RANKING =======================
+// Cole entre as aspas o link do "App da Web" da Planilha Google (termina em /exec).
+const RANK_URL='https://script.google.com/macros/s/AKfycbxXPX3K7kJD3nh1pi6IeFnwj_cGAXi1Xeoaiz9JaO5zN9z1Bp3l2zDr847vPqmjnvhwZA/exec';
+let RK=null,RKerr=false,RKbusy=false;
+const doneB=()=>D.filter((_,i)=>done(i)).length,doneI=()=>DI.filter((_,i)=>idone(i)).length;
+// Envia o progresso. Resposta: {ok:true}, {erro:'nome'} (nome já usado por outro aluno) ou null (sem internet)
+function rankPush(){if(!RANK_URL||!S.name)return Promise.resolve(null);
+return fetch(RANK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+body:JSON.stringify({id:S.id,key:S.key,name:S.name,xp:xpT(),b:doneB(),i:doneI()})}).then(r=>r.json())
+.then(d=>{if(d&&d.erro=='nome')S.taken=S.name;else if(d&&d.ok)S.taken=null;save();return d}).catch(()=>null)}
+function rankLoad(){RKbusy=true;RKerr=false;
+rankPush().then(()=>fetch(RANK_URL)).then(r=>r.json()).then(d=>{RK=d.list||[]}).catch(()=>{RKerr=true})
+.finally(()=>{RKbusy=false;if(S.tab=='r'&&document.getElementById('rk'))rhome()})}
+
+function askName(edit){scrollTo(0,0);
+app.innerHTML=`<div class="card intro" style="text-align:center"><img src="${document.querySelector('.brand img').src}" alt="" style="width:90px;height:90px;border-radius:50%">
+<h2>${edit?'Trocar nome · 改名':'Bem-vindo! · 欢迎！'}</h2>
+<p>Como você se chama? · 你叫什么名字？</p>
+<form id="nf"><input id="nm" class="inp" maxlength="20" autocomplete="off" placeholder="Seu nome · 你的名字" value="${esc(S.name||'')}">
+<p class="us">Esse nome aparece no ranking para todos os alunos. Use seu primeiro nome ou um apelido.<br>这个名字会显示在排行榜上，请使用名字或昵称。</p>
+${S.taken&&S.taken==S.name?`<p class="err">O nome “${esc(S.name)}” já está sendo usado por outro aluno. Escolha outro, por exemplo com a inicial do sobrenome (${esc(S.name)} S.).<br>“${esc(S.name)}”这个名字已经有人用了，请换一个，例如加上姓氏的首字母。</p>`:''}
+<p id="ne" class="err" hidden></p>
+<div class="row" style="justify-content:center">${edit&&S.taken!=S.name?'<button type="button" class="btn ghost" onclick="home()">Cancelar · 取消</button>':''}<button class="btn" type="submit" id="nb">${edit?'Salvar · 保存':'Começar · 开始'}</button></div></form></div>`;
+const i=document.getElementById('nm'),ne=document.getElementById('ne'),nb=document.getElementById('nb');i.focus();
+const err=t=>{ne.innerHTML=t;ne.hidden=false};
+document.getElementById('nf').onsubmit=e=>{e.preventDefault();const v=i.value.trim().replace(/\s+/g,' ');
+if(v.length<2)return err('Digite pelo menos 2 letras. · 请至少输入两个字。');
+const old=S.name;S.name=v;nb.disabled=true;nb.textContent='Verificando... · 检查中…';
+// A planilha confere se o nome está livre. Sem internet, o nome é aceito e conferido no próximo envio.
+rankPush().then(d=>{if(d&&d.erro=='nome'){S.name=old;S.taken=old&&S.taken==old?old:null;save();nb.disabled=false;nb.textContent=edit?'Salvar · 保存':'Começar · 开始';
+return err(`O nome “${esc(v)}” já está em uso. Escolha outro, por exemplo “${esc(v)} S.”.<br>“${esc(v)}”已经有人用了，请换一个名字。`)}
+save();RK=null;home()})}}
+
+function rhome(){let h=tabs()+`<div class="card hero"><div class="txt"><h2>🏆 Ranking · 排行榜</h2>
+<p>Quem avançou mais? A pontuação é o XP total das aulas do Iniciante e do Intermediário.</p>
+<p lang="zh-CN" class="zh">谁进步最多？分数是初级班和中级班所有课程的总经验值。</p>
+<p>Você aparece como <b>${esc(S.name)}</b> · <button class="lnk" onclick="askName(true)">Trocar nome · 改名</button></p></div></div><div id="rk">`;
+const meRow=(pos,name,xp,b,i,me)=>`<div class="rrow ${me?'me':''}"><span class="pos ${pos&&pos<=3?'p'+pos:''}">${pos||'–'}</span>${img(TIERS[tierFor(xp)][2])}
+<span class="nm">${esc(String(name))}${me?' <em>(você · 你)</em>':''}<small>Iniciante ${b}/${D.length} · Intermediário ${i}/${DI.length}</small></span><span class="xp">${xp}<small>XP</small></span></div>`;
+if(!RANK_URL){h+=`<div class="card hsk">${img('🛠️')}<div><b>O ranking online ainda não foi ativado · 在线排行榜尚未开启</b><p>Por enquanto aparece só o seu resultado.</p></div></div>`+meRow(0,S.name,xpT(),doneB(),doneI(),true)}
+else if(RKerr)h+=`<div class="card hsk">${img('📡')}<div><b>Não foi possível carregar o ranking · 无法加载排行榜</b><p>Verifique sua internet e tente de novo.</p><button class="btn blue" onclick="RKerr=false;RK=null;rhome()">Tentar de novo · 重试</button></div></div>`;
+else if(RK==null){if(!RKbusy)rankLoad();h+=`<div class="card" style="text-align:center">⏳ Carregando o ranking... · 正在加载排行榜…</div>`}
+else{const pos=RK.findIndex(r=>r.id==S.id);
+h+=RK.length?RK.map((r,j)=>meRow(j+1,r.name,r.xp,r.b,r.i,r.id==S.id)).join(''):`<div class="card">Ninguém no ranking ainda. Seja o primeiro! · 还没有人上榜，快来当第一名！</div>`;
+if(pos<0)h+=`<p class="us">Seu resultado ainda não está na lista (pode levar alguns segundos):</p>`+meRow(0,S.name,xpT(),doneB(),doneI(),true);
+h+=`<div class="row" style="justify-content:center"><button class="btn ghost" onclick="RK=null;rhome()">🔄 Atualizar · 刷新</button></div>`}
+app.innerHTML=h+`</div><footer>Youhua Educacional · 幼华双语学校 · desde 1992</footer>`}
+// Ao abrir o site, envia o progresso; se o nome estiver repetido, pede um nome novo
+rankPush().then(d=>{if(d&&d.erro=='nome'&&!document.getElementById('nm'))home()});
 home();
 </script></body></html>
