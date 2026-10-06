@@ -6,8 +6,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--brand:#0b8a3e;--brand2:#086b30;--bg:#f7f9f7;--c:#fff;--t:#24332a;--m:#6b7c71;--line:#e5e8e5;--gray:#e5e5e5;--gray2:#c9c9c9;
---ok:#58cc02;--ok2:#46a302;--okbg:#d7ffb8;--bad:#ff4b4b;--bad2:#d33131;--badbg:#ffdfe0;--blue:#1cb0f6;--blue2:#1899d6}
-@media(prefers-color-scheme:dark){:root{--bg:#131f18;--c:#1c2b22;--t:#e8f2ec;--m:#9db3a5;--line:#2c3d33;--gray:#33443a;--gray2:#26352c;--okbg:#20381a;--badbg:#3d1f20}}
+--ok:#58cc02;--ok2:#46a302;--okbg:#d7ffb8;--midbg:#fff3d1;--bad:#ff4b4b;--bad2:#d33131;--badbg:#ffdfe0;--blue:#1cb0f6;--blue2:#1899d6}
+@media(prefers-color-scheme:dark){:root{--bg:#131f18;--c:#1c2b22;--t:#e8f2ec;--m:#9db3a5;--line:#2c3d33;--gray:#33443a;--gray2:#26352c;--okbg:#20381a;--badbg:#3d1f20;--midbg:#3a3214}}
 *{box-sizing:border-box}
 body{margin:0;font-family:Nunito,system-ui,sans-serif;font-weight:700;background:var(--bg);color:var(--t)}
 header{position:sticky;top:0;z-index:5;background:var(--brand);color:#fff;padding:10px 16px;box-shadow:0 2px 0 var(--brand2)}
@@ -133,6 +133,23 @@ html,body{overflow-x:hidden}
 .tile{font:inherit;font-weight:800;font-size:1.05rem;background:var(--c);color:var(--t);border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:8px 12px;cursor:pointer}
 .tile.used{visibility:hidden}
 .tile.zh{font-size:1.35rem}
+/* Treino de fala */
+.seg{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.seg .tab{min-width:140px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.lcard{font:inherit;font-weight:800;text-align:left;display:flex;gap:10px;align-items:center;background:var(--c);color:var(--t);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:10px;cursor:pointer;font-size:.9rem}
+.lcard:hover{background:var(--bg)}
+.lcard img,.lcard .emo{width:34px;height:34px;font-size:1.8rem;flex:0 0 auto}
+.lcard small{display:block;color:var(--m);font-weight:700}
+.btn.mic{background:var(--bad);box-shadow:0 4px 0 var(--bad2)}
+.btn.mic.on{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+.fres{display:flex;gap:14px;align-items:center;text-align:left;margin-top:16px;border-radius:14px;padding:12px 14px;background:var(--bg)}
+.fres.ok{background:var(--okbg)}.fres.mid{background:var(--midbg)}.fres.bad{background:var(--badbg)}
+.fres .pct{font-size:1.9rem;font-weight:900;min-width:76px;text-align:center}
+.fres p{margin:4px 0 0}
+.mk{font-size:1.15rem}
+.mk .g{color:var(--ok2)}.mk .r{color:var(--bad);text-decoration:underline}
 footer{text-align:center;color:var(--m);font-size:.85rem;margin-top:40px}
 </style></head><body>
 <header><div class="hd">
@@ -627,10 +644,11 @@ for(let i=ui*5;i<ui*5+5&&i<list.length;i++){const b=S.best[key(i)],st=starsOf(b)
 h+=`<div class="node ${cls} ${nx?'next':''}" style="--o:${ZZ[i%8]};--uc:${u[1]};--ud:${u[2]}" ${locked?'':`onclick="${fn}(${i})"`}>${nx?`<div class="bubble">${first?'Começar':'Próxima'}</div>`:''}
 <div class="dot">${img(list[i][1])}</div><div class="lb">Aula ${i+1} · ${list[i][0]}<small>${locked?'🔒 Bloqueada':b!=null?`<span class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</span> ${b}/10`:'Não feita'}</small></div></div>`}
 h+=`</div>`});return h}
-const tabs=()=>`<div class="tabs"><button class="tab ${S.tab!='i'?'on':''}" onclick="setTab('b')">🌱 Iniciante <small>初级</small></button><button class="tab ${S.tab=='i'?'on':''}" onclick="setTab('i')">🌳 Intermediário <small>中级</small>${iOpen()?'':' 🔒'}</button></div>`;
+const tabs=()=>`<div class="tabs"><button class="tab ${S.tab!='i'&&S.tab!='f'?'on':''}" onclick="setTab('b')">🌱 Iniciante <small>初级</small></button><button class="tab ${S.tab=='i'?'on':''}" onclick="setTab('i')">🌳 Intermediário <small>中级</small>${iOpen()?'':' 🔒'}</button><button class="tab ${S.tab=='f'?'on':''}" onclick="setTab('f')">🎤 Fala <small>口语</small></button></div>`;
 function setTab(t){S.tab=t;save();home()}
 function home(){hud();window.speechSynthesis&&speechSynthesis.cancel();scrollTo(0,0);
 if(S.tab=='i')return ihome();
+if(S.tab=='f')return fhome();
 const n=nextL(),nd=D.filter((_,i)=>done(i)).length,L=lvl(),first=xpT()==0;
 let h=tabs()+`<div class="card hero"><img class="banner" src="${PANDA}" alt="Panda lendo um livro"><div class="txt">
 <h2>${first?'你好! Bem-vindo!':'加油! Continue assim!'}</h2>
@@ -895,9 +913,239 @@ const DI=[
 我 {和} 你 一起 去。|wǒ hé nǐ yìqǐ qù.|Vou {com} você.|🔗|Eu vou junto com você.
 这 个 {太} 贵 了！|zhè ge tài guì le!|Isso tá caro {demais}!|🤯|Isto está caro demais!
 {可能} 明天 会 下雨。|kěnéng míngtiān huì xiàyǔ.|{Pode ser que} chova amanhã.|🎲|Talvez chova amanhã.
-我 {觉得} 中文 不 太 难。|wǒ juéde Zhōngwén bú tài nán.|{Acho} que chinês nem é tão difícil.|🗯️|Eu acho que chinês não é tão difícil.`,"🔗"]
+我 {觉得} 中文 不 太 难。|wǒ juéde Zhōngwén bú tài nán.|{Acho} que chinês nem é tão difícil.|🗯️|Eu acho que chinês não é tão difícil.`,"🔗"],
+["Números no dia a dia",`我 有 {三} 个 哥哥。|wǒ yǒu sān ge gēge.|Tenho {três} irmãos mais velhos.|3️⃣
+我 家 有 {五} 口 人。|wǒ jiā yǒu wǔ kǒu rén.|Lá em casa somos {cinco}.|5️⃣|Minha família tem cinco pessoas.
+我 儿子 {七} 岁 了。|wǒ érzi qī suì le.|Meu filho já tem {sete} anos.|7️⃣
+给 我 {一} 杯 水。|gěi wǒ yì bēi shuǐ.|Me dá {um} copo d'água.|1️⃣|Pode me dar um copo de água?
+我 早上 {六} 点 起床。|wǒ zǎoshang liù diǎn qǐchuáng.|Acordo às {seis} da manhã.|6️⃣|Eu me levanto às seis da manhã.
+这 本 书 {八} 块 钱。|zhè běn shū bā kuài qián.|Esse livro custa {oito} reais.|8️⃣|Este livro custa oito reais.
+我们 {九} 点 见。|wǒmen jiǔ diǎn jiàn.|A gente se vê às {nove}.|9️⃣|Nós nos encontramos às nove.
+我 学 中文 学 了 {两} 年。|wǒ xué Zhōngwén xué le liǎng nián.|Faz {dois} anos que estudo chinês.|2️⃣|Estudo chinês há dois anos.
+{十} 分钟 以后 到。|shí fēnzhōng yǐhòu dào.|Chego em {dez} minutos.|🔟|Chegarei em dez minutos.
+我 要 {四} 个 苹果。|wǒ yào sì ge píngguǒ.|Quero {quatro} maçãs.|4️⃣`,"🔢"],
+["Cores",`你 喜欢 什么 {颜色}？|nǐ xǐhuan shénme yánsè?|Qual {cor} cê mais curte?|🎨|Qual é a sua cor favorita?
+我 最 喜欢 {蓝色}。|wǒ zuì xǐhuan lánsè.|Minha cor favorita é {azul}.|🟦
+草 是 {绿色} 的。|cǎo shì lǜsè de.|A grama é {verde}.|🟩
+我 的 车 是 {白色} 的。|wǒ de chē shì báisè de.|Meu carro é {branco}.|⬜
+她 穿 了 一 条 {红色} 的 裙子。|tā chuān le yì tiáo hóngsè de qúnzi.|Ela tá de saia {vermelha}.|🟥|Ela está usando uma saia vermelha.
+香蕉 是 {黄色} 的。|xiāngjiāo shì huángsè de.|A banana é {amarela}.|🟨
+我 的 猫 是 {黑色} 的。|wǒ de māo shì hēisè de.|Meu gato é {preto}.|⬛
+她 的 房间 是 {粉色} 的。|tā de fángjiān shì fěnsè de.|O quarto dela é {rosa}.|🩷
+你 有 {紫色} 的 笔 吗？|nǐ yǒu zǐsè de bǐ ma?|Cê tem caneta {roxa}?|🟪|Você tem uma caneta roxa?
+今天 的 天 是 {灰色} 的。|jīntiān de tiān shì huīsè de.|Hoje o céu tá {cinza}.|🩶|Hoje o céu está cinzento.`,"🎨"],
+["Ações do dia a dia",`你 在 {看} 什么？|nǐ zài kàn shénme?|Cê tá {vendo} o quê?|👀|O que você está vendo?
+我们 去 {吃} 火锅 吧！|wǒmen qù chī huǒguō ba!|Bora {comer} hot pot!|🍲|Vamos comer hot pot!
+我 不 {喝} 酒。|wǒ bù hē jiǔ.|Eu não {bebo}.|🚫|Eu não bebo bebidas alcoólicas.
+你 什么 时候 {来}？|nǐ shénme shíhou lái?|Cê {vem} quando?|👈|Quando você vem?
+我 明天 {去} 北京。|wǒ míngtiān qù Běijīng.|Amanhã eu {vou} pra Pequim.|✈️|Amanhã eu vou para Pequim.
+这 个 菜 是 你 {做} 的 吗？|zhè ge cài shì nǐ zuò de ma?|Foi cê que {fez} esse prato?|🍳|Foi você que fez este prato?
+请 {说} 中文。|qǐng shuō Zhōngwén.|{Fala} em chinês, por favor.|🗣️|Fale em chinês, por favor.
+{听} 我 说！|tīng wǒ shuō!|Me {escuta}!|👂|Escute o que eu digo!
+孩子们 在 公园 {玩}。|háizimen zài gōngyuán wán.|As crianças tão {brincando} no parque.|🧸|As crianças estão brincando no parque.
+别 {笑} 我！|bié xiào wǒ!|Não {ri} de mim!|😂|Não ria de mim!`,"🏃"],
+["Descrevendo coisas",`你 的 房子 很 {大}！|nǐ de fángzi hěn dà!|Sua casa é bem {grande}!|🐘|Sua casa é muito grande!
+这 个 房间 太 {小} 了。|zhè ge fángjiān tài xiǎo le.|Esse quarto é muito {pequeno}.|🐭|Este quarto é pequeno demais.
+这 个 主意 很 {好}。|zhè ge zhǔyi hěn hǎo.|Essa ideia é {boa}!|👍|Essa ideia é muito boa.
+他 不 是 {坏} 人。|tā bú shì huài rén.|Ele não é gente {ruim}.|👎|Ele não é uma pessoa ruim.
+我 买 了 一 个 {新} 手机。|wǒ mǎi le yí ge xīn shǒujī.|Comprei um celular {novo}.|🆕
+这 件 衣服 太 {旧} 了。|zhè jiàn yīfu tài jiù le.|Essa roupa tá muito {velha}.|🏚️|Esta roupa está muito velha.
+小心， 汤 很 {热}！|xiǎoxīn, tāng hěn rè!|Cuidado, a sopa tá {quente}!|🔥|Cuidado, a sopa está quente!
+这儿 的 冬天 很 {冷}。|zhèr de dōngtiān hěn lěng.|Aqui o inverno é {frio}.|🥶
+他 跑 得 很 {快}。|tā pǎo de hěn kuài.|Ele corre muito {rápido}.|🚀
+你 开 车 开 得 太 {慢} 了。|nǐ kāi chē kāi de tài màn le.|Cê dirige muito {devagar}.|🐢|Você dirige devagar demais.`,"📏"],
+["Mais ações",`我 想 {买} 一 个 新 电脑。|wǒ xiǎng mǎi yí ge xīn diànnǎo.|Tô querendo {comprar} um computador novo.|💻|Quero comprar um computador novo.
+这 家 店 {卖} 什么？|zhè jiā diàn mài shénme?|O que essa loja {vende}?|🏷️|O que esta loja vende?
+请 {写} 你 的 名字。|qǐng xiě nǐ de míngzi.|{Escreve} seu nome aqui, por favor.|✍️|Escreva o seu nome, por favor.
+我 每天 晚上 {读} 书。|wǒ měitiān wǎnshang dú shū.|Toda noite eu {leio} um pouco.|📚|Eu leio todas as noites.
+你 {学} 中文 多久 了？|nǐ xué Zhōngwén duōjiǔ le?|Faz quanto tempo que cê {estuda} chinês?|🎓|Há quanto tempo você estuda chinês?
+宝宝 在 {睡觉}， 小声 点儿。|bǎobao zài shuìjiào, xiǎoshēng diǎnr.|O bebê tá {dormindo}, fala baixo.|😴|O bebê está dormindo, fale baixo.
+我们 {走} 吧！|wǒmen zǒu ba!|{Vamos} nessa!|🚶|Vamos embora!
+他 每天 早上 {跑}步。|tā měitiān zǎoshang pǎobù.|Ele {corre} todo dia de manhã.|🏃|Ele corre todas as manhãs.
+请 {坐} 这儿。|qǐng zuò zhèr.|{Senta} aqui, por favor.|🪑|Sente-se aqui, por favor.
+我 {站} 了 一 天， 脚 很 累。|wǒ zhàn le yì tiān, jiǎo hěn lèi.|Fiquei o dia todo {em pé}, tô com os pés cansados.|🧍|Fiquei em pé o dia inteiro e meus pés estão cansados.`,"✍️"],
+["O corpo",`我 {头} 有点儿 疼。|wǒ tóu yǒudiǎnr téng.|Tô com um pouco de dor de {cabeça}.|👤|Estou com um pouco de dor de cabeça.
+她 的 {眼睛} 很 漂亮。|tā de yǎnjing hěn piàoliang.|Os {olhos} dela são lindos.|👁️
+你 的 {耳朵} 好 红！|nǐ de ěrduo hǎo hóng!|Sua {orelha} tá vermelhinha!|👂|Sua orelha está muito vermelha!
+我 {鼻子} 不 通， 感冒 了。|wǒ bízi bù tōng, gǎnmào le.|Tô com o {nariz} entupido, peguei uma gripe.|👃|Estou com o nariz entupido, fiquei resfriado.
+你 的 {嘴} 上 有 东西。|nǐ de zuǐ shang yǒu dōngxi.|Tem um negócio na sua {boca}.|👄|Há algo na sua boca.
+吃饭 前 要 洗 {手}。|chīfàn qián yào xǐ shǒu.|Tem que lavar a {mão} antes de comer.|✋|É preciso lavar as mãos antes de comer.
+我 的 {脚} 很 疼。|wǒ de jiǎo hěn téng.|Meu {pé} tá doendo muito.|🦶|Meu pé está doendo muito.
+走 了 一 天， {腿} 好 累。|zǒu le yì tiān, tuǐ hǎo lèi.|Andei o dia todo, minhas {pernas} tão moídas.|🦵|Andei o dia inteiro e minhas pernas estão cansadas.
+我 {心} 跳 得 很 快。|wǒ xīn tiào de hěn kuài.|Meu {coração} tá batendo muito rápido.|❤️|Meu coração está batendo muito rápido.
+我 吃 太 多 了， {肚子} 好 饱。|wǒ chī tài duō le, dùzi hǎo bǎo.|Comi demais, tô com a {barriga} cheia.|🍽️|Comi demais, estou com a barriga cheia.`,"💪"],
+["Sentimentos e relações",`我 {爱} 你， 宝贝。|wǒ ài nǐ, bǎobèi.|Te {amo}, amor.|💕|Eu te amo, querido.
+我 很 {喜欢} 巴西 菜。|wǒ hěn xǐhuan Bāxī cài.|Eu {adoro} comida brasileira.|😍|Eu gosto muito de comida brasileira.
+你 可以 {帮} 我 一下 吗？|nǐ kěyǐ bāng wǒ yíxià ma?|Cê pode me dar uma {força}?|🤝|Você pode me ajudar?
+我 在 {找} 我 的 手机。|wǒ zài zhǎo wǒ de shǒujī.|Tô {procurando} meu celular.|🔍|Estou procurando o meu celular.
+这 是 {给} 你 的 礼物。|zhè shì gěi nǐ de lǐwù.|Esse presente é {pra} você.|🎁|Este presente é para você.
+可以 {开} 空调 吗？|kěyǐ kāi kōngtiáo ma?|Pode {ligar} o ar?|❄️|Pode ligar o ar-condicionado?
+出门 前 {关} 电视。|chūmén qián guān diànshì.|{Desliga} a TV antes de sair.|📺|Desligue a televisão antes de sair.
+{等} 我 一下！|děng wǒ yíxià!|Peraí, me {espera}!|⏳|Espere por mim um momento!
+我 来 {洗} 碗。|wǒ lái xǐ wǎn.|Deixa que eu {lavo} a louça.|🧼|Eu lavo a louça.
+别 {哭} 了， 没事 的。|bié kū le, méishì de.|Não {chora}, vai ficar tudo bem.|😭|Não chore, vai ficar tudo bem.`,"❤️"],
+["Na feira",`{香蕉} 怎么 卖？|xiāngjiāo zěnme mài?|Quanto tá a {banana}?|🍌|Quanto custa a banana?
+我 要 一 公斤 {橙子}。|wǒ yào yì gōngjīn chéngzi.|Me vê um quilo de {laranja}.|🍊|Eu quero um quilo de laranjas.
+夏天 吃 {西瓜} 最 好 了！|xiàtiān chī xīguā zuì hǎo le!|No verão, {melancia} é tudo de bom!|🍉|No verão, melancia é a melhor coisa!
+这 些 {葡萄} 很 甜。|zhè xiē pútao hěn tián.|Essas {uvas} tão bem docinhas.|🍇|Estas uvas estão muito doces.
+我 女儿 最 爱 吃 {草莓}。|wǒ nǚ'ér zuì ài chī cǎoméi.|Minha filha é louca por {morango}.|🍓|Minha filha adora morangos.
+{西红柿} 炒 鸡蛋 很 好吃。|xīhóngshì chǎo jīdàn hěn hǎochī.|Ovo mexido com {tomate} é uma delícia.|🍅
+晚饭 我们 吃 {土豆}。|wǎnfàn wǒmen chī tǔdòu.|Hoje a janta é {batata}.|🥔|No jantar vamos comer batatas.
+多 吃 {青菜}， 对 身体 好。|duō chī qīngcài, duì shēntǐ hǎo.|Come bastante {verdura}, faz bem pra saúde.|🥬|Coma bastante verdura, faz bem para a saúde.
+我 不 喜欢 {洋葱}。|wǒ bù xǐhuan yángcōng.|Não curto {cebola}.|🧅|Eu não gosto de cebola.
+巴西 人 很 喜欢 吃 {玉米}。|Bāxī rén hěn xǐhuan chī yùmǐ.|Brasileiro adora {milho}.|🌽|Os brasileiros gostam muito de milho.`,"🍎"],
+["Comparando",`你 的 头发 很 {长}。|nǐ de tóufa hěn cháng.|Seu cabelo é bem {comprido}.|📏|Seu cabelo é muito comprido.
+这 条 裤子 太 {短} 了。|zhè tiáo kùzi tài duǎn le.|Essa calça ficou {curta}.|✂️|Esta calça está curta demais.
+他 比 我 {高}。|tā bǐ wǒ gāo.|Ele é mais {alto} que eu.|🦒|Ele é mais alto do que eu.
+我 比 我 哥哥 {矮}。|wǒ bǐ wǒ gēge ǎi.|Sou mais {baixo} que meu irmão.|🐜|Sou mais baixo do que meu irmão mais velho.
+今天 人 很 {多}。|jīntiān rén hěn duō.|Hoje tá {cheio} de gente.|➕|Hoje há muitas pessoas.
+我 的 钱 很 {少}。|wǒ de qián hěn shǎo.|Tô com {pouco} dinheiro.|➖|Tenho pouco dinheiro.
+你 家 离 学校 {远} 吗？|nǐ jiā lí xuéxiào yuǎn ma?|Sua casa é {longe} da escola?|🔭
+超市 离 这儿 很 {近}。|chāoshì lí zhèr hěn jìn.|O mercado é bem {pertinho} daqui.|🧲|O supermercado é muito perto daqui.
+这 个 问题 很 {容易}。|zhè ge wèntí hěn róngyì.|Essa pergunta é {moleza}.|😎|Esta pergunta é muito fácil.
+中文 比 葡萄牙语 {难} 吗？|Zhōngwén bǐ Pútáoyáyǔ nán ma?|Chinês é mais {difícil} que português?|🧗|O chinês é mais difícil do que o português?`,"📐"],
+["Expressões úteis",`{我爱你}， 妈妈！|wǒ ài nǐ, māma!|{Te amo}, mãe!|🥰|Eu te amo, mãe!
+{没问题}， 我 来 做。|méi wèntí, wǒ lái zuò.|{Pode deixar}, eu faço.|👌|Sem problema, eu faço.
+对不起， {我 不 懂}。|duìbuqǐ, wǒ bù dǒng.|Foi mal, {não entendi}.|😕|Desculpe, não entendi.
+你 能 {再 说 一 次} 吗？|nǐ néng zài shuō yí cì ma?|Pode {repetir}?|🔁|Você pode repetir, por favor?
+这 件 衣服 {多少钱}？|zhè jiàn yīfu duōshao qián?|Quanto {custa} essa roupa?|💲|Quanto custa esta roupa?
+你 做 得 {很 好}！|nǐ zuò de hěn hǎo!|{Mandou bem}!|🌟|Você fez muito bem!
+{欢迎} 来 我 家！|huānyíng lái wǒ jiā!|{Bem-vindo} lá em casa!|🎉|Seja bem-vindo à minha casa!
+{祝你好运}， 考试 加油！|zhù nǐ hǎoyùn, kǎoshì jiāyóu!|{Boa sorte} na prova!|🍀
+{没关系}， 下 次 再 来。|méi guānxi, xià cì zài lái.|{Não tem problema}, fica pra próxima.|😌|Não tem problema, fica para a próxima.
+你 是 {巴西人} 吗？|nǐ shì Bāxīrén ma?|Cê é {brasileiro}?|🇧🇷|Você é brasileiro?`,"💬"],
+["Querer e poder",`我 {有} 一 个 问题。|wǒ yǒu yí ge wèntí.|{Tenho} uma pergunta.|🙌|Eu tenho uma pergunta.
+我 {没有} 时间。|wǒ méiyǒu shíjiān.|Tô {sem} tempo.|🙅|Eu não tenho tempo.
+你 现在 {在} 家 吗？|nǐ xiànzài zài jiā ma?|Cê {tá} em casa agora?|📌|Você está em casa agora?
+我 {要} 一 个 大 的。|wǒ yào yí ge dà de.|{Quero} um grande.|🫴|Eu quero um grande.
+我 很 {想} 你。|wǒ hěn xiǎng nǐ.|Tô com muita {saudade} de você.|💭|Sinto muita saudade de você.
+你 {会} 开 车 吗？|nǐ huì kāi chē ma?|Cê {sabe} dirigir?|🚗|Você sabe dirigir?
+我 明天 不 {能} 来。|wǒ míngtiān bù néng lái.|Amanhã não vou {poder} ir.|💪|Amanhã não poderei vir.
+大家 都 {叫} 我 小王。|dàjiā dōu jiào wǒ Xiǎo Wáng.|Todo mundo me {chama} de Xiao Wang.|📣|Todos me chamam de Xiao Wang.
+我 不 {知道}。|wǒ bù zhīdào.|{Sei} lá.|🧠|Eu não sei.
+你 {觉得} 怎么样？|nǐ juéde zěnmeyàng?|O que cê {acha}?|🗯️|O que você acha?`,"💭"],
+["Números grandes e preços",`我 今年 {十二} 岁。|wǒ jīnnián shí'èr suì.|Tenho {doze} anos.|🔢
+一 个 月 大概 有 {三十} 天。|yí ge yuè dàgài yǒu sānshí tiān.|Um mês tem uns {trinta} dias.|📆|Um mês tem aproximadamente trinta dias.
+这 双 鞋 {一百} 块。|zhè shuāng xié yìbǎi kuài.|Esse sapato tá {cem} conto.|💯|Este par de sapatos custa cem reais.
+我们 班 有 {二十} 个 学生。|wǒmen bān yǒu èrshí ge xuésheng.|Minha turma tem {vinte} alunos.|🧑‍🎓
+我 爷爷 {八十} 岁 了。|wǒ yéye bāshí suì le.|Meu vô já tem {oitenta} anos.|👴|Meu avô já tem oitenta anos.
+{五十} 块 太 贵 了。|wǔshí kuài tài guì le.|{Cinquenta} reais é caro demais.|💴
+我 只 有 {十一} 块 钱。|wǒ zhǐ yǒu shíyī kuài qián.|Só tenho {onze} reais.|🪙
+一 杯 咖啡 {八} 块 {五}。|yì bēi kāfēi bā kuài wǔ.|Um café sai {oito e cinquenta}.|☕|Um café custa oito reais e cinquenta centavos.
+{零} 下 五 度， 好 冷！|líng xià wǔ dù, hǎo lěng!|Cinco graus abaixo de {zero}, que frio!|🥶
+{两} 杯 咖啡， 谢谢。|liǎng bēi kāfēi, xièxie.|{Dois} cafés, por favor.|✌️`,"💯"],
+["Que horas são?",`你 几 {点} 下班？|nǐ jǐ diǎn xiàbān?|Cê sai do trabalho que {horas}?|🕐|A que horas você sai do trabalho?
+现在 十 点 二十 {分}。|xiànzài shí diǎn èrshí fēn.|São dez e {vinte}.|⏱️|Agora são dez horas e vinte minutos.
+差 一 {刻} 三 点。|chà yí kè sān diǎn.|São {quinze} pras três.|🕒|Faltam quinze minutos para as três.
+我 等 了 两 个 {小时}。|wǒ děng le liǎng ge xiǎoshí.|Esperei duas {horas}.|⌛|Esperei por duas horas.
+再 等 五 {分钟}。|zài děng wǔ fēnzhōng.|Espera mais cinco {minutinhos}.|⏲️|Espere mais cinco minutos.
+我 没有 {时间} 吃 早饭。|wǒ méiyǒu shíjiān chī zǎofàn.|Não tenho {tempo} de tomar café.|⌚|Não tenho tempo para tomar o café da manhã.
+我 的 {钟} 慢 了 五 分钟。|wǒ de zhōng màn le wǔ fēnzhōng.|Meu {relógio} tá cinco minutos atrasado.|⏰|Meu relógio está cinco minutos atrasado.
+{中午} 十二 点 吃 午饭。|zhōngwǔ shí'èr diǎn chī wǔfàn.|O almoço é ao {meio-dia}.|🕛
+你 来 得 真 {早}！|nǐ lái de zhēn zǎo!|Cê chegou {cedo}, hein!|🐓|Você chegou muito cedo!
+太 {晚} 了， 我 要 睡觉 了。|tài wǎn le, wǒ yào shuìjiào le.|Já tá {tarde}, vou dormir.|🌆|Já está tarde, vou dormir.`,"🕐"],
+["A semana",`{星期一} 我 很 忙。|xīngqīyī wǒ hěn máng.|Na {segunda} eu fico na correria.|☕|Às segundas-feiras fico muito ocupado.
+我们 {星期二} 有 中文 课。|wǒmen xīngqī'èr yǒu Zhōngwén kè.|A gente tem aula de chinês na {terça}.|📚|Temos aula de chinês na terça-feira.
+{星期三} 晚上 你 有 空 吗？|xīngqīsān wǎnshang nǐ yǒu kòng ma?|Cê tá livre na {quarta} à noite?|🐪|Você está livre na quarta-feira à noite?
+{星期四} 我 去 健身房。|xīngqīsì wǒ qù jiànshēnfáng.|Na {quinta} eu vou pra academia.|🏋️|Na quinta-feira eu vou à academia.
+{星期五} 晚上 我们 出去 玩 吧！|xīngqīwǔ wǎnshang wǒmen chūqu wán ba!|{Sexta} à noite bora sair!|🍕|Vamos sair na sexta-feira à noite!
+{星期六} 我 睡 懒觉。|xīngqīliù wǒ shuì lǎnjiào.|No {sábado} eu durmo até tarde.|😴
+{星期天} 我们 去 奶奶 家。|xīngqītiān wǒmen qù nǎinai jiā.|No {domingo} a gente vai na casa da vó.|👵|No domingo vamos à casa da avó.
+这 个 {周末} 你 做 什么？|zhè ge zhōumò nǐ zuò shénme?|O que cê vai fazer nesse {fim de semana}?|🎡|O que você vai fazer neste fim de semana?
+我 一 {天} 喝 三 杯 咖啡。|wǒ yì tiān hē sān bēi kāfēi.|Tomo três cafés por {dia}.|🌄|Eu tomo três xícaras de café por dia.
+我 {每天} 都 走路 上班。|wǒ měitiān dōu zǒulù shàngbān.|Vou a pé pro trabalho {todo dia}.|🔄|Vou a pé para o trabalho todos os dias.`,"📅"],
+["Frases do cotidiano",`{你好吗}？ 好 久 不 见！|nǐ hǎo ma? hǎo jiǔ bú jiàn!|{Tudo bem}? Quanto tempo!|🙂|Como vai? Há quanto tempo!
+{我很好}， 就是 有点儿 累。|wǒ hěn hǎo, jiùshì yǒudiǎnr lèi.|{Tô bem}, só um pouco cansado.|😊|Estou bem, só um pouco cansado.
+你好， 我 叫 李明， {你叫什么名字}？|nǐ hǎo, wǒ jiào Lǐ Míng, nǐ jiào shénme míngzi?|Oi, eu sou o Li Ming, e {você, como chama}?|📛|Olá, eu me chamo Li Ming, e você, como se chama?
+小朋友， {你几岁} 了？|xiǎopéngyǒu, nǐ jǐ suì le?|E aí, pequeno, {quantos anos} cê tem?|🎂|Criança, quantos anos você tem?
+他 说 得 太 快， {我听不懂}。|tā shuō de tài kuài, wǒ tīng bu dǒng.|Ele fala rápido demais, {não entendo nada}.|🙉|Ele fala rápido demais, não consigo entender.
+请 {慢一点} 说。|qǐng màn yìdiǎn shuō.|Fala mais {devagar}, por favor.|🐌|Por favor, fale mais devagar.
+不好意思， {厕所在哪里}？|bù hǎoyìsi, cèsuǒ zài nǎlǐ?|Com licença, {cadê o banheiro}?|🚻|Com licença, onde fica o banheiro?
+妈妈， {我饿了}！|māma, wǒ è le!|Mãe, {tô com fome}!|🍔|Mãe, estou com fome!
+{加油}！ 你 一定 可以 的！|jiāyóu! nǐ yídìng kěyǐ de!|{Força}! Cê consegue!|🔥|Força! Você consegue!
+{生日快乐}！ 祝 你 天天 开心！|shēngrì kuàilè! zhù nǐ tiāntiān kāixīn!|{Feliz aniversário}! Muitas felicidades!|🥳`,"🗨️"],
+["Partículas na prática",`这 是 我 {的} 书。|zhè shì wǒ de shū.|Esse livro é {meu}.|🏷️|Este livro é meu.
+我 买 {了} 一 个 新 包。|wǒ mǎi le yí ge xīn bāo.|{Comprei} uma bolsa nova.|☑️
+我 去 超市， 你 {呢}？|wǒ qù chāoshì, nǐ ne?|Vou no mercado, e {você}?|🔄|Vou ao supermercado, e você?
+我 买 了 一{些} 水果。|wǒ mǎi le yìxiē shuǐguǒ.|Comprei {umas} frutas.|🧺|Comprei algumas frutas.
+你 喜欢 {哪} 个 颜色？|nǐ xǐhuan nǎ ge yánsè?|Cê gosta de {qual} cor?|🤷|De qual cor você gosta?
+你 住 在 {哪儿}？|nǐ zhù zài nǎr?|Cê mora {onde}?|🗺️|Onde você mora?
+这 件 衣服 {怎么样}？|zhè jiàn yīfu zěnmeyàng?|Que {tal} essa roupa?|🤙|O que acha desta roupa?
+他 {已经} 走 了。|tā yǐjīng zǒu le.|Ele {já} foi embora.|✔️
+今天 {非常} 热！|jīntiān fēicháng rè!|Hoje tá um calor {absurdo}!|🔝|Hoje está extremamente quente!
+他 {可能} 不 来 了。|tā kěnéng bù lái le.|{Acho que} ele não vem mais.|🎲|Talvez ele não venha mais.`,"🧩"],
+["No médico",`你 哪儿 不 {舒服}？|nǐ nǎr bù shūfu?|O que cê tá {sentindo}?|🩺|O que você está sentindo?
+我 {生病} 了， 发烧 三十八 度。|wǒ shēngbìng le, fāshāo sānshíbā dù.|Tô {doente}, com febre de trinta e oito.|🤒|Estou doente, com febre de trinta e oito graus.
+我 嗓子 {疼}。|wǒ sǎngzi téng.|Tô com {dor} de garganta.|🤕|Estou com dor de garganta.
+你 {感冒} 几 天 了？|nǐ gǎnmào jǐ tiān le?|Faz quantos dias que cê tá {gripado}?|🤧|Há quantos dias você está resfriado?
+一 天 吃 两 次 {药}。|yì tiān chī liǎng cì yào.|Toma o {remédio} duas vezes por dia.|💊|Tome o remédio duas vezes ao dia.
+你 要 多 {休息}。|nǐ yào duō xiūxi.|Cê precisa {descansar} bastante.|🛋️|Você precisa descansar bastante.
+我 要 去 {医院} 吗？|wǒ yào qù yīyuàn ma?|Preciso ir pro {hospital}?|🏥|Preciso ir ao hospital?
+{医生}， 我 没事 吧？|yīshēng, wǒ méishì ba?|{Doutor}, tá tudo bem comigo?|👨‍⚕️|Doutor, está tudo bem comigo?
+别 {担心}， 不 严重。|bié dānxīn, bù yánzhòng.|{Relaxa}, não é nada grave.|😟|Não se preocupe, não é grave.
+多 喝 {水}， 早 点儿 睡。|duō hē shuǐ, zǎo diǎnr shuì.|Bebe bastante {água} e dorme cedo.|💧|Beba bastante água e durma cedo.`,"🩺"],
+["Viajando",`今年 夏天 我们 去 哪儿 {旅游}？|jīnnián xiàtiān wǒmen qù nǎr lǚyóu?|Pra onde a gente vai {viajar} nesse verão?|🧳|Para onde vamos viajar neste verão?
+{机场} 怎么 走？|jīchǎng zěnme zǒu?|Como chego no {aeroporto}?|🛫|Como faço para chegar ao aeroporto?
+{飞机} 几 点 起飞？|fēijī jǐ diǎn qǐfēi?|O {avião} sai que horas?|✈️|A que horas o avião decola?
+这 个 {饭店} 有 空 房间 吗？|zhè ge fàndiàn yǒu kòng fángjiān ma?|Esse {hotel} tem quarto vago?|🏨|Este hotel tem quartos disponíveis?
+坐 {火车} 去 要 多 长 时间？|zuò huǒchē qù yào duō cháng shíjiān?|Quanto tempo leva de {trem}?|🚆|Quanto tempo demora de trem?
+{出租车}！ 去 机场。|chūzūchē! qù jīchǎng.|{Táxi}! Pro aeroporto, por favor.|🚕|Táxi! Para o aeroporto, por favor.
+{北京} 有 很 多 好玩儿 的 地方。|Běijīng yǒu hěn duō hǎowánr de dìfang.|{Pequim} tem muito lugar legal.|🏯|Pequim tem muitos lugares interessantes.
+我们 坐 {船} 去 吧。|wǒmen zuò chuán qù ba.|Bora de {barco}.|⛵|Vamos de barco.
+这 是 我 第一 次 来 {中国}。|zhè shì wǒ dì-yī cì lái Zhōngguó.|É minha primeira vez na {China}.|🇨🇳|Esta é a minha primeira vez na China.
+{地铁} 站 离 这儿 远 吗？|dìtiě zhàn lí zhèr yuǎn ma?|A estação de {metrô} é longe daqui?|🚇`,"✈️"],
+["Fazendo planos",`你 {明天} 有 空 吗？|nǐ míngtiān yǒu kòng ma?|Cê tá livre {amanhã}?|🔜|Você está livre amanhã?
+我们 {一起} 去 吃饭 吧！|wǒmen yìqǐ qù chīfàn ba!|Bora comer {juntos}!|👯|Vamos comer juntos!
+我们 {几} 点 见？|wǒmen jǐ diǎn jiàn?|A gente se encontra {que horas}?|⏰|A que horas nos encontramos?
+{下午} 三 点 怎么样？|xiàwǔ sān diǎn zěnmeyàng?|Que tal às três da {tarde}?|🌇
+{星期六} 我 有 事， 星期天 可以。|xīngqīliù wǒ yǒu shì, xīngqītiān kěyǐ.|{Sábado} não dá, mas domingo pode ser.|🗓️|No sábado tenho compromisso, mas no domingo posso.
+我 {想} 去 海边。|wǒ xiǎng qù hǎibiān.|Tô {a fim} de ir pra praia.|🏖️|Eu gostaria de ir à praia.
+好 啊， {没问题}！|hǎo a, méi wèntí!|Fechou, {sem problema}!|👌|Combinado, sem problema!
+不好意思， 我 {今天} 不 行。|bù hǎoyìsi, wǒ jīntiān bù xíng.|Foi mal, {hoje} não vai dar.|🙇|Desculpe, hoje não posso.
+我们 {下 个 星期} 再 约 吧。|wǒmen xià ge xīngqī zài yuē ba.|Bora marcar pra {semana que vem}.|📆|Vamos marcar para a próxima semana.
+到 了 {给} 我 打电话。|dào le gěi wǒ dǎ diànhuà.|Quando chegar, me {liga}.|📞|Quando chegar, ligue para mim.`,"🗓️"],
+["Na casa de um amigo",`{欢迎}！ 快 请 进！|huānyíng! kuài qǐng jìn!|{Seja bem-vindo}! Entra, entra!|🎉|Seja bem-vindo! Entre, por favor!
+你 {家} 真 漂亮！|nǐ jiā zhēn piàoliang!|Sua {casa} é linda!|🏠|Sua casa é muito bonita!
+请 {坐}， 别 客气。|qǐng zuò, bié kèqi.|{Senta} aí, fica à vontade.|🛋️|Sente-se e fique à vontade.
+你 想 {喝} 点儿 什么？|nǐ xiǎng hē diǎnr shénme?|Quer {beber} alguma coisa?|🥤|Você quer beber alguma coisa?
+来， 多 {吃} 点儿！|lái, duō chī diǎnr!|Vai, {come} mais um pouco!|🍲|Por favor, coma mais um pouco!
+太 {好吃} 了， 谢谢 你！|tài hǎochī le, xièxie nǐ!|Tava uma {delícia}, valeu!|😋|Estava delicioso, muito obrigado!
+我 可以 {看} 一下 你 的 照片 吗？|wǒ kěyǐ kàn yíxià nǐ de zhàopiàn ma?|Posso {ver} suas fotos?|📸|Posso ver as suas fotos?
+{时间} 不 早 了， 我 该 走 了。|shíjiān bù zǎo le, wǒ gāi zǒu le.|Já tá {tarde}, tenho que ir.|⌚|Já está tarde, preciso ir embora.
+{谢谢} 你 的 招待！|xièxie nǐ de zhāodài!|{Valeu} pela recepção!|🙏|Obrigado pela hospitalidade!
+{下次} 再 来 玩儿！|xià cì zài lái wánr!|Aparece {mais vezes}!|👋|Volte mais vezes!`,"🏡"],
+["Mensagens no celular",`你 在 {干嘛} 呢？|nǐ zài gànmá ne?|Tá {fazendo} o quê?|📱|O que você está fazendo?
+我 {到} 了， 你 在 哪儿？|wǒ dào le, nǐ zài nǎr?|{Cheguei}, cadê você?|📍|Cheguei, onde você está?
+我 {马上} 到！|wǒ mǎshàng dào!|Chego {já já}!|🏃|Chego em instantes!
+我 {手机} 快 没 电 了。|wǒ shǒujī kuài méi diàn le.|Meu {celular} tá quase sem bateria.|🔋|Meu celular está quase sem bateria.
+你 {看到} 我 的 消息 了 吗？|nǐ kàndào wǒ de xiāoxi le ma?|Cê {viu} minha mensagem?|💬|Você viu a minha mensagem?
+{好} 的， 没问题。|hǎo de, méi wèntí.|{Beleza}, sem problema.|👍|Está bem, sem problema.
+{哈哈}， 太 好笑 了！|hāhā, tài hǎoxiào le!|{Hahaha}, muito engraçado!|😂
+回头 {再} 聊！|huítóu zài liáo!|Depois a gente se {fala}!|👋|Conversamos depois!
+{谢谢} 啦， 你 真 好！|xièxie la, nǐ zhēn hǎo!|{Valeu}, cê é demais!|🙏|Muito obrigado, você é muito gentil!
+{晚安}， 做 个 好 梦！|wǎn'ān, zuò ge hǎo mèng!|{Boa noite}, sonha com os anjos!|🌜|Boa noite, tenha bons sonhos!`,"📱"],
+["Festa e aniversário",`明天 是 我 的 {生日}。|míngtiān shì wǒ de shēngrì.|Amanhã é meu {aniversário}.|🎂
+你 来 我 的 {生日} 派对 吗？|nǐ lái wǒ de shēngrì pàiduì ma?|Cê vem na minha festa de {aniversário}?|🎈|Você vem à minha festa de aniversário?
+{生日快乐}！ 这 是 给 你 的 礼物。|shēngrì kuàilè! zhè shì gěi nǐ de lǐwù.|{Parabéns}! Esse presente é pra você.|🎁|Feliz aniversário! Este presente é para você.
+我们 一起 {唱} 生日 歌 吧！|wǒmen yìqǐ chàng shēngrì gē ba!|Bora {cantar} parabéns!|🎤|Vamos cantar parabéns!
+你 {今年} 多 大 了？|nǐ jīnnián duō dà le?|Cê tá fazendo quantos {anos}?|🔢|Quantos anos você está fazendo?
+这 个 蛋糕 太 {好吃} 了！|zhè ge dàngāo tài hǎochī le!|Esse bolo tá muito {bom}!|🍰|Este bolo está delicioso!
+大家 一起 {跳舞} 吧！|dàjiā yìqǐ tiàowǔ ba!|Bora todo mundo {dançar}!|💃|Vamos todos dançar!
+我 今天 {很 开心}！|wǒ jīntiān hěn kāixīn!|Hoje eu tô muito {feliz}!|😁|Hoje estou muito feliz!
+为 我们 的 友谊 {干杯}！|wèi wǒmen de yǒuyì gānbēi!|Um {brinde} à nossa amizade!|🥂
+{谢谢} 你们 来！|xièxie nǐmen lái!|{Valeu} por terem vindo, galera!|🙏|Obrigado por terem vindo!`,"🎂"],
+["Pequenos diálogos",`你 是 {老师} 还是 学生？|nǐ shì lǎoshī háishi xuésheng?|Cê é {professor} ou aluno?|👩‍🏫|Você é professor ou aluno?
+我 {觉得} 今天 会 下雨。|wǒ juéde jīntiān huì xiàyǔ.|{Acho} que hoje vai chover.|🌧️|Eu acho que hoje vai chover.
+你 {怎么} 知道 的？|nǐ zěnme zhīdào de?|{Como} cê sabe?|🧐|Como você sabe?
+{因为} 天 很 阴。|yīnwèi tiān hěn yīn.|{Porque} o céu tá bem nublado.|🌥️|Porque o céu está muito nublado.
+那 我们 在 {家} 看 电视 吧。|nà wǒmen zài jiā kàn diànshì ba.|Então bora ficar em {casa} vendo TV.|📺|Então vamos ficar em casa assistindo televisão.
+你 {饿} 不 饿？|nǐ è bu è?|Cê tá com {fome}?|🤤|Você está com fome?
+有 一点儿， 我们 {叫} 外卖 吧。|yǒu yìdiǎnr, wǒmen jiào wàimài ba.|Um pouco, bora {pedir} delivery.|🛵|Um pouco, vamos pedir comida por entrega.
+你 想 吃 {什么}？|nǐ xiǎng chī shénme?|Cê quer comer {o quê}?|❓|O que você quer comer?
+{都} 可以， 你 决定 吧。|dōu kěyǐ, nǐ juédìng ba.|{Tanto faz}, cê que sabe.|🤷|Qualquer um está bom, você decide.
+{好}， 那 吃 饺子！|hǎo, nà chī jiǎozi!|{Fechou}, então vai ser guioza!|🥟|Combinado, então vamos comer guioza!`,"🗣️"]
 ];
-const UI=[["Conversas básicas",...U[0].slice(1)],["Meu dia",...U[1].slice(1)],["Pela cidade",...U[2].slice(1)],["Conversas reais",...U[3].slice(1)]];
+const UI=[["Conversas básicas",...U[0].slice(1)],["Meu dia",...U[1].slice(1)],["Pela cidade",...U[2].slice(1)],["Conversas reais",...U[3].slice(1)],["Revendo o básico",...U[4].slice(1)],["No dia a dia",...U[5].slice(1)],["Números e tempo",...U[6].slice(1)],["Situações reais",...U[7].slice(1)],["Rumo à fluência",...U[8].slice(1)]];
 const PUN=/[。？！，、,.!?]/g;
 const hlt=s=>s.replace(/\{(.*?)\}/g,'<em>$1</em>');
 const toks=s=>s.replace(/[{}]/g,'').split(/\s+/).map(t=>t.replace(PUN,'')).filter(Boolean);
@@ -993,5 +1241,92 @@ app.innerHTML=`<div class="card end"><img src="${tw(ok?'🏆':'💪')}" alt="" s
 <div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="ilesson(${li})">Revisar aula</button>
 ${li<DI.length-1?`<button class="btn" onclick="ilesson(${li+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
 show()}
+
+// ======================= TREINO DE FALA =======================
+// Usa o reconhecimento de voz do navegador (Chrome, Edge, Safari). O site compara o que foi
+// entendido com o texto certo e dá uma nota de 0 a 100%.
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let F=Object.assign({lang:'zh',src:'b',li:0},S.f||{});
+const setF=(k,v)=>{F[k]=v;S.f=F;save();fhome()};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fkey=li=>'f'+F.lang+F.src+li;
+const flag=e=>`<img src="${tw(e)}" alt="" style="width:20px;height:20px;vertical-align:-4px">`;
+const fstars=p=>p==null?0:p>=90?3:p>=75?2:p>=60?1:0;
+const NOSR=`<div class="card hsk">${img('⚠️')}<div><b>Seu navegador não tem reconhecimento de voz · 你的浏览器不支持语音识别</b><p>Use o Google Chrome (computador ou Android), o Microsoft Edge ou o Safari (iPhone).</p><p lang="zh-CN" class="zh">请使用 Google Chrome（电脑或安卓手机）、Microsoft Edge 或 Safari（iPhone）。</p></div></div>`;
+
+function fhome(){let h=tabs();if(!SR)h+=NOSR;
+h+=`<div class="card hero"><div class="txt"><h2>🎤 Treino de fala · 口语练习</h2>
+<p>Ouça a pronúncia, fale no microfone e veja se o site entendeu o que você disse.</p>
+<p lang="zh-CN" class="zh">先听发音，再对着麦克风说，看看网站能不能听懂你说的话。</p></div></div>
+<p class="q">1. Qual língua você quer praticar? · 你想练习哪种语言？</p>
+<div class="seg"><button class="tab ${F.lang=='zh'?'on':''}" onclick="setF('lang','zh')">${flag('🇨🇳')} Chinês · 中文</button><button class="tab ${F.lang=='pt'?'on':''}" onclick="setF('lang','pt')">${flag('🇧🇷')} Português · 葡萄牙语</button></div>
+<p class="q">2. O que você quer falar? · 你想说什么？</p>
+<div class="seg"><button class="tab ${F.src=='b'?'on':''}" onclick="setF('src','b')">Palavras · 词语 <small>(Iniciante)</small></button><button class="tab ${F.src=='i'?'on':''}" onclick="setF('src','i')">Frases · 句子 <small>(Intermediário)</small>${iOpen()?'':' 🔒'}</button></div>
+<p class="q">3. Escolha a aula · 选择课程</p>`;
+if(F.src=='i'&&!iOpen())h+=`<div class="card lock">🔒 As frases ficam liberadas junto com a Classe Intermediário. · 句子练习在解锁中级班后开放。</div>`;
+else{const L=F.src=='b'?D.map(d=>[d[0],d[3]]):DI.map(d=>[d[0],d[2]]);
+h+=`<div class="lgrid">`+L.map((d,i)=>{const p=(S.fala||{})[fkey(i)],st=fstars(p);
+return`<button class="lcard" onclick="fstart(${i})">${img(d[1])}<span>Aula ${i+1} · ${d[0]}<small>${p!=null?`<span class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</span> ${p}%`:'Não feita'}</small></span></button>`}).join('')+`</div>`}
+app.innerHTML=h+`<footer>Youhua Educacional · 幼华双语学校 · desde 1992</footer>`}
+
+let fi=0,fsc=[];
+const fitems=()=>F.src=='b'?A[F.li]:AI[F.li];
+// Textos aceitos como corretos (no Intermediário em português vale a forma coloquial ou a formal)
+const ftargets=w=>F.src=='b'?(F.lang=='zh'?[w.h]:[ptTxt(w.t)]):(F.lang=='zh'?[w.zh]:[w.pt,...(w.f?[w.f]:[])]);
+function fstart(li){F.li=li;S.f=F;save();fi=0;fsc=[];fcard()}
+function fcard(){const it=fitems(),w=it[fi],zh=F.lang=='zh',b=F.src=='b',u=(b?unitOf:iUnit)(F.li);scrollTo(0,0);
+const main=b?(zh?w.h:w.t):(zh?w.zh:w.pt),cls=b?(zh?'hz':'pt'):(zh?'hzs':'pts');
+const sub=zh?`<div class="py">${w.p}</div><div class="us">${b?w.t:w.pt}</div>`:`<div class="us" lang="zh-CN">${b?w.h:w.zh}</div>${!b&&w.f?`<div class="us">Formal · 正式: ${w.f}</div>`:''}`;
+app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${(fi+1)/it.length*100}%;background:var(--bad)"></i></div><span>${fi+1}/${it.length}</span></div>
+<p class="tag">🎤 Fala · ${zh?'Chinês 中文':'Português 葡萄牙语'} · Aula ${F.li+1} · ${b?D[F.li][0]:DI[F.li][0]}</p>
+<div class="card flash"><div class="pic sm" style="background:${u[3]}">${img(w.e)}</div>
+<div class="${cls}" style="text-align:center">${main}</div>${sub}
+<div class="row" style="justify-content:center;gap:14px;flex-wrap:wrap"><button class="btn blue" onclick="say(ftargets(fitems()[fi])[0],F.lang=='zh'?'zh-CN':'pt-BR')">🔊 Ouvir · 听</button><button class="btn mic" id="mic" onclick="listen()" ${SR?'':'disabled'}>🎤 Falar · 说</button></div>
+<div id="res">${SR?'':NOSR}</div></div>
+<div class="row"><button class="btn ghost" ${fi?'':'disabled'} onclick="fi--;fcard()">← Anterior</button>${fi<it.length-1?'<button class="btn" onclick="fi++;fcard()">Próxima →</button>':'<button class="btn" onclick="fend()">Terminar ✅</button>'}</div>`;
+say(ftargets(w)[0],zh?'zh-CN':'pt-BR')}
+
+let rec=null;
+function listen(){if(!SR)return;const m=document.getElementById('mic');
+if(rec){rec.abort();return}
+window.speechSynthesis&&speechSynthesis.cancel();
+rec=new SR();rec.lang=F.lang=='zh'?'zh-CN':'pt-BR';rec.interimResults=false;rec.maxAlternatives=5;
+m.classList.add('on');m.textContent='👂 Ouvindo... 正在听';
+rec.onresult=e=>judge([...e.results[0]].map(a=>a.transcript));
+rec.onerror=e=>{const t=e.error=='not-allowed'||e.error=='service-not-allowed'?'Permita o uso do microfone no navegador e tente de novo. · 请允许浏览器使用麦克风。'
+:e.error=='no-speech'?'Não ouvi nada. Fale mais perto do microfone. · 没听到声音，请靠近麦克风再说一次。'
+:e.error=='aborted'?'':'Não foi possível usar o microfone ('+e.error+'). · 无法使用麦克风。';
+if(t)document.getElementById('res').innerHTML=`<div class="fres bad"><div class="pct">🎤</div><div>${t}</div></div>`};
+rec.onend=()=>{rec=null;const m2=document.getElementById('mic');if(m2){m2.classList.remove('on');m2.textContent='🎤 Falar · 说'}};
+rec.start()}
+
+// ---- Comparação ----
+const ZD='零一二三四五六七八九';
+const zhNum=n=>n<10?ZD[n]:n<20?'十'+(n%10?ZD[n%10]:''):n<100?ZD[Math.floor(n/10)]+'十'+(n%10?ZD[n%10]:''):n==100?'一百':String(n);
+const normZh=s=>s.replace(/\d+/g,d=>zhNum(+d)).replace(/[她它]/g,'他').replace(/[地得]/g,'的').replace(/两/g,'二').replace(/[^一-鿿]/g,'');
+const PU=['zero','um','dois','tres','quatro','cinco','seis','sete','oito','nove','dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove'],PT=['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
+const ptNum=n=>n<20?PU[n]:n<100?PT[Math.floor(n/10)]+(n%10?' e '+PU[n%10]:''):n==100?'cem':String(n);
+const normW=w=>w.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'').replace(/^catorze$/,'quatorze');
+const normPt=s=>s.replace(/\d+/g,d=>' '+ptNum(+d)+' ').split(/[\s\-]+/).map(normW).filter(Boolean);
+// Maior subsequência comum: diz quais partes do texto certo apareceram no que foi ouvido
+function lcs(a,b){const n=a.length,m=b.length,T=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)T[i][j]=a[i]==b[j]?T[i+1][j+1]+1:Math.max(T[i+1][j],T[i][j+1]);
+const hit=new Set();let i=0,j=0;while(i<n&&j<m){if(a[i]==b[j]){hit.add(i);i++;j++}else if(T[i+1][j]>=T[i][j+1])i++;else j++}
+return{len:T[0][0],hit}}
+function cmp(target,heard){if(F.lang=='zh'){const a=[...normZh(target)],b=[...normZh(heard)],r=lcs(a,b);
+return{pct:a.length?Math.round(200*r.len/(a.length+b.length)):0,marks:a.map((c,i)=>`<span class="${r.hit.has(i)?'g':'r'}">${c}</span>`).join('')}}
+const words=target.split(/\s+/).map(w=>[w,normW(w)]).filter(x=>x[1]),a=words.map(x=>x[1]),b=normPt(heard),r=lcs(a,b);
+return{pct:a.length?Math.round(200*r.len/(a.length+b.length)):0,marks:words.map((x,i)=>`<span class="${r.hit.has(i)?'g':'r'}">${esc(x[0])}</span>`).join(' ')}}
+function judge(alts){const w=fitems()[fi];let best={pct:-1};
+alts.forEach(h=>ftargets(w).forEach(t=>{const r=cmp(t,h);if(r.pct>best.pct)best=Object.assign(r,{heard:h})}));
+fsc[fi]=Math.max(fsc[fi]||0,best.pct);
+const v=best.pct>=90?['ok','Perfeito! 太棒了！']:best.pct>=70?['mid','Quase lá! 差不多了！']:['bad','Tente de novo · 再试一次'];
+document.getElementById('res').innerHTML=`<div class="fres ${v[0]}"><div class="pct">${best.pct}%</div><div><b>${v[1]}</b><p>Ouvi · 听到: “${esc(best.heard)}”</p><p class="mk">${best.marks}</p></div></div>`}
+function fend(){scrollTo(0,0);const it=fitems(),avg=Math.round(it.reduce((s,_,i)=>s+(fsc[i]||0),0)/it.length),k=fkey(F.li);
+S.fala=S.fala||{};S.fala[k]=Math.max(avg,S.fala[k]||0);bump();save();const st=fstars(avg),n=F.src=='b'?D.length:DI.length;
+app.innerHTML=`<div class="card end"><img src="${tw(avg>=60?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${avg}%</div>
+<div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>Média de pronúncia nesta aula · 本课发音平均分<br><small>Itens que você pulou contam como 0%. · 跳过的题目按0分计算。</small></p>
+<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="fstart(${F.li})">Repetir · 再练一次</button>
+${F.li<n-1?`<button class="btn" onclick="fstart(${F.li+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
 home();
 </script></body></html>
