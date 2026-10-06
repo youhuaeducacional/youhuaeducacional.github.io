@@ -133,6 +133,19 @@ html,body{overflow-x:hidden}
 .tile{font:inherit;font-weight:800;font-size:1.05rem;background:var(--c);color:var(--t);border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:8px 12px;cursor:pointer}
 .tile.used{visibility:hidden}
 .tile.zh{font-size:1.35rem}
+/* Medalhas */
+.stats .medal img,.stats .medal .emo{width:20px;height:20px;font-size:1.1rem}
+.stats .medal small{font-weight:700;opacity:.85;font-size:.75rem}
+.tier{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+.tier>img,.tier>.emo{width:56px;height:56px;font-size:3rem;flex:0 0 auto}
+.tier .tx{flex:1;min-width:0}
+.tier b{font-size:1.1rem;font-weight:900}
+.tier small{color:var(--m)}
+.tier .prog{margin:8px 0 6px}
+.tiers{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tiers span{display:flex;align-items:center;gap:4px;font-size:.8rem;padding:3px 10px 3px 4px;border-radius:99px;background:var(--bg);color:var(--m);filter:grayscale(1);opacity:.6}
+.tiers span.got{filter:none;opacity:1;color:var(--t)}
+.tiers img,.tiers .emo{width:20px;height:20px;font-size:1rem}
 /* Treino de fala */
 .seg{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
 .seg .tab{min-width:140px}
@@ -625,6 +638,18 @@ let S={best:{},inter:false,streak:0,last:''};try{S=Object.assign(S,JSON.parse(lo
 const save=()=>{try{localStorage.setItem('yh',JSON.stringify(S))}catch(e){}};
 const xpT=()=>Object.values(S.best).reduce((a,b)=>a+b,0);
 const lvl=()=>Math.floor(xpT()/10);
+// Medalhas: o máximo de XP é 10 por aula (Iniciante + Intermediário). Diamante = todas as aulas com 10/10.
+const TIERS=[['Bronze','铜牌','🥉',0,'#cd7f32'],['Prata','银牌','🥈',1/3,'#9aa8b5'],['Ouro','金牌','🥇',2/3,'#ffc800'],['Diamante','钻石','💎',1,'#1cb0f6']];
+const XPM=()=>(D.length+DI.length)*10;
+const tierXP=i=>Math.ceil(XPM()*TIERS[i][3]);
+const tier=()=>{let t=0;TIERS.forEach((_,i)=>{if(xpT()>=tierXP(i))t=i});return t};
+const tierUp=t0=>tier()>t0?`<br>${TIERS[tier()][2]} Nova medalha: <b>${TIERS[tier()][0]} · ${TIERS[tier()][1]}</b>!`:'';
+function tierCard(){const t=tier(),x=xpT(),T=TIERS[t],nx=TIERS[t+1];
+const pct=nx?(x-tierXP(t))/(tierXP(t+1)-tierXP(t))*100:100;
+return`<div class="card tier">${img(T[2])}<div class="tx"><b>Medalha ${T[0]} · ${T[1]}</b> <small>${x} / ${XPM()} XP</small>
+<div class="prog"><i style="width:${pct}%;background:${nx?nx[4]:T[4]}"></i></div>
+<small>${nx?`Faltam <b>${tierXP(t+1)-x} XP</b> para ${nx[0]} ${nx[2]} · 还差${tierXP(t+1)-x}经验升到${nx[1]}`:'Você terminou todas as aulas com 100%! · 所有课程全部满分！'}</small>
+<div class="tiers">${TIERS.map((y,i)=>`<span class="${i<=t?'got':''}" title="${i==3?'Todas as aulas com 10/10':tierXP(i)+' XP'}">${img(y[2])}${y[0]}</span>`).join('')}</div></div></div>`}
 const day=o=>{const d=new Date();d.setDate(d.getDate()-(o||0));return d.toDateString()};
 const streak=()=>S.last==day()||S.last==day(1)?S.streak:0;
 const bump=()=>{if(S.last!=day()){S.streak=S.last==day(1)?S.streak+1:1;S.last=day()}};
@@ -633,7 +658,7 @@ const done=i=>starsOf(S.best[i])>0;
 const nextL=()=>{const i=D.findIndex((_,j)=>!done(j));return i<0?0:i};
 const app=document.getElementById('app');
 const sh=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
-function hud(){document.getElementById('stats').innerHTML=`<span title="Dias seguidos">🔥 ${streak()}</span><span title="XP total">⭐ ${xpT()}</span><span title="Level">🏅 ${lvl()}</span>`}
+function hud(){document.getElementById('stats').innerHTML=`<span title="Dias seguidos">🔥 ${streak()}</span><span title="XP total">⭐ ${xpT()}</span><span class="medal" title="${TIERS[tier()][0]} · Level ${lvl()}">${img(TIERS[tier()][2])}${TIERS[tier()][0]} <small>Lv ${lvl()}</small></span>`}
 
 // ---------- Página inicial ----------
 const ZZ=[0,70,100,70,0,-70,-100,-70];
@@ -655,7 +680,7 @@ let h=tabs()+`<div class="card hero"><img class="banner" src="${PANDA}" alt="Pan
 <p>${first?'Aprenda chinês com desenhos, áudio e provinhas rápidas.':'Você já concluiu '+nd+' de '+D.length+' aulas.'}</p>
 <div class="prog"><i style="width:${nd/D.length*100}%"></i></div>
 <button class="btn" onclick="lesson(${n})">${first?'Começar a aula 1':'Continuar · Aula '+(n+1)}</button></div></div>`;
-h+=`<div class="card hsk">${img('🎓')}<div><b>Classe Iniciante · ${D.length} aulas · ${ALL.length} palavras</b>
+h+=tierCard()+`<div class="card hsk">${img('🎓')}<div><b>Classe Iniciante · ${D.length} aulas · ${ALL.length} palavras</b>
 <p>Cobre todas as 150 palavras do HSK 1, a prova oficial de proficiência em chinês para iniciantes, e ainda traz palavras extras do dia a dia.</p>
 <p lang="zh-CN" class="zh">初级班 · ${D.length}课 · ${ALL.length}个词。涵盖HSK一级（汉语水平考试入门级）全部150个词汇，并补充了日常生活常用词。</p></div></div>`;
 if(first)h+=`<div class="how"><div>${img('🃏')}<span>1. Veja os cartões com desenhos</span></div><div>${img('🔊')}<span>2. Ouça a pronúncia em chinês e português</span></div><div>${img('✍️')}<span>3. Faça a prova e ganhe XP</span></div></div>`;
@@ -700,9 +725,9 @@ document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div cl
 const nx=document.getElementById('nx');nx.focus();nx.onclick=()=>{q++;show()}})}
 function end(){let m='',ok=true;scrollTo(0,0);
 if(mode=='t'){ok=sc>=TEST_OK;if(ok){S.inter=true;save()}m=ok?`🎉 Aprovado! Classe Intermediário liberada.<br><br><button class="btn" onclick="setTab('i')">Ir para o Intermediário →</button>`:`Você precisa de ${TEST_OK} acertos. Tente novamente!`}
-else{const g=Math.max(0,sc-(S.best[mode]||0)),l0=lvl();S.best[mode]=Math.max(sc,S.best[mode]||0);
+else{const g=Math.max(0,sc-(S.best[mode]||0)),l0=lvl(),t0=tier();S.best[mode]=Math.max(sc,S.best[mode]||0);
 bump();save();
-m=`+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}`+(lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:'');ok=sc>=6}
+m=`+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}`+(lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:'')+tierUp(t0);ok=sc>=6}
 const st=mode=='t'?0:starsOf(sc);
 app.innerHTML=`<div class="card end"><img src="${tw(ok?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${ws.length}</div>
 ${mode!='t'?`<div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div>`:''}<p>${m}</p>
@@ -1174,7 +1199,7 @@ h+=`<div class="card hero"><div class="txt"><h2>中级班 · Classe Intermediár
 <p>${first?'Frases curtas do dia a dia com as palavras que você já aprendeu.':'Você já concluiu '+nd+' de '+DI.length+' aulas.'}</p>
 <div class="prog"><i style="width:${nd/DI.length*100}%"></i></div>
 <button class="btn" onclick="ilesson(${n})">${first?'Começar a aula 1':'Continuar · Aula '+(n+1)}</button></div></div>
-<div class="card hsk">${img('💬')}<div><b>Português do dia a dia · 日常口语</b>
+${tierCard()}<div class="card hsk">${img('💬')}<div><b>Português do dia a dia · 日常口语</b>
 <p>As frases usam o jeito que os brasileiros falam no dia a dia. Quando a frase é informal, mostramos também a versão formal.</p>
 <p lang="zh-CN" class="zh">句子采用巴西人的日常口语；如果是口语说法，会同时给出正式说法。</p>
 <button class="lnk" onclick="iintro()">Ver o aviso completo · 查看完整说明</button></div></div>`;
@@ -1233,11 +1258,11 @@ const sp=()=>ansZh?ptS(s):zhS(s);document.getElementById('qs').onclick=sp;sp();
 function fb(r){if(r)sc++;ansZh?zhS(s):ptS(s);
 document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div class="in"><div><h3>${r?'Muito bem! 太棒了!':'Resposta correta · 正确答案:'}</h3><p>${s.zh} (${s.p})<br>${s.pt}${s.f?`<br><small>Formal: ${s.f}</small>`:''}</p></div><button class="btn ${r?'':'red'}" id="nx">Continuar</button></div></div>`;
 const nx=document.getElementById('nx');nx.focus();nx.onclick=()=>{q++;show()}}}
-function end(){scrollTo(0,0);const key=ik(li),g=Math.max(0,sc-(S.best[key]||0)),l0=lvl();
+function end(){scrollTo(0,0);const key=ik(li),g=Math.max(0,sc-(S.best[key]||0)),l0=lvl(),t0=tier();
 S.best[key]=Math.max(sc,S.best[key]||0);bump();save();
 const ok=sc>=6,st=starsOf(sc);
 app.innerHTML=`<div class="card end"><img src="${tw(ok?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${ws.length}</div>
-<div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}${lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:''}</p>
+<div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}${lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:''}${tierUp(t0)}</p>
 <div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="ilesson(${li})">Revisar aula</button>
 ${li<DI.length-1?`<button class="btn" onclick="ilesson(${li+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
 show()}
