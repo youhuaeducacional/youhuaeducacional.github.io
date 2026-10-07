@@ -1458,7 +1458,7 @@ fetch(RANK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'
 S.id=d.id;S.key=d.key;S.name=d.name;S.code=c;S.taken=null;mergeProg(d.data);save();RK=null;rankPush();home()})
 .catch(()=>{le.textContent='Sem conexão. Tente de novo. · 没有网络，请重试。';le.hidden=false;lb.disabled=false;lb.textContent='Entrar · 登录'})}}
 
-function showCode(){document.body.insertAdjacentHTML('beforeend',`<div class="modal" id="mdl"><div class="card">${img('🔑')}
+function showCode(){S.codeShown=true;save();document.body.insertAdjacentHTML('beforeend',`<div class="modal" id="mdl"><div class="card">${img('🔑')}
 <h3>Seu código de acesso · 你的登录码</h3><div class="code">${S.code}</div>
 <p>Anote ou tire um print! Com seu nome e este código você recupera seu progresso em outro celular ou no app instalado.</p>
 <p lang="zh-CN" class="zh">请记下或截图！用名字和这个登录码，可以在其他手机或已安装的应用里找回你的进度。</p>
@@ -1519,6 +1519,8 @@ dlBtn();
 if('serviceWorker'in navigator&&location.protocol=='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 // Ao abrir o site, envia o progresso; se o nome estiver repetido, pede um nome novo
-rankPush().then(d=>{if(d&&d.erro=='nome'&&!document.getElementById('nm'))home()});
+// Alunos que já tinham conta antes do código: mostra o código uma vez, depois que a planilha confirmou o salvamento
+rankPush().then(d=>{if(d&&d.erro=='nome'&&!document.getElementById('nm'))home();
+else if(d&&d.ok&&!S.codeShown&&!document.getElementById('nm')&&!document.getElementById('mdl'))showCode()});
 home();
 </script></body></html>
