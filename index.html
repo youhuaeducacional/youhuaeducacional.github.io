@@ -167,6 +167,7 @@ html,body{overflow-x:hidden}
 .tiers .mdl{height:24px;width:auto}
 .rrow>.mdl{height:40px;width:auto}
 .end .mdl{height:36px}
+.mdl-e{font-size:1.2em;line-height:1;vertical-align:middle}.tier>.mdl-e{font-size:3.4rem}.rrow>.mdl-e{font-size:1.8rem}
 /* Nome e ranking */
 @media(max-width:560px){.tabs{flex-wrap:wrap}.tab{flex:1 1 40%}}
 .inp{font:inherit;font-weight:800;font-size:1.2rem;width:100%;max-width:360px;padding:12px 16px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--t);text-align:center;margin:6px 0}
@@ -192,8 +193,8 @@ html,body{overflow-x:hidden}
 .tier small{color:var(--m)}
 .tier .prog{margin:8px 0 6px}
 .tiers{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.tiers span{display:flex;align-items:center;gap:4px;font-size:.8rem;padding:3px 10px 3px 4px;border-radius:99px;background:var(--bg);color:var(--m);filter:grayscale(1);opacity:.6}
-.tiers span.got{filter:none;opacity:1;color:var(--t)}
+.tiers>span{display:flex;align-items:center;gap:4px;font-size:.8rem;padding:3px 10px 3px 4px;border-radius:99px;background:var(--bg);color:var(--m);filter:grayscale(1);opacity:.6}
+.tiers>span.got{filter:none;opacity:1;color:var(--t)}
 .tiers img,.tiers .emo{width:20px;height:20px;font-size:1rem}
 /* Aula 0: tons e acentos */
 .lcard.guide{width:100%;margin-bottom:18px;border-color:#f5d27a;background:var(--midbg)}
@@ -266,7 +267,7 @@ html.tech .rrow{background:var(--c);border:1px solid var(--line)}
 html.tech .rrow.me{border-color:#5eead4;background:rgba(94,234,212,.08);box-shadow:0 0 22px rgba(94,234,212,.15)}
 html.tech .hsk,html.tech .lcard.guide{border-color:var(--line)}
 html.tech .badge{background:rgba(250,204,21,.14);color:#fde68a}
-html.tech .formal,html.tech .inp,html.tech .code,html.tech .ex2,html.tech .tiers span{background:rgba(255,255,255,.04)}
+html.tech .formal,html.tech .inp,html.tech .code,html.tech .ex2,html.tech .tiers>span{background:rgba(255,255,255,.04)}
 html.tech .modal .card{background:#0f1d20}
 html.tech .hl em{color:#ff8a9a}
 html.tech .q,html.tech .tier b,html.tech .gd h2{letter-spacing:.2px}
@@ -764,7 +765,8 @@ const lvl=()=>Math.floor(xpT()/10);
 // Medalhas: o máximo de XP é 10 por aula — provas do Iniciante e do Intermediário + treino de fala das
 // palavras e das frases. Diamante = tudo com 10/10.
 const TIERS=[['Bronze','铜牌','🥉',0,'#cd7f32','medal-bronze.png'],['Prata','银牌','🥈',1/3,'#9aa8b5','medal-prata.png'],['Ouro','金牌','🥇',2/3,'#ffc800','medal-ouro.png'],['Diamante','钻石','💎',1,'#1cb0f6','medal-diamante.png']];
-const medal=i=>`<img class="mdl" src="${TIERS[i][5]}" alt="${TIERS[i][0]}" draggable="false">`;
+// Se a imagem da medalha não carregar (ex.: arquivo ainda não enviado), mostra o emoji no lugar
+const medal=i=>`<img class="mdl" src="${TIERS[i][5]}" alt="${TIERS[i][0]}" draggable="false" onerror="this.outerHTML='<span class=mdl-e>${TIERS[i][2]}</span>'">`;
 const XPM=()=>(D.length+DI.length)*10*2;
 const tierXP=i=>Math.ceil(XPM()*TIERS[i][3]);
 const tierFor=x=>{let t=0;TIERS.forEach((_,i)=>{if(x>=tierXP(i))t=i});return t};
