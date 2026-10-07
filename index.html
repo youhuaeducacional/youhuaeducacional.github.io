@@ -149,6 +149,22 @@ html,body{overflow-x:hidden}
 .modal .card>img,.modal .card>.emo{width:56px;height:56px;font-size:3rem}
 .code{font-size:2rem;font-weight:900;letter-spacing:6px;background:var(--bg);border:2px dashed var(--line);border-radius:14px;padding:10px;margin:8px 0;font-family:ui-monospace,Consolas,monospace}
 .code.sm{font-size:1rem;letter-spacing:3px;padding:2px 8px;border-radius:8px;display:inline-block;margin:0}
+/* Exercícios novos: ouvir, ligar pares, escrever */
+.listen{display:flex;flex-direction:column;align-items:center;gap:8px;margin:6px 0 22px;color:var(--m)}
+.snd.big{width:100px;height:100px;border-radius:30px}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.match>div{display:flex;flex-direction:column;gap:10px}
+.mt{font:inherit;font-weight:800;font-size:1rem;background:var(--c);color:var(--t);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:12px 8px;cursor:pointer;min-height:58px}
+.mt.zh{font-size:1.5rem}
+.mt.sel{border-color:var(--blue);background:rgba(28,176,246,.12)}
+.mt.ok{border-color:var(--ok);background:var(--okbg);color:var(--ok2);opacity:.55;cursor:default}
+.mt.bad{border-color:var(--bad);background:var(--badbg);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.tf{display:flex;flex-direction:column;align-items:center;gap:12px;margin:6px 0 22px}
+.wl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0 12px}
+.wl span{background:var(--bg);border-radius:10px;padding:4px 10px;font-size:.9rem}
+.rev{border-color:#b7e3fa}
+html.tech .mt{border:1px solid var(--line)}html.tech .rev{border-color:rgba(56,189,248,.35)}
 /* Alternativas com botão de ouvir */
 .orow{display:flex;gap:8px;align-items:center}
 .orow .o{flex:1;min-width:0}
@@ -721,10 +737,10 @@ const U=[["Primeiros passos","#58cc02","#46a302","#e9fbd9"],["Dia a dia","#1cb0f
 const unitOf=i=>U[Math.floor(i/5)];
 // Acesso ao Intermediário: level mínimo e prova de graduação (70% de acertos)
 const LV_INTER=25,TEST_N=40,TEST_OK=28;
-const A=D.map((d,i)=>d[2].split('\n').map(l=>{const[h,p,t,e,x]=l.split('|');let u=x||'';
+const A=D.map((d,i)=>d[2].split('\n').map((l,k)=>{const[h,p,t,e,x]=l.split('|');let u=x||'';
 if(d[1]=='v')u=`Em ação: 在${h} · Passado: ${h}了 · Futuro: 要${h}`;
 if(d[1]=='a')u=`很${h} = muito ${t.toLowerCase()} · 不${h} = não é ${t.toLowerCase()}`;
-return{h,p,t,e,u,l:i}}));
+return{h,p,t,e,u,l:i,k}}));
 const ALL=A.flat();
 
 // ---------- Desenhos (Twemoji, com o emoji do aparelho como reserva) ----------
@@ -820,7 +836,7 @@ let h=tabs()+`<div class="card hero"><img class="banner" src="${PANDA}" alt="Pan
 <p>${first?'Aprenda chinês com desenhos, áudio e provinhas rápidas.':'Você já concluiu '+nd+' de '+D.length+' aulas.'}</p>
 <div class="prog"><i style="width:${nd/D.length*100}%"></i></div>
 <button class="btn" onclick="lesson(${n})">${first?'Começar a aula 1':'Continuar · Aula '+(n+1)}</button></div></div>`;
-h+=tierCard()+`<div class="card hsk">${img('🎓')}<div><b>Classe Iniciante · ${D.length} aulas · ${ALL.length} palavras</b>
+h+=revCard()+tierCard()+`<div class="card hsk">${img('🎓')}<div><b>Classe Iniciante · ${D.length} aulas · ${ALL.length} palavras</b>
 <p>Cobre todas as 150 palavras do HSK 1, a prova oficial de proficiência em chinês para iniciantes, e ainda traz palavras extras do dia a dia.</p>
 <p lang="zh-CN" class="zh">初级班 · ${D.length}课 · ${ALL.length}个词。涵盖HSK一级（汉语水平考试入门级）全部150个词汇，并补充了日常生活常用词。</p></div></div>`;
 if(first)h+=`<div class="how"><div>${img('🃏')}<span>1. Veja os cartões com desenhos</span></div><div>${img('🔊')}<span>2. Ouça a pronúncia em chinês e português</span></div><div>${img('✍️')}<span>3. Faça a prova e ganhe XP</span></div></div>`;
@@ -841,7 +857,7 @@ app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">
 <div class="wrow"><button class="snd" onclick="sayZh(A[cur][k])" title="Ouvir em chinês">${SPK}</button><div><div class="hz">${w.h}</div><div class="py">${w.p}</div></div></div>
 <div class="wrow"><button class="snd sm" onclick="sayPt(A[cur][k])" title="Ouvir em português">${SPK}</button><div class="pt">${w.t}</div></div>
 ${w.u?`<div class="us">${w.u}</div>`:''}</div>
-<div class="row"><button class="btn ghost" ${k?'':'disabled'} onclick="k--;card()">← Anterior</button>${k<9?'<button class="btn" onclick="k++;card()">Próxima →</button>':'<button class="btn" onclick="quiz(sh(A[cur]),cur)">Fazer a prova ✍️</button>'}</div>`;
+<div class="row"><button class="btn ghost" ${k?'':'disabled'} onclick="k--;card()">← Anterior</button>${k<9?'<button class="btn" onclick="k++;card()">Próxima →</button>':'<button class="btn" onclick="qz(sh(A[cur]),{kind:\'b\',li:cur,pairs:uniqPairs(sh(A[cur]),5)})">Fazer a prova ✍️</button>'}</div>`;
 sayZh(w)}
 
 // ---------- Prova ----------
@@ -1316,9 +1332,9 @@ const PUN=/[。？！，、,.!?]/g;
 const hlt=s=>s.replace(/\{(.*?)\}/g,'<em>$1</em>');
 const toks=s=>s.replace(/[{}]/g,'').split(/\s+/).map(t=>t.replace(PUN,'')).filter(Boolean);
 // Campos extras: zs/ps = chinês padrão + pinyin (só quando a frase principal em chinês é coloquial)
-const AI=DI.map((d,i)=>d[1].split('\n').map(l=>{const[z,p,t,e,f,zs,ps]=l.split('|');
+const AI=DI.map((d,i)=>d[1].split('\n').map((l,k)=>{const[z,p,t,e,f,zs,ps]=l.split('|');
 return{zh:z.replace(/[{}\s]/g,''),zhH:hlt(z.replace(/\s+/g,'')),zt:toks(z),p,pt:t.replace(/[{}]/g,''),ptH:hlt(t),tt:toks(t),e,f:f||'',
-zs:zs?zs.replace(/[{}\s]/g,''):'',zsH:zs?hlt(zs.replace(/\s+/g,'')):'',ps:ps||'',l:i}}));
+zs:zs?zs.replace(/[{}\s]/g,''):'',zsH:zs?hlt(zs.replace(/\s+/g,'')):'',ps:ps||'',l:i,k}}));
 // Liberado por quem passou na prova. Professores podem ver tudo abrindo o site com #professor no fim do link.
 const iOpen=()=>S.inter||location.hash=='#professor';
 const ik=i=>'i'+i;
@@ -1342,7 +1358,7 @@ h+=`<div class="card hero"><div class="txt"><h2>中级班 · Classe Intermediár
 <p>${first?'Frases curtas do dia a dia com as palavras que você já aprendeu.':'Você já concluiu '+nd+' de '+DI.length+' aulas.'}</p>
 <div class="prog"><i style="width:${nd/DI.length*100}%"></i></div>
 <button class="btn" onclick="ilesson(${n})">${first?'Começar a aula 1':'Continuar · Aula '+(n+1)}</button></div></div>
-${tierCard()}<div class="card hsk">${img('💬')}<div><b>Linguagem do dia a dia · 日常口语</b>
+${revCard()}${tierCard()}<div class="card hsk">${img('💬')}<div><b>Linguagem do dia a dia · 日常口语</b>
 <p>As frases usam o jeito que brasileiros e chineses falam no dia a dia. Quando a frase é informal, mostramos também a versão formal (português) ou padrão (chinês).</p>
 <p lang="zh-CN" class="zh">葡萄牙语和中文句子都采用日常口语；口语句子会同时给出正式/标准说法。</p>
 <button class="lnk" onclick="iintro()">Ver o aviso completo · 查看完整说明</button></div></div>`;
@@ -1370,25 +1386,93 @@ app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">
 ${s.zs?`<div class="formal" style="margin:4px 0 14px"><span class="badge">标准 · Padrão</span><div class="wrow" style="justify-content:flex-start"><button class="snd sm" onclick="say(AI[icur][ii].zs,'zh-CN')" title="Ouvir o chinês padrão">${SPK}</button><div class="hl"><b>${s.zsH}</b><br><small>${s.ps}</small></div></div></div><br>`:''}
 <div class="wrow"><button class="snd sm" onclick="ptS(AI[icur][ii])" title="Ouvir em português">${SPK}</button><div class="pts hl">${s.ptH}</div></div>
 ${s.f?`<div class="formal"><span class="badge">💬 Coloquial · 口语</span><div class="wrow" style="justify-content:flex-start"><button class="snd sm" onclick="say(AI[icur][ii].f,'pt-BR')" title="Ouvir a forma formal">${SPK}</button><div>Formal · 正式: <b>${s.f}</b></div></div></div>`:''}</div>
-<div class="row"><button class="btn ghost" ${ii?'':'disabled'} onclick="ii--;icard()">← Anterior</button>${ii<9?'<button class="btn" onclick="ii++;icard()">Próxima →</button>':'<button class="btn" onclick="iquiz(icur)">Fazer a prova ✍️</button>'}</div>`;
+<div class="row"><button class="btn ghost" ${ii?'':'disabled'} onclick="ii--;icard()">← Anterior</button>${ii<9?'<button class="btn" onclick="ii++;icard()">Próxima →</button>':'<button class="btn" onclick="qz(sh(AI[icur]),{kind:\'i\',li:icur})">Fazer a prova ✍️</button>'}</div>`;
 zhS(s)}
 
-// Prova: 0 = escolher o significado, 1 = escolher a frase em chinês, 2 = montar em português, 3 = montar em chinês
-function iquiz(li){const ws=sh(AI[li]);let q=0,sc=0;
-function show(){scrollTo(0,0);if(q>=ws.length)return end();
-const s=ws[q],ty=Math.floor(Math.random()*4),u=iUnit(li),others=AI[li].filter(x=>x!=s),ansZh=ty==1||ty==3;
-const T=['O que significa? · 什么意思？','Como se diz em chinês? · 中文怎么说？','Monte a frase em português · 用葡萄牙语组句','Monte a frase em chinês · 用中文组句'][ty];
-let h=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${q/ws.length*100}%"></i></div><span>${q+1}/${ws.length}</span></div><p class="q">${T}</p>`;
-h+=ansZh?`<div class="qbox"><div class="pic" style="background:${u[3]}">${img(s.e)}</div><div class="wrow"><button class="snd sm" id="qs" title="Ouvir">${SPK}</button><div class="pts">${s.pt}</div></div></div>`
-:`<div class="qbox"><button class="snd" id="qs" title="Ouvir">${SPK}</button><div class="sent"><div class="hzs">${s.zh}</div><div class="py">${s.p}</div></div></div>`;
+// ======================= MOTOR DE EXERCÍCIOS (provas das aulas e Revisão do dia) =======================
+const isW=it=>it.h!=null;                                   // palavra do Iniciante (frase do Intermediário = false)
+const zhOf=it=>isW(it)?it.h:it.zh, ptOf=it=>isW(it)?it.t:it.pt;
+const sZ=it=>say(zhOf(it),'zh-CN'), sP=it=>say(isW(it)?ptTxt(it.t):it.pt,'pt-BR');
+const ikey=it=>(isW(it)?'b':'i')+it.l+'.'+it.k;              // identidade do item, ex.: b3.4 ou i12.0
+const lessonOf=it=>isW(it)?A[it.l]:AI[it.l];
+const unitFor=it=>isW(it)?unitOf(it.l):iUnit(it.l);
 
-if(ty<2){const op=sh([s,...sh(others).slice(0,3)]);
-h+=`<div class="opts" id="o">`+op.map((o,j)=>oRow(ty==0?o.pt:`<span class="ohz">${o.zh}</span><br><small>${o.p}</small>`,'',j)).join('')+`</div>`;
+// ---- Repetição espaçada: acertou → volta em 1, 2, 4, 7, 15, 30 dias; errou → volta hoje ----
+const dayN=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
+const IV=[0,1,2,4,7,15,30];
+function srsHit(it,ok){S.srs=S.srs||{};const k=ikey(it),c=S.srs[k]||[0,0],b=ok?Math.min(c[0]+1,IV.length-1):0;S.srs[k]=[b,dayN()+IV[b]]}
+// Itens que entram na revisão: os das aulas que o aluno já fez
+function revPool(){const o=[];D.forEach((_,l)=>{if(S.best[l]!=null)o.push(...A[l])});if(iOpen())DI.forEach((_,l)=>{if(S.best[ik(l)]!=null)o.push(...AI[l])});return o}
+const isDue=it=>{const c=(S.srs||{})[ikey(it)];return !c||c[1]<=dayN()};
+// Prioridade: mais atrasados e mais errados primeiro; se faltar, completa com os menos dominados
+function revPick(n){const t=dayN(),s=S.srs||{},pool=revPool();
+const pr=it=>{const c=s[ikey(it)];return c?(t-c[1])*2-c[0]+5:3};
+let r=sh(pool.filter(isDue)).sort((a,b)=>pr(b)-pr(a)).slice(0,n);
+if(r.length<n)r=r.concat(sh(pool.filter(it=>!r.includes(it))).sort((a,b)=>((s[ikey(a)]||[0])[0])-((s[ikey(b)]||[0])[0])).slice(0,n-r.length));
+return sh(r)}
+// Pares para o "Ligue os pares": sem chinês nem português repetidos
+const uniqPairs=(arr,n)=>{const r=[],H=new Set(),T=new Set();for(const x of arr){if(r.length>=n)break;if(H.has(x.h)||T.has(x.t))continue;H.add(x.h);T.add(x.t);r.push(x)}return r};
+
+// ---- Tons: gera pinyins com um tom trocado (para "Qual é a pronúncia certa?") ----
+const TONES={a:'āáǎà',e:'ēéěè',i:'īíǐì',o:'ōóǒò',u:'ūúǔù','ü':'ǖǘǚǜ'},TREV={};
+for(const b in TONES)[...TONES[b]].forEach((c,t)=>TREV[c]=[b,t]);
+function toneVars(py){const ch=[...py],pos=ch.map((c,i)=>TREV[c]?i:-1).filter(i=>i>=0),out=new Set();
+pos.forEach(i=>{const[b,t]=TREV[ch[i]];for(let n=0;n<4;n++)if(n!=t){const c2=[...ch];c2[i]=TONES[b][n];out.add(c2.join(''))}});
+return sh([...out]).slice(0,3)}
+const toneOK=it=>isW(it)&&[...it.h].length<=3&&[...it.p].some(c=>TREV[c])&&toneVars(it.p).length>=3;
+
+// ---- Escrita: compara sem tons, sem acentos, sem espaços ----
+const CMB=new RegExp('['+String.fromCharCode(0x300)+'-'+String.fromCharCode(0x36f)+']','g');
+const ptN=s=>s.toLowerCase().normalize('NFD').replace(CMB,'').replace(/[^a-z0-9]/g,'');
+const pyN=s=>ptN(s.replace(/v/gi,'u'));
+const ptAns=it=>[ptOf(it),...ptOf(it).replace(/\(.*?\)/g,'').split('/')].map(ptN).filter(Boolean);
+
+// ---- Alternativas erradas: mesma aula primeiro; nas palavras, com o mesmo nº de caracteres ----
+function distract(it,n){const pool=lessonOf(it).filter(x=>x!==it&&zhOf(x)!=zhOf(it)&&ptOf(x)!=ptOf(it));
+if(!isW(it))return sh(pool).slice(0,n);
+const len=x=>[...x.h].length==[...it.h].length,all=ALL.filter(x=>x!==it&&x.h!=it.h&&x.t!=it.t);
+return[...sh(pool.filter(len)),...sh(all.filter(x=>len(x)&&x.l!=it.l)),...sh(all.filter(x=>!len(x)))].slice(0,n)}
+
+// Tipos: mcz = ver chinês e escolher o significado · mcp = ver português e escolher o chinês
+// lis = ouvir chinês e escolher · lisp = ouvir português e escolher o chinês · tone = escolher o pinyin com o tom certo
+// tpy = escrever o pinyin · tpt = escrever em português · bpt/bzh = montar a frase com blocos
+function pickType(it,mcOnly){if(mcOnly)return sh(['mcz','mcp'])[0];
+const t=isW(it)?['mcz','mcp','lis','lisp','type',...(toneOK(it)?['tone']:[])]:['mcz','mcp','lis','bpt','bzh'];
+const x=t[Math.floor(Math.random()*t.length)];return x=='type'?(Math.random()<.5?'tpy':'tpt'):x}
+const QT={mcz:'O que significa? · 什么意思？',mcp:'Como se diz em chinês? · 中文怎么说？',lis:'🎧 Ouça e escolha o que ouviu · 听一听，选出你听到的',
+lisp:'🎧 Ouça em português e escolha o significado · 听葡萄牙语，选意思',tone:'🎵 Qual é a pronúncia certa? · 哪个读音（声调）对？',
+tpy:'⌨️ Escreva o pinyin (sem tons também vale) · 写出拼音（可以不标声调）',tpt:'⌨️ Escreva em português (sem acento também vale) · 用葡萄牙语写出来',
+bpt:'Monte a frase em português · 用葡萄牙语组句',bzh:'Monte a frase em chinês · 用中文组句'};
+
+// o = {kind:'b'|'i'|'r', li: aula, pairs: palavras para o aquecimento "Ligue os pares"}
+function qz(items,o){let q=0,sc=0;const wrong=[];
+function show(){idleStop();scrollTo(0,0);if(q>=items.length)return end();
+const it=items[q],ty=pickType(it,o.mcOnly),w=isW(it),u=unitFor(it),zhAns=['mcp','lis','lisp','tone','tpy','bzh'].includes(ty);
+const sp=()=>({mcz:sZ,mcp:sP,lis:sZ,lisp:sP,tone:sZ,tpy:sZ,tpt:sZ,bpt:sZ,bzh:sP})[ty](it);
+const ZH=`<div class="${w?'hz':'hzs'}">${zhOf(it)}</div>`,PY=`<div class="py">${it.p}</div>`,PT=`<div class="${w?'pt':'pts'}">${ptOf(it)}</div>`;
+const QS=big=>`<button class="snd${big?'':' sm'}" id="qs" title="Ouvir">${SPK}</button>`;
+let h=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${q/items.length*100}%"></i></div><span>${q+1}/${items.length}</span></div><p class="q">${QT[ty]}</p>`;
+if(ty=='mcz'||ty=='bpt'||ty=='tpt')h+=`<div class="qbox">${QS(1)}<div class="sent">${ZH}${PY}</div></div>`;
+else if(ty=='tone'||ty=='tpy')h+=`<div class="qbox">${QS(1)}<div class="sent">${ZH}</div></div>`;
+else if(ty=='mcp'||ty=='bzh')h+=`<div class="qbox"><div class="pic" style="background:${u[3]}">${img(it.e)}</div><div class="wrow">${QS(0)}${PT}</div></div>`;
+else h+=`<div class="listen"><button class="snd big" id="qs" title="Ouvir de novo">${SPK}</button><small>Toque para ouvir de novo · 点击再听一遍</small></div>`;
+
+if(['mcz','mcp','lis','lisp','tone'].includes(ty)){
+const op=ty=='tone'?sh([it.p,...toneVars(it.p)]):sh([it,...distract(it,3)]),right=ty=='tone'?it.p:it;
+const lab=ty=='tone'?(x=>`<span class="ohz">${x}</span>`):ty=='mcz'?(x=>ptOf(x)):(x=>`<span class="ohz">${zhOf(x)}</span>${w?' ':'<br>'}<small>${x.p}</small>`);
+const spk=ty=='mcz'||ty=='mcp'||ty=='lisp',grid=(w&&ty=='mcz')||ty=='tone';     // em "Ouça e escolha" não há 🔊 nas opções
+h+=`<div class="opts ${grid?'g2':''}" id="o">`+op.map((x,j)=>spk?oRow(lab(x),grid?'pc':'',j):`<div class="orow"><button class="o ${grid?'pc':''}">${lab(x)}</button></div>`).join('')+`</div>`;
 app.innerHTML=h+`<div id="fb"></div>`;
 const bs=[...document.querySelectorAll('#o .o')];
-document.querySelectorAll('#o .oa').forEach(b=>b.onclick=()=>{const o=op[+b.dataset.j];ty==0?ptS(o):zhS(o);idleStart(sp)});
-bs.forEach((b,j)=>b.onclick=()=>{const r=op[j]==s;bs.forEach((c,m)=>{c.onclick=null;if(op[m]==s)c.classList.add('ok')});if(!r)b.classList.add('bad');fb(r)})}
-else{const zh=ty==3,ans=zh?s.zt:s.tt,lc=x=>x.toLowerCase();
+document.querySelectorAll('#o .oa').forEach(b=>b.onclick=()=>{const x=op[+b.dataset.j];ty=='mcz'?sP(x):sZ(x);idleStart(sp)});
+bs.forEach((b,j)=>b.onclick=()=>{const r=op[j]===right;bs.forEach((c,m)=>{c.onclick=null;if(op[m]===right)c.classList.add('ok')});if(!r)b.classList.add('bad');fb(r)})}
+else if(ty=='tpy'||ty=='tpt'){
+h+=`<form id="tf" class="tf"><input id="ti" class="inp" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="${ty=='tpy'?'ex.: ni hao':'Digite em português · 输入葡萄牙语'}"><button class="btn" id="tb">Verificar · 检查</button></form>`;
+app.innerHTML=h+`<div id="fb"></div>`;
+const ti=document.getElementById('ti');ti.focus();ti.oninput=()=>idleStart(sp);
+document.getElementById('tf').onsubmit=e=>{e.preventDefault();const v=ti.value.trim();if(!v)return;ti.disabled=true;document.getElementById('tb').disabled=true;
+fb(ty=='tpy'?pyN(v)==pyN(it.p):ptAns(it).includes(ptN(v)),v)}}
+else{const zh=ty=='bzh',ans=zh?it.zt:it.tt,lc=x=>x.toLowerCase(),others=lessonOf(it).filter(x=>x!==it);
 const ds=[...new Set(sh(others.flatMap(x=>zh?x.zt:x.tt)).filter(t=>!ans.some(a=>lc(a)==lc(t))))].slice(0,3);
 const tiles=sh([...ans,...ds]).map(t=>({t,u:false}));let sel=[],lock=false;
 h+=`<div class="ans" id="ans"></div><div class="bank" id="bank"></div><div class="row" style="justify-content:flex-end"><button class="btn" id="chk" disabled>Verificar · 检查</button></div>`;
@@ -1401,18 +1485,53 @@ B_.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(lock)return;const i=+
 C_.disabled=!sel.length}
 rt();
 C_.onclick=()=>{lock=true;C_.disabled=true;const j=zh?'':' ';fb(lc(sel.map(i=>tiles[i].t).join(j))==lc(ans.join(j)))}}
-const sp=()=>ansZh?ptS(s):zhS(s);document.getElementById('qs').onclick=sp;sp();idleStart(sp);
-function fb(r){idleStop();if(r)sc++;ansZh?zhS(s):ptS(s);
-document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div class="in"><div><h3>${r?'Muito bem! 太棒了!':'Resposta correta · 正确答案:'}</h3><p>${s.zh} (${s.p})${s.zs?`<br><small>标准 · Padrão: ${s.zs}</small>`:''}<br>${s.pt}${s.f?`<br><small>Formal: ${s.f}</small>`:''}</p></div><button class="btn ${r?'':'red'}" id="nx">Continuar</button></div></div>`;
+document.getElementById('qs').onclick=sp;sp();idleStart(sp);
+function fb(r,typed){idleStop();if(r)sc++;else wrong.push(it);srsHit(it,r);save();zhAns?sZ(it):sP(it);
+document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div class="in"><div><h3>${r?'Muito bem! 太棒了!':'Resposta correta · 正确答案:'}</h3>
+<p>${zhOf(it)} (${it.p})${!w&&it.zs?`<br><small>标准 · Padrão: ${it.zs}</small>`:''}<br>${ptOf(it)}${!w&&it.f?`<br><small>Formal: ${it.f}</small>`:''}${!r&&typed?`<br><small>Você escreveu · 你写的: ${esc(typed)}</small>`:''}</p></div>
+<button class="btn ${r?'':'red'}" id="nx">Continuar</button></div></div>`;
 const nx=document.getElementById('nx');nx.focus();nx.onclick=()=>{q++;show()}}}
-function end(){scrollTo(0,0);const key=ik(li),g=Math.max(0,sc-(S.best[key]||0)),l0=lvl(),t0=tier();
-S.best[key]=Math.max(sc,S.best[key]||0);bump();save();rankPush();
-const ok=sc>=6,st=starsOf(sc);
-app.innerHTML=`<div class="card end"><img src="${tw(ok?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${ws.length}</div>
+function end(){idleStop();scrollTo(0,0);const l0=lvl(),t0=tier();
+if(o.kind=='r'){S.rev=(S.rev||0)+1;bump();save();rankPush();
+app.innerHTML=`<div class="card end"><img src="${tw(sc>=items.length*.6?'🧠':'💪')}" alt="" style="width:100px"><div class="big">${sc}/${items.length}</div>
+<p>Revisão concluída! · 复习完成！<br><small>${wrong.length?'Estes vão aparecer de novo em breve · 这些很快会再出现：':'Você acertou tudo! Esses itens voltam daqui a alguns dias. · 全对！过几天再复习。'}</small></p>
+${wrong.length?`<div class="wl">${wrong.map(x=>`<span><b>${zhOf(x)}</b> · ${ptOf(x)}</span>`).join('')}</div>`:''}
+<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="review()">Mais uma revisão · 再复习一次</button><button class="btn blue" onclick="home()">Início</button></div></div>`;hud();return}
+const key=o.kind=='i'?ik(o.li):o.li,g=Math.max(0,sc-(S.best[key]||0));S.best[key]=Math.max(sc,S.best[key]||0);bump();save();rankPush();
+const st=starsOf(sc),go=o.kind=='i'?'ilesson':'lesson',n=o.kind=='i'?DI.length:D.length;
+app.innerHTML=`<div class="card end"><img src="${tw(sc>=6?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${items.length}</div>
 <div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}${lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:''}${tierUp(t0)}</p>
-<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="ilesson(${li})">Revisar aula</button>
-${li<DI.length-1?`<button class="btn" onclick="ilesson(${li+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
+<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="${go}(${o.li})">Revisar aula</button>
+${o.li<n-1?`<button class="btn" onclick="${go}(${o.li+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
+if(o.pairs&&o.pairs.length>=3)return matchRound(o.pairs,show);
 show()}
+
+// ---- 🔗 Ligue os pares (aquecimento contra o relógio; não muda a nota) ----
+function matchRound(ws,next){idleStop();scrollTo(0,0);const L=sh(ws),R=sh(ws),bad=new Set(),t0=Date.now();let sel=null,done=0,err=0;
+app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><p class="tag" style="margin:0;flex:1">🔗 Aquecimento · 热身</p><span id="mt">⏱ 0s</span></div>
+<p class="q">🔗 Ligue os pares · 连一连</p><p class="us" style="margin-top:-8px">Toque numa palavra em chinês e depois no significado. · 先点中文，再点它的意思。</p>
+<div class="match"><div>${L.map((x,i)=>`<button class="mt zh" data-s="L" data-i="${i}">${x.h}</button>`).join('')}</div><div>${R.map((x,i)=>`<button class="mt" data-s="R" data-i="${i}">${x.t}</button>`).join('')}</div></div>
+<div class="row" style="justify-content:center"><button class="lnk" id="mskip">Pular aquecimento · 跳过</button></div><div id="fb"></div>`;
+const tm=setInterval(()=>{const e=document.getElementById('mt');if(!e)return clearInterval(tm);e.textContent='⏱ '+Math.round((Date.now()-t0)/1000)+'s'},500);
+document.getElementById('mskip').onclick=()=>{clearInterval(tm);next()};
+document.querySelectorAll('.mt').forEach(b=>b.onclick=()=>{if(b.classList.contains('ok'))return;const s=b.dataset.s,x=(s=='L'?L:R)[+b.dataset.i];
+if(s=='L')sZ(x);
+if(!sel||sel.s==s){document.querySelectorAll('.mt.sel').forEach(c=>c.classList.remove('sel'));b.classList.add('sel');sel={s,x,b};return}
+if(sel.x===x){[sel.b,b].forEach(c=>{c.classList.remove('sel');c.classList.add('ok')});srsHit(x,!bad.has(x));done++;sel=null;
+if(done==ws.length){clearInterval(tm);save();const secs=Math.round((Date.now()-t0)/1000);
+document.getElementById('fb').innerHTML=`<div class="fb ok"><div class="in"><div><h3>Pares completos! 全部连对！</h3><p>⏱ ${secs}s · ${err} ${err==1?'erro':'erros'} · ${err}个错误</p></div><button class="btn" id="nx">Continuar</button></div></div>`;
+const nx=document.getElementById('nx');nx.focus();nx.onclick=next}}
+else{err++;bad.add(x);bad.add(sel.x);const p=[sel.b,b];p.forEach(c=>{c.classList.remove('sel');c.classList.add('bad')});setTimeout(()=>p.forEach(c=>c.classList.remove('bad')),500);sel=null}})}
+
+// ---- 🧠 Revisão do dia ----
+function review(){const items=revPick(10);if(!items.length)return home();
+const words=sh(revPool().filter(isW)).sort((a,b)=>isDue(b)-isDue(a));
+qz(items,{kind:'r',pairs:uniqPairs(words,5)})}
+function revCard(){const pool=revPool();if(!pool.length)return'';const n=pool.filter(isDue).length;
+return`<div class="card hsk rev">${img('🧠')}<div><b>Revisão do dia · 今日复习</b>
+<p>${n?`Você tem <b>${n}</b> ${n==1?'item':'itens'} para revisar hoje. · 今天有 ${n} 个要复习。`:'Tudo revisado por hoje! 🎉 · 今天的复习都完成了！'}</p>
+<p class="us" style="text-align:left;margin-top:4px">O site lembra o que você errou ou não vê há dias. Cada revisão tem até 10 itens, com pares, áudio, tons e escrita. Não vale XP, mas conta para a 🔥 sequência. · 网站会记住你答错的和很久没复习的内容。不计经验，但计入连续天数。</p>
+<button class="btn" onclick="review()">${n?'Começar revisão · 开始复习':'Praticar mesmo assim · 继续练习'}</button></div></div>`}
 
 // ======================= TREINO DE FALA =======================
 // Usa o reconhecimento de voz do navegador (Chrome, Edge, Safari). O site compara o que foi
@@ -1564,11 +1683,13 @@ rankPush().then(()=>fetch(RANK_URL)).then(r=>r.json()).then(d=>{RK=d.list||[]}).
 .finally(()=>{RKbusy=false;if(S.tab=='r'&&document.getElementById('rk'))rhome()})}
 
 // Progresso completo salvo na planilha, para recuperar a conta em outro aparelho (ou no app do iPhone)
-const progData=()=>JSON.stringify({best:S.best,fala:S.fala||{},inter:!!S.inter,iintro:!!S.iintro,streak:S.streak||0,last:S.last||''});
+const progData=()=>JSON.stringify({best:S.best,fala:S.fala||{},inter:!!S.inter,iintro:!!S.iintro,streak:S.streak||0,last:S.last||'',srs:S.srs||{}});
 function mergeProg(p){try{p=JSON.parse(p)}catch(e){return}if(!p)return;
 for(const k in p.best||{})S.best[k]=Math.max(S.best[k]||0,+p.best[k]||0);
 S.fala=S.fala||{};for(const k in p.fala||{})S.fala[k]=Math.max(S.fala[k]||0,+p.fala[k]||0);
-S.inter=S.inter||!!p.inter;S.iintro=S.iintro||!!p.iintro;if((p.streak||0)>(S.streak||0)){S.streak=p.streak;S.last=p.last}}
+S.inter=S.inter||!!p.inter;S.iintro=S.iintro||!!p.iintro;if((p.streak||0)>(S.streak||0)){S.streak=p.streak;S.last=p.last}
+// Revisão: fica com o registro mais avançado de cada item
+S.srs=S.srs||{};for(const k in p.srs||{}){const a=S.srs[k],b=p.srs[k];if(Array.isArray(b)&&(!a||b[1]>a[1]))S.srs[k]=b}}
 
 function loginForm(){scrollTo(0,0);
 app.innerHTML=`<div class="card intro" style="text-align:center"><img src="${document.querySelector('.brand img').src}" alt="" style="width:90px;height:90px;border-radius:50%">
