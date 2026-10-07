@@ -149,6 +149,9 @@ html,body{overflow-x:hidden}
 .modal .card>img,.modal .card>.emo{width:56px;height:56px;font-size:3rem}
 .code{font-size:2rem;font-weight:900;letter-spacing:6px;background:var(--bg);border:2px dashed var(--line);border-radius:14px;padding:10px;margin:8px 0;font-family:ui-monospace,Consolas,monospace}
 .code.sm{font-size:1rem;letter-spacing:3px;padding:2px 8px;border-radius:8px;display:inline-block;margin:0}
+/* Alternativas com botão de ouvir */
+.orow{display:flex;gap:8px;align-items:center}
+.orow .o{flex:1;min-width:0}
 /* Aviso "está com dúvida?" */
 .idle{position:fixed;left:0;right:0;bottom:0;z-index:8;background:#ddf4ff;color:#1a5a7a;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -2px 0 #b7e3fa;animation:up .25s ease-out}
 .idle .in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -732,6 +735,8 @@ h+=`<div class="node ${cls} ${nx?'next':''}" style="--o:${ZZ[i%8]};--uc:${u[1]};
 h+=`</div>`});return h}
 const tabs=()=>`<div class="tabs"><button class="tab ${!['i','f','r'].includes(S.tab)?'on':''}" onclick="setTab('b')">🌱 Iniciante <small>初级</small></button><button class="tab ${S.tab=='i'?'on':''}" onclick="setTab('i')">🌳 Intermediário <small>中级</small>${iOpen()?'':' 🔒'}</button><button class="tab ${S.tab=='f'?'on':''}" onclick="setTab('f')">🎤 Fala <small>口语</small></button><button class="tab ${S.tab=='r'?'on':''}" onclick="setTab('r')">🏆 Ranking <small>排行榜</small></button></div>`;
 function setTab(t){S.tab=t;save();if(t=='r'){RK=null;RKerr=false}home()}
+// Alternativa da prova com botão 🔊 ao lado (ouvir não conta como resposta)
+const oRow=(inner,cls,j)=>`<div class="orow"><button class="o ${cls}">${inner}</button><button class="snd sm oa" data-j="${j}" title="Ouvir · 听">${SPK}</button></div>`;
 // Prova: depois de 15 segundos sem resposta, oferece repetir o áudio da pergunta
 const IDLE_S=15;let idleT=null;
 function idleStop(){clearTimeout(idleT);idleT=null;const x=document.getElementById('idle');if(x)x.remove()}
@@ -783,12 +788,13 @@ const pool=ALL.filter(x=>x.t!=w.t&&x.h!=w.h),len=x=>[...x.h].length==[...w.h].le
 const ds=[...sh(pool.filter(x=>len(x)&&x.l==w.l)),...sh(pool.filter(x=>len(x)&&x.l!=w.l)),...sh(pool.filter(x=>!len(x)))].slice(0,3),op=sh([w,...ds]);
 let h=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${q/ws.length*100}%"></i></div><span>${q+1}/${ws.length}</span></div>`;
 if(zh)h+=`<p class="q">O que significa?</p><div class="qbox"><button class="snd" id="qs" title="Ouvir">${SPK}</button><div><div class="hz">${w.h}</div><div class="py">${w.p}</div></div></div>
-<div class="opts g2" id="o">`+op.map(o=>`<button class="o pc">${o.t}</button>`).join('');
+<div class="opts g2" id="o">`+op.map((o,j)=>oRow(o.t,'pc',j)).join('');
 else h+=`<p class="q">Como se diz em chinês?</p><div class="qbox"><div class="pic" style="background:${u[3]}">${img(w.e)}</div><div class="wrow"><button class="snd sm" id="qs" title="Ouvir">${SPK}</button><div class="pt">${w.t}</div></div></div>
-<div class="opts" id="o">`+op.map(o=>`<button class="o"><span class="ohz">${o.h}</span> <small>${o.p}</small></button>`).join('');
+<div class="opts" id="o">`+op.map((o,j)=>oRow(`<span class="ohz">${o.h}</span> <small>${o.p}</small>`,'',j)).join('');
 app.innerHTML=h+`</div><div id="fb"></div>`;
 const sp=()=>zh?sayZh(w):sayPt(w);document.getElementById('qs').onclick=sp;sp();idleStart(sp);
-const bs=[...document.querySelectorAll('#o button')];
+const bs=[...document.querySelectorAll('#o .o')];
+document.querySelectorAll('#o .oa').forEach(b=>b.onclick=()=>{const o=op[+b.dataset.j];zh?sayPt(o):sayZh(o);idleStart(sp)});
 bs.forEach((b,j)=>b.onclick=()=>{idleStop();const r=op[j]==w;if(r)sc++;
 bs.forEach((c,m)=>{c.onclick=null;if(op[m]==w)c.classList.add('ok')});if(!r)b.classList.add('bad');
 sayZh(w);
@@ -1313,9 +1319,10 @@ h+=ansZh?`<div class="qbox"><div class="pic" style="background:${u[3]}">${img(s.
 :`<div class="qbox"><button class="snd" id="qs" title="Ouvir">${SPK}</button><div class="sent"><div class="hzs">${s.zh}</div><div class="py">${s.p}</div></div></div>`;
 
 if(ty<2){const op=sh([s,...sh(others).slice(0,3)]);
-h+=`<div class="opts" id="o">`+op.map(o=>ty==0?`<button class="o">${o.pt}</button>`:`<button class="o"><span class="ohz">${o.zh}</span><br><small>${o.p}</small></button>`).join('')+`</div>`;
+h+=`<div class="opts" id="o">`+op.map((o,j)=>oRow(ty==0?o.pt:`<span class="ohz">${o.zh}</span><br><small>${o.p}</small>`,'',j)).join('')+`</div>`;
 app.innerHTML=h+`<div id="fb"></div>`;
-const bs=[...document.querySelectorAll('#o button')];
+const bs=[...document.querySelectorAll('#o .o')];
+document.querySelectorAll('#o .oa').forEach(b=>b.onclick=()=>{const o=op[+b.dataset.j];ty==0?ptS(o):zhS(o);idleStart(sp)});
 bs.forEach((b,j)=>b.onclick=()=>{const r=op[j]==s;bs.forEach((c,m)=>{c.onclick=null;if(op[m]==s)c.classList.add('ok')});if(!r)b.classList.add('bad');fb(r)})}
 else{const zh=ty==3,ans=zh?s.zt:s.tt,lc=x=>x.toLowerCase();
 const ds=[...new Set(sh(others.flatMap(x=>zh?x.zt:x.tt)).filter(t=>!ans.some(a=>lc(a)==lc(t))))].slice(0,3);
