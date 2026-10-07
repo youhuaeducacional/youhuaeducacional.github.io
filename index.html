@@ -1781,11 +1781,23 @@ let instEvt=null;
 function dlBtn(){const b=document.getElementById('dl');b.hidden=isApp()||!(instEvt||(isIOS&&!S.noInstall))}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEvt=e;dlBtn()});
 addEventListener('appinstalled',()=>{instEvt=null;dlBtn()});
+// Passo a passo conforme o navegador do iPhone. Desde o iOS 16.4, Chrome, Edge e Firefox também adicionam à Tela de Início.
+function iosSteps(){const ua=navigator.userAgent,m=ua.match(/OS (\d+)_(\d+)/),v=m?+m[1]+(+m[2])/100:99,old=v<16.04;
+const br=/CriOS/.test(ua)?'Chrome':/EdgiOS/.test(ua)?'Edge':/FxiOS/.test(ua)?'Firefox':/Safari/.test(ua)&&!/(GSA|Instagram|FBAN|FBAV|Line|MicroMessenger)/.test(ua)?'Safari':'outro';
+if(br=='Safari')return`<p>1. Toque em <b>Compartilhar</b> (o quadrado com a seta ⬆️, na barra de baixo).<br>2. Role e toque em <b>“Adicionar à Tela de Início”</b>.<br>3. Toque em <b>Adicionar</b>.</p>
+<p lang="zh-CN" class="zh">1. 点底部的 <b>“分享”</b>（带箭头的方框 ⬆️）。<br>2. 往下滑，点 <b>“添加到主屏幕”</b>。<br>3. 点 <b>“添加”</b>。</p>`;
+if((br=='Chrome'||br=='Edge')&&!old)return`<p>1. No ${br}, toque em <b>Compartilhar</b> (o quadrado com a seta ⬆️, <b>na barra de endereço, em cima à direita</b>).<br>2. Toque em <b>“Adicionar à Tela de Início”</b>.<br>3. Toque em <b>Adicionar</b>.</p>
+<p lang="zh-CN" class="zh">1. 在 ${br} 里，点<b>地址栏右上角</b>的 <b>“分享”</b>（带箭头的方框 ⬆️）。<br>2. 点 <b>“添加到主屏幕”</b>。<br>3. 点 <b>“添加”</b>。</p>`;
+if(br=='Firefox'&&!old)return`<p>1. No Firefox, toque no menu <b>☰</b> (embaixo à direita) e depois em <b>Compartilhar</b>.<br>2. Toque em <b>“Adicionar à Tela de Início”</b>.<br>3. Toque em <b>Adicionar</b>.</p>
+<p lang="zh-CN" class="zh">1. 在 Firefox 里，点右下角的菜单 <b>☰</b>，再点 <b>“分享”</b>。<br>2. 点 <b>“添加到主屏幕”</b>。<br>3. 点 <b>“添加”</b>。</p>`;
+// iOS antigo (antes do 16.4) ou navegador dentro de outro app (Instagram, WeChat...): só pelo Safari
+return`<p>Neste navegador não dá para adicionar. Copie o link, abra no <b>Safari</b>, toque em <b>Compartilhar</b> ⬆️ e depois em <b>“Adicionar à Tela de Início”</b>.</p>
+<p lang="zh-CN" class="zh">这个浏览器无法添加。请复制链接，用 <b>Safari</b> 打开，点 <b>“分享”</b> ⬆️，再点 <b>“添加到主屏幕”</b>。</p>`}
 function installNow(){if(instEvt){instEvt.prompt();instEvt.userChoice.then(()=>{instEvt=null;dlBtn()});return}
 document.body.insertAdjacentHTML('beforeend',`<div class="modal" id="mdl" onclick="if(event.target==this)this.remove()"><div class="card">
 <img src="apple-touch-icon.png" alt="" style="width:64px;height:64px;border-radius:14px"><h3>Instalar no iPhone · 安装到 iPhone</h3>
-<p>1. Abra este site no <b>Safari</b>.<br>2. Toque em <b>Compartilhar</b> (o quadrado com a seta ⬆️).<br>3. Toque em <b>“Adicionar à Tela de Início”</b>.</p>
-<p lang="zh-CN" class="zh">1. 用 <b>Safari</b> 打开本网站。<br>2. 点 <b>“分享”</b>（带箭头的方框 ⬆️）。<br>3. 点 <b>“添加到主屏幕”</b>。</p>
+${iosSteps()}
+<p class="us">No iPhone não existe instalação com um clique: a Apple só permite pelo menu Compartilhar. · iPhone 不支持一键安装，只能通过“分享”菜单添加。</p>
 <div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="S.noInstall=true;save();dlBtn();mdl.remove()">Já instalei · 已安装</button><button class="btn" onclick="mdl.remove()">Entendi · 明白了</button></div></div></div>`)}
 dlBtn();
 if('serviceWorker'in navigator&&location.protocol=='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
