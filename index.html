@@ -146,6 +146,9 @@ html,body{overflow-x:hidden}
 .modal .card{max-width:420px;width:100%;text-align:center}
 .modal h3{margin:8px 0;font-weight:900}
 .modal p{text-align:left;line-height:1.6}
+.modal .card>img,.modal .card>.emo{width:56px;height:56px;font-size:3rem}
+.code{font-size:2rem;font-weight:900;letter-spacing:6px;background:var(--bg);border:2px dashed var(--line);border-radius:14px;padding:10px;margin:8px 0;font-family:ui-monospace,Consolas,monospace}
+.code.sm{font-size:1rem;letter-spacing:3px;padding:2px 8px;border-radius:8px;display:inline-block;margin:0}
 /* Aviso "está com dúvida?" */
 .idle{position:fixed;left:0;right:0;bottom:0;z-index:8;background:#ddf4ff;color:#1a5a7a;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));box-shadow:0 -2px 0 #b7e3fa;animation:up .25s ease-out}
 .idle .in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -676,6 +679,8 @@ const save=()=>{try{localStorage.setItem('yh',JSON.stringify(S))}catch(e){}};
 // Identificação do aluno no ranking: id público + chave secreta (só este aparelho pode atualizar a linha dele)
 const rid=()=>Math.random().toString(36).slice(2,10);
 if(!S.id){S.id=rid()+rid();S.key=rid()+rid()+rid();save()}
+// Código de acesso (6 letras/números, sem os que confundem como O/0 e I/1): nome + código recuperam a conta
+if(!S.code){S.code=[...Array(6)].map(()=>'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*31)]).join('');save()}
 const xpT=()=>Object.values(S.best).reduce((a,b)=>a+b,0);
 const lvl=()=>Math.floor(xpT()/10);
 // Medalhas: o máximo de XP é 10 por aula — provas do Iniciante e do Intermediário + treino de fala das
@@ -1422,11 +1427,43 @@ const doneF=()=>D.filter((_,i)=>(S.best[sxk('b',i)]||0)>=6).length+DI.filter((_,
 // Envia o progresso. Resposta: {ok:true}, {erro:'nome'} (nome já usado por outro aluno) ou null (sem internet)
 function rankPush(){if(!RANK_URL||!S.name)return Promise.resolve(null);
 return fetch(RANK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-body:JSON.stringify({id:S.id,key:S.key,name:S.name,xp:xpT(),b:doneB(),i:doneI(),f:doneF()})}).then(r=>r.json())
+body:JSON.stringify({id:S.id,key:S.key,name:S.name,xp:xpT(),b:doneB(),i:doneI(),f:doneF(),code:S.code,data:progData()})}).then(r=>r.json())
 .then(d=>{if(d&&d.erro=='nome')S.taken=S.name;else if(d&&d.ok)S.taken=null;save();return d}).catch(()=>null)}
 function rankLoad(){RKbusy=true;RKerr=false;
 rankPush().then(()=>fetch(RANK_URL)).then(r=>r.json()).then(d=>{RK=d.list||[]}).catch(()=>{RKerr=true})
 .finally(()=>{RKbusy=false;if(S.tab=='r'&&document.getElementById('rk'))rhome()})}
+
+// Progresso completo salvo na planilha, para recuperar a conta em outro aparelho (ou no app do iPhone)
+const progData=()=>JSON.stringify({best:S.best,fala:S.fala||{},inter:!!S.inter,iintro:!!S.iintro,streak:S.streak||0,last:S.last||''});
+function mergeProg(p){try{p=JSON.parse(p)}catch(e){return}if(!p)return;
+for(const k in p.best||{})S.best[k]=Math.max(S.best[k]||0,+p.best[k]||0);
+S.fala=S.fala||{};for(const k in p.fala||{})S.fala[k]=Math.max(S.fala[k]||0,+p.fala[k]||0);
+S.inter=S.inter||!!p.inter;S.iintro=S.iintro||!!p.iintro;if((p.streak||0)>(S.streak||0)){S.streak=p.streak;S.last=p.last}}
+
+function loginForm(){scrollTo(0,0);
+app.innerHTML=`<div class="card intro" style="text-align:center"><img src="${document.querySelector('.brand img').src}" alt="" style="width:90px;height:90px;border-radius:50%">
+<h2>Já tenho conta · 我已有账号</h2>
+<p>Digite seu nome e o código de acesso. Você encontra o código na aba 🏆 Ranking do aparelho onde começou.<br>
+<span lang="zh-CN">请输入你的名字和登录码。登录码在你原来设备的 🏆 排行榜 页面里。</span></p>
+<form id="lf"><input id="ln" class="inp" maxlength="20" autocomplete="off" placeholder="Seu nome · 你的名字">
+<input id="lc" class="inp" maxlength="8" autocomplete="off" autocapitalize="characters" placeholder="Código · 登录码" style="letter-spacing:4px;text-transform:uppercase">
+<p id="le" class="err" hidden></p>
+<div class="row" style="justify-content:center;flex-wrap:wrap"><button type="button" class="btn ghost" onclick="askName()">Voltar · 返回</button><button class="btn" id="lb">Entrar · 登录</button></div></form></div>`;
+const le=document.getElementById('le'),lb=document.getElementById('lb');document.getElementById('ln').focus();
+document.getElementById('lf').onsubmit=e=>{e.preventDefault();const n=document.getElementById('ln').value.trim(),c=document.getElementById('lc').value.trim().toUpperCase();
+if(n.length<2||c.length<4){le.textContent='Preencha o nome e o código. · 请填写名字和登录码。';le.hidden=false;return}
+lb.disabled=true;lb.textContent='Entrando... · 登录中…';
+fetch(RANK_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'login',name:n,code:c})})
+.then(r=>r.json()).then(d=>{if(!d||!d.ok){le.innerHTML='Nome ou código incorretos. · 名字或登录码不正确。';le.hidden=false;lb.disabled=false;lb.textContent='Entrar · 登录';return}
+S.id=d.id;S.key=d.key;S.name=d.name;S.code=c;S.taken=null;mergeProg(d.data);save();RK=null;rankPush();home()})
+.catch(()=>{le.textContent='Sem conexão. Tente de novo. · 没有网络，请重试。';le.hidden=false;lb.disabled=false;lb.textContent='Entrar · 登录'})}}
+
+function showCode(){document.body.insertAdjacentHTML('beforeend',`<div class="modal" id="mdl"><div class="card">${img('🔑')}
+<h3>Seu código de acesso · 你的登录码</h3><div class="code">${S.code}</div>
+<p>Anote ou tire um print! Com seu nome e este código você recupera seu progresso em outro celular ou no app instalado.</p>
+<p lang="zh-CN" class="zh">请记下或截图！用名字和这个登录码，可以在其他手机或已安装的应用里找回你的进度。</p>
+<p class="us">Ele também fica na aba 🏆 Ranking. · 登录码也可以在 🏆 排行榜 页面找到。</p>
+<div class="row" style="justify-content:center"><button class="btn" onclick="mdl.remove()">Anotei! · 记下了！</button></div></div></div>`)}
 
 function askName(edit){scrollTo(0,0);
 app.innerHTML=`<div class="card intro" style="text-align:center"><img src="${document.querySelector('.brand img').src}" alt="" style="width:90px;height:90px;border-radius:50%">
@@ -1436,7 +1473,8 @@ app.innerHTML=`<div class="card intro" style="text-align:center"><img src="${doc
 <p class="us">Esse nome aparece no ranking para todos os alunos. Use seu primeiro nome ou um apelido.<br>这个名字会显示在排行榜上，请使用名字或昵称。</p>
 ${S.taken&&S.taken==S.name?`<p class="err">O nome “${esc(S.name)}” já está sendo usado por outro aluno. Escolha outro, por exemplo com a inicial do sobrenome (${esc(S.name)} S.).<br>“${esc(S.name)}”这个名字已经有人用了，请换一个，例如加上姓氏的首字母。</p>`:''}
 <p id="ne" class="err" hidden></p>
-<div class="row" style="justify-content:center">${edit&&S.taken!=S.name?'<button type="button" class="btn ghost" onclick="home()">Cancelar · 取消</button>':''}<button class="btn" type="submit" id="nb">${edit?'Salvar · 保存':'Começar · 开始'}</button></div></form></div>`;
+<div class="row" style="justify-content:center">${edit&&S.taken!=S.name?'<button type="button" class="btn ghost" onclick="home()">Cancelar · 取消</button>':''}<button class="btn" type="submit" id="nb">${edit?'Salvar · 保存':'Começar · 开始'}</button></div>
+${RANK_URL&&(!edit||S.taken==S.name)?'<button type="button" class="lnk" style="margin-top:14px" onclick="loginForm()">Já tenho conta (entrar com código) · 我已有账号</button>':''}</form></div>`;
 const i=document.getElementById('nm'),ne=document.getElementById('ne'),nb=document.getElementById('nb');i.focus();
 const err=t=>{ne.innerHTML=t;ne.hidden=false};
 document.getElementById('nf').onsubmit=e=>{e.preventDefault();const v=i.value.trim().replace(/\s+/g,' ');
@@ -1445,12 +1483,13 @@ const old=S.name;S.name=v;nb.disabled=true;nb.textContent='Verificando... · 检
 // A planilha confere se o nome está livre. Sem internet, o nome é aceito e conferido no próximo envio.
 rankPush().then(d=>{if(d&&d.erro=='nome'){S.name=old;S.taken=old&&S.taken==old?old:null;save();nb.disabled=false;nb.textContent=edit?'Salvar · 保存':'Começar · 开始';
 return err(`O nome “${esc(v)}” já está em uso. Escolha outro, por exemplo “${esc(v)} S.”.<br>“${esc(v)}”已经有人用了，请换一个名字。`)}
-save();RK=null;home()})}}
+save();RK=null;home();if(!old&&RANK_URL)showCode()})}}
 
 function rhome(){let h=tabs()+`<div class="card hero"><div class="txt"><h2>🏆 Ranking · 排行榜</h2>
-<p>Quem avançou mais? A pontuação é o XP total das aulas do Iniciante e do Intermediário.</p>
-<p lang="zh-CN" class="zh">谁进步最多？分数是初级班和中级班所有课程的总经验值。</p>
-<p>Você aparece como <b>${esc(S.name)}</b> · <button class="lnk" onclick="askName(true)">Trocar nome · 改名</button></p></div></div><div id="rk">`;
+<p>Quem avançou mais? A pontuação é o XP total: provas do Iniciante e do Intermediário + treino de fala.</p>
+<p lang="zh-CN" class="zh">谁进步最多？分数是总经验值：初级班和中级班的测验 + 口语练习。</p>
+<p>Você aparece como <b>${esc(S.name)}</b> · <button class="lnk" onclick="askName(true)">Trocar nome · 改名</button></p>
+${RANK_URL?`<p class="us" style="text-align:left">🔑 Seu código de acesso · 登录码: <b class="code sm">${S.code}</b><br>Use nome + código para entrar em outro celular ou no app instalado sem perder o progresso. · 用名字和登录码，可在其他设备找回进度。</p>`:''}</div></div><div id="rk">`;
 const meRow=(pos,name,xp,b,i,f,me)=>`<div class="rrow ${me?'me':''}"><span class="pos ${pos&&pos<=3?'p'+pos:''}">${pos||'–'}</span>${img(TIERS[tierFor(xp)][2])}
 <span class="nm">${esc(String(name))}${me?' <em>(você · 你)</em>':''}<small>Iniciante ${b}/${D.length} · Intermediário ${i}/${DI.length} · Fala ${f}/${D.length+DI.length}</small></span><span class="xp">${xp}<small>XP</small></span></div>`;
 if(!RANK_URL){h+=`<div class="card hsk">${img('🛠️')}<div><b>O ranking online ainda não foi ativado · 在线排行榜尚未开启</b><p>Por enquanto aparece só o seu resultado.</p></div></div>`+meRow(0,S.name,xpT(),doneB(),doneI(),doneF(),true)}
