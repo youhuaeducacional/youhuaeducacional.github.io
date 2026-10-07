@@ -185,6 +185,20 @@ html,body{overflow-x:hidden}
 .tiers span{display:flex;align-items:center;gap:4px;font-size:.8rem;padding:3px 10px 3px 4px;border-radius:99px;background:var(--bg);color:var(--m);filter:grayscale(1);opacity:.6}
 .tiers span.got{filter:none;opacity:1;color:var(--t)}
 .tiers img,.tiers .emo{width:20px;height:20px;font-size:1rem}
+/* Aula 0: tons e acentos */
+.lcard.guide{width:100%;margin-bottom:18px;border-color:#f5d27a;background:var(--midbg)}
+.gd{margin-bottom:16px}.gd h2{margin:0 0 8px;font-weight:900;font-size:1.3rem}.gd h3{margin:18px 0 8px;font-weight:900}
+.trow{display:grid;grid-template-columns:64px 1fr auto auto;gap:12px;align-items:center;padding:10px 0;border-top:2px solid var(--line)}
+.trow small{color:var(--m)}
+.pitch{width:64px;height:46px}.pitch line{stroke:var(--line);stroke-width:1}.pitch polyline{fill:none;stroke:var(--bad);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.pitch circle{fill:var(--bad)}
+.mk2{font-size:1.3rem;color:var(--bad);font-weight:900}
+.ex{text-align:center}.hz2{display:block;font-size:1.6rem;font-weight:700}
+.rule{font-weight:900;font-size:1.1rem;text-align:center;color:var(--blue)}.rule.big{font-size:2rem;color:var(--bad)}
+.trow:has(.exs){grid-template-columns:64px 1fr}
+.exs{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.ex2{display:inline-flex;align-items:center;gap:8px;background:var(--bg);border-radius:12px;padding:6px 10px 6px 6px}
+.pair{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:520px){.trow{grid-template-columns:56px 1fr}.trow .ex,.trow>.snd{grid-column:auto}}
 /* Treino de fala */
 .seg{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
 .seg .tab{min-width:140px}
@@ -796,7 +810,7 @@ show()}
 // Cada linha: chinês (palavras separadas por espaço, palavra da aula entre {}) | pinyin |
 // português do dia a dia (palavra da aula entre {}) | desenho | forma formal (só quando a frase é coloquial)
 const DI=[
-["Cumprimentos e cortesia",`嗨！ 最近 {怎么样} 啊？|hāi! zuìjìn zěnmeyàng a?|Oi! {Como} cê tá?|👋|Olá! Como você está?|你好！ 最近 {怎么样}？|nǐ hǎo! zuìjìn zěnmeyàng?
+["Cumprimentos e cortesia",`嗨！ 最近 {怎么样} 啊？|hāi! zuìjìn zěnmeyàng a?|Oi! {Como} você tá?|👋|Olá! Como você está?|你好！ 最近 {怎么样}？|nǐ hǎo! zuìjìn zěnmeyàng?
 挺 好 的， {谢谢} 啦！|tǐng hǎo de, xièxie la!|Tô bem, {valeu}!|😊|Estou bem, obrigado!|我 很 好， {谢谢}！|wǒ hěn hǎo, xièxie!
 {不客气}， 没 事儿。|bú kèqi, méi shìr.|{De nada}, imagina.|🤗
 {对不起}， 我 来 晚 了。|duìbuqǐ, wǒ lái wǎn le.|{Desculpa}, cheguei atrasado.|🙇|Desculpe, cheguei atrasado.
@@ -806,11 +820,11 @@ const DI=[
 {晚安}， 明天 见！|wǎn'ān, míngtiān jiàn!|{Boa noite}, até amanhã!|🌜
 {再见} 啦， 路上 小心 点！|zàijiàn la, lùshang xiǎoxīn diǎn!|{Tchau}, vai com cuidado!|🚶|Até logo, tome cuidado no caminho!|{再见}， 路上 小心！|zàijiàn, lùshang xiǎoxīn!
 我 {听不懂}， 再 说 一 遍 好 吗？|wǒ tīng bu dǒng, zài shuō yí biàn hǎo ma?|Não {entendi}, fala de novo, por favor?|🙉|Não entendi, poderia repetir, por favor?|我 {听不懂}， 请 再 说 一 次。|wǒ tīng bu dǒng, qǐng zài shuō yí cì.`,"👋"],
-["Falando de mim",`你 {叫} 啥 名字？|nǐ jiào shá míngzi?|Como cê se {chama}?|📛|Como você se chama?|你 {叫} 什么 名字？|nǐ jiào shénme míngzi?
+["Falando de mim",`你 {叫} 啥 名字？|nǐ jiào shá míngzi?|Como você se {chama}?|📛||你 {叫} 什么 名字？|nǐ jiào shénme míngzi?
 我 {叫} 安娜。|wǒ jiào Ānnà.|Eu me {chamo} Ana.|🙋‍♀️
-你 是 {哪}里 人 啊？|nǐ shì nǎlǐ rén a?|Cê é de {onde}?|🗺️|De que país você é?|你 是 {哪} 国 人？|nǐ shì nǎ guó rén?
+你 是 {哪}里 人 啊？|nǐ shì nǎlǐ rén a?|Você é de {onde}?|🗺️|De que país você é?|你 是 {哪} 国 人？|nǐ shì nǎ guó rén?
 我 是 {巴西} 人， 住 在 圣保罗。|wǒ shì Bāxī rén, zhù zài Shèngbǎoluó.|Sou {brasileiro}, moro em São Paulo.|🇧🇷
-你 今年 几 {岁} 啦？|nǐ jīnnián jǐ suì la?|Cê tem quantos {anos}?|🎂|Quantos anos você tem?|你 今年 几 {岁}？|nǐ jīnnián jǐ suì?
+你 今年 几 {岁} 啦？|nǐ jīnnián jǐ suì la?|Você tem quantos {anos}?|🎂|Quantos anos você tem?|你 今年 几 {岁}？|nǐ jīnnián jǐ suì?
 我 {二十} 岁。|wǒ èrshí suì.|Tenho {vinte} anos.|🔢
 {认识} 你 真 开心！|rènshi nǐ zhēn kāixīn!|Prazer em te {conhecer}!|🤝|Muito prazer em conhecê-lo!|很 高兴 {认识} 你！|hěn gāoxìng rènshi nǐ!
 她 是 我 {朋友}。|tā shì wǒ péngyou.|Ela é minha {amiga}.|👫||她 是 我 的 {朋友}。|tā shì wǒ de péngyou.
@@ -821,13 +835,13 @@ const DI=[
 我 有 一 个 {哥哥}。|wǒ yǒu yí ge gēge.|Tenho um {irmão mais velho}.|👱‍♂️
 我 {妹妹} 才 六 岁。|wǒ mèimei cái liù suì.|Minha {irmãzinha} tem seis anos.|👧|Minha irmã mais nova tem seis anos.|我 {妹妹} 六 岁。|wǒ mèimei liù suì.
 {爷爷} {奶奶} 跟 我们 一起 住。|yéye nǎinai gēn wǒmen yìqǐ zhù.|Meu {vô} e minha {vó} moram com a gente.|👴|Meu avô e minha avó moram conosco.|{爷爷} 和 {奶奶} 住 在 我们 家。|yéye hé nǎinai zhù zài wǒmen jiā.
-你 家 有 {几} 个 孩子 啊？|nǐ jiā yǒu jǐ ge háizi a?|Cê tem {quantos} filhos?|🧒|Quantos filhos você tem?|你 有 {几} 个 孩子？|nǐ yǒu jǐ ge háizi?
+你 家 有 {几} 个 孩子 啊？|nǐ jiā yǒu jǐ ge háizi a?|Você tem {quantos} filhos?|🧒|Quantos filhos você tem?|你 有 {几} 个 孩子？|nǐ yǒu jǐ ge háizi?
 我 有 一 个 {儿子} 和 两 个 {女儿}。|wǒ yǒu yí ge érzi hé liǎng ge nǚ'ér.|Tenho um {filho} e duas {filhas}.|👨‍👧
 我 爸 是 {医生}。|wǒ bà shì yīshēng.|Meu pai é {médico}.|👨‍⚕️||我 爸爸 是 {医生}。|wǒ bàba shì yīshēng.
 我 {妈} 做 的 菜 超 好吃！|wǒ mā zuò de cài chāo hǎochī!|A comida da minha {mãe} é uma delícia.|🥘||我 {妈妈} 做 的 菜 很 好吃。|wǒ māma zuò de cài hěn hǎochī.
 我 {爱} 我 的 家人。|wǒ ài wǒ de jiārén.|Eu {amo} minha família.|❤️`,"👨‍👩‍👧"],
 ["Comendo e bebendo",`{饿} 死 了， 走， 吃饭 去！|è sǐ le, zǒu, chīfàn qù!|Tô com {fome}, bora comer!|🤤|Estou com fome, vamos comer!|我 {饿} 了， 我们 去 吃饭 吧！|wǒ è le, wǒmen qù chīfàn ba!
-你 想 {喝} 点儿 啥？|nǐ xiǎng hē diǎnr shá?|O que cê quer {beber}?|🥤|O que você gostaria de beber?|你 想 {喝} 什么？|nǐ xiǎng hē shénme?
+你 想 {喝} 点儿 啥？|nǐ xiǎng hē diǎnr shá?|O que você quer {beber}?|🥤|O que você gostaria de beber?|你 想 {喝} 什么？|nǐ xiǎng hē shénme?
 来 一 杯 {咖啡}！|lái yì bēi kāfēi!|Me vê um {café}.|☕|Eu quero um café, por favor.|我 要 一 杯 {咖啡}。|wǒ yào yì bēi kāfēi.
 {服务员}， 麻烦 拿 一下 {菜单}。|fúwùyuán, máfan ná yíxià càidān.|Moço, me traz o {cardápio}, por favor?|📋|Garçom, poderia me trazer o cardápio?|{服务员}， 请 给 我 {菜单}。|fúwùyuán, qǐng gěi wǒ càidān.
 这 个 菜 超 {好吃}！|zhè ge cài chāo hǎochī!|Esse prato tá muito {bom}!|😋|Este prato está delicioso!|这 个 菜 太 {好吃} 了！|zhè ge cài tài hǎochī le!
@@ -848,7 +862,7 @@ const DI=[
 不 用 {袋子}， 谢谢。|bú yòng dàizi, xièxie.|Não precisa de {sacola}, valeu.|🛍️|Não preciso de sacola, obrigado.`,"🛍️"],
 ["Minha rotina",`我 每天 早上 七 点 {起床}。|wǒ měitiān zǎoshang qī diǎn qǐchuáng.|Eu {acordo} às sete todo dia.|🌅|Eu me levanto às sete horas todos os dias.
 我 先 {刷牙}， 再 洗澡。|wǒ xiān shuāyá, zài xǐzǎo.|Primeiro eu {escovo os dentes}, depois tomo banho.|🪥
-你 几 点 {上班}？|nǐ jǐ diǎn shàngbān?|Cê entra no {trabalho} que horas?|🧑‍💻|A que horas você começa a trabalhar?
+你 几 点 {上班}？|nǐ jǐ diǎn shàngbān?|Você entra no {trabalho} que horas?|🧑‍💻|A que horas você começa a trabalhar?
 我 八 点 {半} 出门。|wǒ bā diǎn bàn chūmén.|Saio de casa às oito e {meia}.|🕣
 {中午} 我 在 公司 吃饭。|zhōngwǔ wǒ zài gōngsī chīfàn.|No {almoço} eu como no trabalho.|🍱|Ao meio-dia, eu almoço na empresa.
 我 晚上 六 点 {回家}。|wǒ wǎnshang liù diǎn huíjiā.|Eu {volto pra casa} às seis da tarde.|🏡|Eu volto para casa às seis da tarde.
@@ -874,7 +888,7 @@ const DI=[
 一起 看 会儿 {电视} 吧！|yìqǐ kàn huìr diànshì ba!|Bora ver {TV} juntos.|📺|Vamos assistir televisão juntos.|我们 一起 看 {电视} 吧。|wǒmen yìqǐ kàn diànshì ba.
 把 {灯} 关 了 吧。|bǎ dēng guān le ba.|Apaga a {luz}, por favor.|💡|Apague a luz, por favor.|请 关 {灯}。|qǐng guān dēng.
 我 在 {床} 上 看 书。|wǒ zài chuáng shang kàn shū.|Tô lendo na {cama}.|🛏️|Estou lendo na cama.
-你 在 {做} 啥 呢？|nǐ zài zuò shá ne?|Que cê tá {fazendo}?|🛠️|O que você está fazendo?|你 在 {做} 什么？|nǐ zài zuò shénme?
+你 在 {做} 啥 呢？|nǐ zài zuò shá ne?|Que você tá {fazendo}?|🛠️|O que você está fazendo?|你 在 {做} 什么？|nǐ zài zuò shénme?
 我 {洗} 衣服 呢。|wǒ xǐ yīfu ne.|Tô {lavando} roupa.|🧼|Estou lavando roupa.|我 在 {洗} 衣服。|wǒ zài xǐ yīfu.`,"🏠"],
 ["Clima e natureza",`今天 {天气} 怎么样？|jīntiān tiānqì zěnmeyàng?|Como tá o {tempo} hoje?|🌦️|Como está o tempo hoje?
 今天 {热} 死 了！|jīntiān rè sǐ le!|Hoje tá um {calor}!|🔥|Hoje está muito quente!|今天 很 {热}！|jīntiān hěn rè!
@@ -887,16 +901,16 @@ const DI=[
 这 些 {花} 好 美 啊！|zhè xiē huā hǎo měi a!|Que {flores} lindas!|🌷|Estas flores são muito bonitas!|这 些 {花} 真 漂亮！|zhè xiē huā zhēn piàoliang!
 今天 挺 {凉快} 的， 好 舒服。|jīntiān tǐng liángkuai de, hǎo shūfu.|Hoje tá {fresquinho}, uma delícia.|🍃|Hoje está fresco e agradável.|今天 很 {凉快}， 很 舒服。|jīntiān hěn liángkuai, hěn shūfu.`,"🌦️"],
 ["Como estou",`我 今天 超 {高兴}！|wǒ jīntiān chāo gāoxìng!|Tô muito {feliz} hoje!|😄|Estou muito feliz hoje!|我 今天 很 {高兴}！|wǒ jīntiān hěn gāoxìng!
-怎么 啦？ 你 看着 好 {难过}。|zěnme la? nǐ kànzhe hǎo nánguò.|Que foi? Cê parece {triste}.|😢|O que aconteceu? Você parece triste.|你 怎么 了？ 你 看起来 很 {难过}。|nǐ zěnme le? nǐ kànqilai hěn nánguò.
+怎么 啦？ 你 看着 好 {难过}。|zěnme la? nǐ kànzhe hǎo nánguò.|Que foi? Você parece {triste}.|😢|O que aconteceu? Você parece triste.|你 怎么 了？ 你 看起来 很 {难过}。|nǐ zěnme le? nǐ kànqilai hěn nánguò.
 我 {生病} 了， 今天 不 去 上班。|wǒ shēngbìng le, jīntiān bú qù shàngbān.|Tô {doente}, hoje não vou trabalhar.|🤒|Estou doente, hoje não vou trabalhar.
 我 头 {疼}。|wǒ tóu téng.|Tô com {dor} de cabeça.|🤕|Estou com dor de cabeça.
-你 {感冒} 了？ 多 喝 点 热水！|nǐ gǎnmào le? duō hē diǎn rèshuǐ!|Cê tá {gripado}? Bebe bastante água.|🤧|Você está resfriado? Beba bastante água.|你 {感冒} 了 吗？ 多 喝 水。|nǐ gǎnmào le ma? duō hē shuǐ.
+你 {感冒} 了？ 多 喝 点 热水！|nǐ gǎnmào le? duō hē diǎn rèshuǐ!|Você tá {gripado}? Bebe bastante água.|🤧|Você está resfriado? Beba bastante água.|你 {感冒} 了 吗？ 多 喝 水。|nǐ gǎnmào le ma? duō hē shuǐ.
 这 个 {药} 一 天 吃 三 次。|zhè ge yào yì tiān chī sān cì.|Toma esse {remédio} três vezes por dia.|💊|Tome este remédio três vezes ao dia.
 别 {担心}， 没事 的！|bié dānxīn, méishì de!|Fica {tranquilo}, vai dar tudo certo.|😟|Não se preocupe, vai dar tudo certo.|别 {担心}， 没 问题 的。|bié dānxīn, méi wèntí de.
 我 超 {怕} 狗 的。|wǒ chāo pà gǒu de.|Morro de {medo} de cachorro.|😱|Tenho muito medo de cachorro.|我 很 {怕} 狗。|wǒ hěn pà gǒu.
 他 挺 {生气} 的。|tā tǐng shēngqì de.|Ele tá {bravo}.|😠|Ele está bravo.|他 很 {生气}。|tā hěn shēngqì.
 我 好 {无聊} 啊！|wǒ hǎo wúliáo a!|Que {tédio}!|🥱|Estou muito entediado!`,"😊"],
-["Indo para lugares",`上 哪儿 {去}？|shàng nǎr qù?|Cê {vai} pra onde?|🚶|Aonde você vai?|你 {去} 哪儿？|nǐ qù nǎr?
+["Indo para lugares",`上 哪儿 {去}？|shàng nǎr qù?|Você {vai} pra onde?|🚶|Aonde você vai?|你 {去} 哪儿？|nǐ qù nǎr?
 我 去 {医院} 看 病。|wǒ qù yīyuàn kàn bìng.|Vou no {hospital} ver o médico.|🏥|Vou ao hospital consultar o médico.|我 去 {医院} 看 医生。|wǒ qù yīyuàn kàn yīshēng.
 我 坐 {地铁} 上班。|wǒ zuò dìtiě shàngbān.|Vou trabalhar de {metrô}.|🚇
 我们 打 {出租车} 吧。|wǒmen dǎ chūzūchē ba.|Bora pegar um {táxi}.|🚕|Vamos pegar um táxi.
@@ -926,7 +940,7 @@ const DI=[
 考试 {难} 死 了！|kǎoshì nán sǐ le!|A prova tava muito {difícil}!|🧗|A prova estava muito difícil!|考试 太 {难} 了！|kǎoshì tài nán le!
 作业 {写} 完 了 没？|zuòyè xiě wán le méi?|Já {terminou} a lição?|📝|Você já terminou a lição de casa?|你 {写} 完 作业 了 吗？|nǐ xiě wán zuòyè le ma?
 明天 有 中文 {课}。|míngtiān yǒu Zhōngwén kè.|Amanhã tem {aula} de chinês.|📚`,"🏫"],
-["Trabalho",`你 是 干 啥 {工作} 的？|nǐ shì gàn shá gōngzuò de?|Cê {trabalha} com o quê?|💼|Em que você trabalha?|你 做 什么 {工作}？|nǐ zuò shénme gōngzuò?
+["Trabalho",`你 是 干 啥 {工作} 的？|nǐ shì gàn shá gōngzuò de?|Você {trabalha} com o quê?|💼|Em que você trabalha?|你 做 什么 {工作}？|nǐ zuò shénme gōngzuò?
 我 是 {老师}。|wǒ shì lǎoshī.|Sou {professor}.|👨‍🏫
 我 在 {公司} 上班。|wǒ zài gōngsī shàngbān.|Trabalho numa {empresa}.|🏢|Trabalho em uma empresa.|我 在 一 家 {公司} 工作。|wǒ zài yì jiā gōngsī gōngzuò.
 我 今天 {忙} 死 了。|wǒ jīntiān máng sǐ le.|Hoje tô na {correria}.|🤹|Hoje estou muito ocupado.|我 今天 很 {忙}。|wǒ jīntiān hěn máng.
@@ -941,17 +955,17 @@ const DI=[
 我 晚上 给 你 {打电话}。|wǒ wǎnshang gěi nǐ dǎ diànhuà.|Te {ligo} de noite.|📞|Eu ligo para você à noite.
 你 {手机} 号 多少？|nǐ shǒujī hào duōshao?|Me passa seu número de {celular}?|📱|Qual é o número do seu celular?|你 的 {手机} 号码 是 多少？|nǐ de shǒujī hàomǎ shì duōshao?
 现在 不 方便， 等 会儿 打 {回} 给 你。|xiànzài bù fāngbiàn, děng huìr dǎ huí gěi nǐ.|Agora não dá, daqui a pouco te ligo de {volta}.|↩️|Agora não posso falar, retorno a ligação em breve.|我 现在 不 方便， 一会儿 打 {回} 给 你。|wǒ xiànzài bù fāngbiàn, yíhuìr dǎ huí gěi nǐ.
-能 {听} 见 吗？|néng tīng jiàn ma?|Cê tá me {ouvindo}?|👂|Você está me ouvindo?|你 {听} 得 到 吗？|nǐ tīng de dào ma?
+能 {听} 见 吗？|néng tīng jiàn ma?|Você tá me {ouvindo}?|👂|Você está me ouvindo?|你 {听} 得 到 吗？|nǐ tīng de dào ma?
 {告诉} 他 我 晚 点儿 到。|gàosu tā wǒ wǎn diǎnr dào.|{Avisa} ele que vou chegar um pouco atrasado.|📢|Diga a ele que vou chegar um pouco atrasado.|{告诉} 他 我 会 晚 一点儿 到。|gàosu tā wǒ huì wǎn yìdiǎnr dào.
 我 {等} 你 电话 呢。|wǒ děng nǐ diànhuà ne.|Tô {esperando} sua ligação.|⏳|Estou esperando a sua ligação.|我 在 {等} 你 的 电话。|wǒ zài děng nǐ de diànhuà.
 不好意思， 打 {错} 了。|bù hǎoyìsi, dǎ cuò le.|Foi mal, liguei {errado}.|🙇|Desculpe, foi engano.|对不起， 打 {错} 了。|duìbuqǐ, dǎ cuò le.
 你 {说} 慢 点儿 嘛！|nǐ shuō màn diǎnr ma!|{Fala} mais devagar, pode ser?|🐌|Poderia falar mais devagar?|{说} 慢 一点儿， 好 吗？|shuō màn yìdiǎnr, hǎo ma?`,"📞"],
-["Gostos e hobbies",`你 平时 {喜欢} 干 啥？|nǐ píngshí xǐhuan gàn shá?|O que cê {curte} fazer?|😍|O que você gosta de fazer?|你 {喜欢} 做 什么？|nǐ xǐhuan zuò shénme?
+["Gostos e hobbies",`你 平时 {喜欢} 干 啥？|nǐ píngshí xǐhuan gàn shá?|O que você {curte} fazer?|😍|O que você gosta de fazer?|你 {喜欢} 做 什么？|nǐ xǐhuan zuò shénme?
 我 超 爱 {足球}！|wǒ chāo ài zúqiú!|Sou louco por {futebol}!|⚽|Eu gosto muito de futebol!|我 很 喜欢 {足球}！|wǒ hěn xǐhuan zúqiú!
 周末 去 看 {电影} 不？|zhōumò qù kàn diànyǐng bu?|Bora ver um {filme} no fim de semana?|🎬|Vamos assistir a um filme no fim de semana?|周末 我们 去 看 {电影} 吧。|zhōumò wǒmen qù kàn diànyǐng ba.
 我 天天 听 {音乐}。|wǒ tiāntiān tīng yīnyuè.|Escuto {música} todo dia.|🎵|Eu escuto música todos os dias.|我 每天 听 {音乐}。|wǒ měitiān tīng yīnyuè.
 她 {唱歌} 超 好听！|tā chànggē chāo hǎotīng!|Ela {canta} muito bem.|🎤||她 {唱歌} 唱 得 很 好。|tā chànggē chàng de hěn hǎo.
-你 会 不 会 {游泳}？|nǐ huì bu huì yóuyǒng?|Cê sabe {nadar}?|🏊|Você sabe nadar?|你 会 {游泳} 吗？|nǐ huì yóuyǒng ma?
+你 会 不 会 {游泳}？|nǐ huì bu huì yóuyǒng?|Você sabe {nadar}?|🏊||你 会 {游泳} 吗？|nǐ huì yóuyǒng ma?
 我 不 太 会 {跳舞}。|wǒ bú tài huì tiàowǔ.|Não sei {dançar} muito bem.|💃
 我 弟 整天 打 {游戏}。|wǒ dì zhěngtiān dǎ yóuxì.|Meu irmão fica o dia inteiro no {videogame}.|🎮|Meu irmão mais novo joga videogame o dia todo.|我 弟弟 整天 玩 {游戏}。|wǒ dìdi zhěngtiān wán yóuxì.
 我 想 去 好 多 国家 {旅游}。|wǒ xiǎng qù hǎo duō guójiā lǚyóu.|Quero {viajar} pra vários países.|🧳|Quero viajar para muitos países.|我 想 去 很 多 国家 {旅游}。|wǒ xiǎng qù hěn duō guójiā lǚyóu.
@@ -969,23 +983,23 @@ const DI=[
 ["Roupas e aparência",`今天 穿 啥 {衣服} 好 呢？|jīntiān chuān shá yīfu hǎo ne?|Que {roupa} eu ponho hoje?|👚|Que roupa vou vestir hoje?|今天 穿 什么 {衣服}？|jīntiān chuān shénme yīfu?
 这 件 {外套} 挺 好看 的。|zhè jiàn wàitào tǐng hǎokàn de.|Esse {casaco} é muito bonito.|🧥|Este casaco é muito bonito.|这 件 {外套} 很 好看。|zhè jiàn wàitào hěn hǎokàn.
 太阳 好 大， 戴 个 {帽子} 吧。|tàiyáng hǎo dà, dài ge màozi ba.|Tá um sol forte, põe o {boné}.|🧢|O sol está forte, coloque o chapéu.|太阳 很 大， 戴 上 {帽子}。|tàiyáng hěn dà, dài shang màozi.
-你 戴 {眼镜} 吗？|nǐ dài yǎnjìng ma?|Cê usa {óculos}?|👓|Você usa óculos?
+你 戴 {眼镜} 吗？|nǐ dài yǎnjìng ma?|Você usa {óculos}?|👓|
 她 好 {漂亮} 啊！|tā hǎo piàoliang a!|Ela é {linda}.|🌸|Ela é muito bonita.|她 很 {漂亮}。|tā hěn piàoliang.
 他 个子 好 {高}。|tā gèzi hǎo gāo.|Ele é bem {alto}.|🦒|Ele é muito alto.|他 很 {高}。|tā hěn gāo.
 我 头发 太 {长} 了。|wǒ tóufa tài cháng le.|Meu cabelo tá {comprido} demais.|📏|Meu cabelo está comprido demais.|我 的 头发 太 {长} 了。|wǒ de tóufa tài cháng le.
 这 条 {裤子} 有点 紧。|zhè tiáo kùzi yǒudiǎn jǐn.|Essa {calça} tá meio apertada.|👖|Esta calça está um pouco pequena.|这 条 {裤子} 有点儿 小。|zhè tiáo kùzi yǒudiǎnr xiǎo.
 我 {手} 好 冰 啊。|wǒ shǒu hǎo bīng a.|Minhas {mãos} tão geladas.|✋|Minhas mãos estão muito frias.|我 的 {手} 很 冷。|wǒ de shǒu hěn lěng.
 我 {肚子} 疼。|wǒ dùzi téng.|Tô com dor de {barriga}.|🤢|Estou com dor de barriga.`,"👕"],
-["Perguntas do dia a dia",`你 在 {哪儿} 呢？|nǐ zài nǎr ne?|Cê tá {onde}?|📍|Onde você está?|你 在 {哪儿}？|nǐ zài nǎr?
-你 {为什么} 没 来 啊？|nǐ wèishénme méi lái a?|{Por que} cê não veio?|🤔|Por que você não veio?|你 {为什么} 没 来？|nǐ wèishénme méi lái?
+["Perguntas do dia a dia",`你 在 {哪儿} 呢？|nǐ zài nǎr ne?|Você tá {onde}?|📍|Onde você está?|你 在 {哪儿}？|nǐ zài nǎr?
+你 {为什么} 没 来 啊？|nǐ wèishénme méi lái a?|{Por que} você não veio?|🤔||你 {为什么} 没 来？|nǐ wèishénme méi lái?
 {什么时候} 开始？|shénme shíhou kāishǐ?|Começa {quando}?|🕰️|Quando começa?
 这 是 {谁} 的 包？|zhè shì shéi de bāo?|De {quem} é essa bolsa?|👜|De quem é esta bolsa?
-你 {怎么} 去 上班？|nǐ zěnme qù shàngbān?|Cê vai {como} pro trabalho?|🧐|Como você vai para a empresa?|你 {怎么} 去 公司？|nǐ zěnme qù gōngsī?
-你 要 {哪个} 啊？|nǐ yào nǎge a?|Cê quer {qual}?|🤷|Qual você quer?|你 要 {哪个}？|nǐ yào nǎge?
+你 {怎么} 去 上班？|nǐ zěnme qù shàngbān?|Você vai {como} pro trabalho?|🧐|Como você vai para a empresa?|你 {怎么} 去 公司？|nǐ zěnme qù gōngsī?
+你 要 {哪个} 啊？|nǐ yào nǎge a?|Você quer {qual}?|🤷|Qual você quer?|你 要 {哪个}？|nǐ yào nǎge?
 你 吃饭 了 {吗}？|nǐ chīfàn le ma?|Já {comeu}?|❔|Você já comeu?
 我 挺 好 的， 你 {呢}？|wǒ tǐng hǎo de, nǐ ne?|Tô bem, e {você}?|🔄|Estou bem, e você?|我 很 好， 你 {呢}？|wǒ hěn hǎo, nǐ ne?
 咱们 吃 点 {什么}？|zánmen chī diǎn shénme?|A gente vai comer {o quê}?|❓|O que vamos comer?|我们 吃 {什么}？|wǒmen chī shénme?
-你 {想} 一起 去 不？|nǐ xiǎng yìqǐ qù bu?|Cê {quer} ir junto?|👯|Você quer ir conosco?|你 {想} 一起 去 吗？|nǐ xiǎng yìqǐ qù ma?`,"❓"],
+你 {想} 一起 去 不？|nǐ xiǎng yìqǐ qù bu?|Você {quer} ir junto?|👯|Você quer ir conosco?|你 {想} 一起 去 吗？|nǐ xiǎng yìqǐ qù ma?`,"❓"],
 ["Conectando ideias",`我 {也} 是 巴西 人。|wǒ yě shì Bāxī rén.|Eu {também} sou brasileiro.|👥
 我们 {都} 超 爱 中国 菜。|wǒmen dōu chāo ài Zhōngguó cài.|{Todo mundo} aqui curte comida chinesa.|👨‍👩‍👧‍👦|Todos nós gostamos de comida chinesa.|我们 {都} 喜欢 中国 菜。|wǒmen dōu xǐhuan Zhōngguó cài.
 我 想 去， {但是} 没 空。|wǒ xiǎng qù, dànshì méi kòng.|Eu queria ir, {mas} tô sem tempo.|🚧|Eu gostaria de ir, mas não tenho tempo.|我 想 去， {但是} 没 时间。|wǒ xiǎng qù, dànshì méi shíjiān.
@@ -1006,7 +1020,7 @@ const DI=[
 我 学 中文 {两} 年 了。|wǒ xué Zhōngwén liǎng nián le.|Faz {dois} anos que estudo chinês.|2️⃣|Estudo chinês há dois anos.|我 学 中文 学 了 {两} 年。|wǒ xué Zhōngwén xué le liǎng nián.
 再 过 {十} 分钟 就 到！|zài guò shí fēnzhōng jiù dào!|Chego em {dez} minutos.|🔟|Chegarei em dez minutos.|{十} 分钟 以后 到。|shí fēnzhōng yǐhòu dào.
 我 要 {四} 个 苹果。|wǒ yào sì ge píngguǒ.|Quero {quatro} maçãs.|4️⃣`,"🔢"],
-["Cores",`你 最 喜欢 啥 {颜色}？|nǐ zuì xǐhuan shá yánsè?|Qual {cor} cê mais curte?|🎨|Qual é a sua cor favorita?|你 喜欢 什么 {颜色}？|nǐ xǐhuan shénme yánsè?
+["Cores",`你 最 喜欢 啥 {颜色}？|nǐ zuì xǐhuan shá yánsè?|Qual {cor} você mais curte?|🎨|Qual é a sua cor favorita?|你 喜欢 什么 {颜色}？|nǐ xǐhuan shénme yánsè?
 我 最 喜欢 {蓝色}。|wǒ zuì xǐhuan lánsè.|Minha cor favorita é {azul}.|🟦
 草 是 {绿色} 的。|cǎo shì lǜsè de.|A grama é {verde}.|🟩
 我 的 车 是 {白色} 的。|wǒ de chē shì báisè de.|Meu carro é {branco}.|⬜
@@ -1014,14 +1028,14 @@ const DI=[
 香蕉 是 {黄色} 的。|xiāngjiāo shì huángsè de.|A banana é {amarela}.|🟨
 我 的 猫 是 {黑色} 的。|wǒ de māo shì hēisè de.|Meu gato é {preto}.|⬛
 她 的 房间 是 {粉色} 的。|tā de fángjiān shì fěnsè de.|O quarto dela é {rosa}.|🩷
-你 有 {紫色} 的 笔 吗？|nǐ yǒu zǐsè de bǐ ma?|Cê tem caneta {roxa}?|🟪|Você tem uma caneta roxa?
+你 有 {紫色} 的 笔 吗？|nǐ yǒu zǐsè de bǐ ma?|Você tem caneta {roxa}?|🟪|Você tem uma caneta roxa?
 今天 天 {灰}蒙蒙 的。|jīntiān tiān huīméngméng de.|Hoje o céu tá {cinza}.|🩶|Hoje o céu está cinzento.|今天 的 天 是 {灰色} 的。|jīntiān de tiān shì huīsè de.`,"🎨"],
-["Ações do dia a dia",`你 在 {看} 啥 呢？|nǐ zài kàn shá ne?|Cê tá {vendo} o quê?|👀|O que você está vendo?|你 在 {看} 什么？|nǐ zài kàn shénme?
+["Ações do dia a dia",`你 在 {看} 啥 呢？|nǐ zài kàn shá ne?|Você tá {vendo} o quê?|👀|O que você está vendo?|你 在 {看} 什么？|nǐ zài kàn shénme?
 我们 去 {吃} 火锅 吧！|wǒmen qù chī huǒguō ba!|Bora {comer} hot pot!|🍲|Vamos comer hot pot!
 我 不 {喝} 酒。|wǒ bù hē jiǔ.|Eu não {bebo}.|🚫|Eu não bebo bebidas alcoólicas.
-你 啥 时候 {来}？|nǐ shá shíhou lái?|Cê {vem} quando?|👈|Quando você vem?|你 什么 时候 {来}？|nǐ shénme shíhou lái?
+你 啥 时候 {来}？|nǐ shá shíhou lái?|Você {vem} quando?|👈|Quando você vem?|你 什么 时候 {来}？|nǐ shénme shíhou lái?
 我 明天 {去} 北京。|wǒ míngtiān qù Běijīng.|Amanhã eu {vou} pra Pequim.|✈️|Amanhã eu vou para Pequim.
-这 菜 是 你 {做} 的？|zhè cài shì nǐ zuò de?|Foi cê que {fez} esse prato?|🍳|Foi você que fez este prato?|这 个 菜 是 你 {做} 的 吗？|zhè ge cài shì nǐ zuò de ma?
+这 菜 是 你 {做} 的？|zhè cài shì nǐ zuò de?|Foi você que {fez} esse prato?|🍳|Foi você que fez este prato?|这 个 菜 是 你 {做} 的 吗？|zhè ge cài shì nǐ zuò de ma?
 {说} 中文 吧！|shuō Zhōngwén ba!|{Fala} em chinês, por favor.|🗣️|Fale em chinês, por favor.|请 {说} 中文。|qǐng shuō Zhōngwén.
 {听} 我 说！|tīng wǒ shuō!|Me {escuta}!|👂|Escute o que eu digo!
 孩子们 在 公园 {玩}。|háizimen zài gōngyuán wán.|As crianças tão {brincando} no parque.|🧸|As crianças estão brincando no parque.
@@ -1035,12 +1049,12 @@ const DI=[
 小心， 汤 很 {热}！|xiǎoxīn, tāng hěn rè!|Cuidado, a sopa tá {quente}!|🔥|Cuidado, a sopa está quente!
 这儿 的 冬天 很 {冷}。|zhèr de dōngtiān hěn lěng.|Aqui o inverno é {frio}.|🥶
 他 跑 得 很 {快}。|tā pǎo de hěn kuài.|Ele corre muito {rápido}.|🚀
-你 开 车 也 太 {慢} 了 吧！|nǐ kāi chē yě tài màn le ba!|Cê dirige muito {devagar}.|🐢|Você dirige devagar demais.|你 开 车 开 得 太 {慢} 了。|nǐ kāi chē kāi de tài màn le.`,"📏"],
+你 开 车 也 太 {慢} 了 吧！|nǐ kāi chē yě tài màn le ba!|Você dirige muito {devagar}.|🐢|Você dirige devagar demais.|你 开 车 开 得 太 {慢} 了。|nǐ kāi chē kāi de tài màn le.`,"📏"],
 ["Mais ações",`我 想 {买} 台 新 电脑。|wǒ xiǎng mǎi tái xīn diànnǎo.|Tô querendo {comprar} um computador novo.|💻|Quero comprar um computador novo.|我 想 {买} 一 个 新 电脑。|wǒ xiǎng mǎi yí ge xīn diànnǎo.
 这 家 店 {卖} 啥？|zhè jiā diàn mài shá?|O que essa loja {vende}?|🏷️|O que esta loja vende?|这 家 店 {卖} 什么？|zhè jiā diàn mài shénme?
 请 {写} 你 的 名字。|qǐng xiě nǐ de míngzi.|{Escreve} seu nome aqui, por favor.|✍️|Escreva o seu nome, por favor.
 我 每天 晚上 {读} 书。|wǒ měitiān wǎnshang dú shū.|Toda noite eu {leio} um pouco.|📚|Eu leio todas as noites.
-你 {学} 中文 多久 了？|nǐ xué Zhōngwén duōjiǔ le?|Faz quanto tempo que cê {estuda} chinês?|🎓|Há quanto tempo você estuda chinês?
+你 {学} 中文 多久 了？|nǐ xué Zhōngwén duōjiǔ le?|Faz quanto tempo que você {estuda} chinês?|🎓|Há quanto tempo você estuda chinês?
 宝宝 在 {睡觉}， 小声 点儿。|bǎobao zài shuìjiào, xiǎoshēng diǎnr.|O bebê tá {dormindo}, fala baixo.|😴|O bebê está dormindo, fale baixo.
 {走} 啦 {走} 啦！|zǒu la zǒu la!|{Vamos} nessa!|🚶|Vamos embora!|我们 {走} 吧！|wǒmen zǒu ba!
 他 每天 早上 {跑}步。|tā měitiān zǎoshang pǎobù.|Ele {corre} todo dia de manhã.|🏃|Ele corre todas as manhãs.
@@ -1058,7 +1072,7 @@ const DI=[
 我 吃 太 多 了， {肚子} 好 饱。|wǒ chī tài duō le, dùzi hǎo bǎo.|Comi demais, tô com a {barriga} cheia.|🍽️|Comi demais, estou com a barriga cheia.`,"💪"],
 ["Sentimentos e relações",`我 {爱} 你， 宝贝。|wǒ ài nǐ, bǎobèi.|Te {amo}, amor.|💕|Eu te amo, querido.
 我 很 {喜欢} 巴西 菜。|wǒ hěn xǐhuan Bāxī cài.|Eu {adoro} comida brasileira.|😍|Eu gosto muito de comida brasileira.
-能 {帮} 我 个 忙 吗？|néng bāng wǒ ge máng ma?|Cê pode me dar uma {força}?|🤝|Você pode me ajudar?|你 可以 {帮} 我 一下 吗？|nǐ kěyǐ bāng wǒ yíxià ma?
+能 {帮} 我 个 忙 吗？|néng bāng wǒ ge máng ma?|Você pode me dar uma {força}?|🤝|Você pode me ajudar?|你 可以 {帮} 我 一下 吗？|nǐ kěyǐ bāng wǒ yíxià ma?
 我 在 {找} 我 的 手机。|wǒ zài zhǎo wǒ de shǒujī.|Tô {procurando} meu celular.|🔍|Estou procurando o meu celular.
 这 是 {给} 你 的 礼物。|zhè shì gěi nǐ de lǐwù.|Esse presente é {pra} você.|🎁|Este presente é para você.
 能 {开} 下 空调 吗？|néng kāi xià kōngtiáo ma?|Pode {ligar} o ar?|❄️|Pode ligar o ar-condicionado?|可以 {开} 空调 吗？|kěyǐ kāi kōngtiáo ma?
@@ -1095,17 +1109,17 @@ const DI=[
 {欢迎} 来 我 家！|huānyíng lái wǒ jiā!|{Bem-vindo} lá em casa!|🎉|Seja bem-vindo à minha casa!
 {祝你好运}， 考试 加油！|zhù nǐ hǎoyùn, kǎoshì jiāyóu!|{Boa sorte} na prova!|🍀
 {没关系}， 下 次 再 来。|méi guānxi, xià cì zài lái.|{Não tem problema}, fica pra próxima.|😌|Não tem problema, fica para a próxima.
-你 是 {巴西人} 吗？|nǐ shì Bāxīrén ma?|Cê é {brasileiro}?|🇧🇷|Você é brasileiro?`,"💬"],
+你 是 {巴西人} 吗？|nǐ shì Bāxīrén ma?|Você é {brasileiro}?|🇧🇷|`,"💬"],
 ["Querer e poder",`我 {有} 一 个 问题。|wǒ yǒu yí ge wèntí.|{Tenho} uma pergunta.|🙌|Eu tenho uma pergunta.
 我 {没有} 时间。|wǒ méiyǒu shíjiān.|Tô {sem} tempo.|🙅|Eu não tenho tempo.
-你 现在 {在} 家 吗？|nǐ xiànzài zài jiā ma?|Cê {tá} em casa agora?|📌|Você está em casa agora?
+你 现在 {在} 家 吗？|nǐ xiànzài zài jiā ma?|Você {tá} em casa agora?|📌|Você está em casa agora?
 我 {要} 一 个 大 的。|wǒ yào yí ge dà de.|{Quero} um grande.|🫴|Eu quero um grande.
 我 很 {想} 你。|wǒ hěn xiǎng nǐ.|Tô com muita {saudade} de você.|💭|Sinto muita saudade de você.
-你 {会} 开 车 吗？|nǐ huì kāi chē ma?|Cê {sabe} dirigir?|🚗|Você sabe dirigir?
+你 {会} 开 车 吗？|nǐ huì kāi chē ma?|Você {sabe} dirigir?|🚗|
 我 明天 不 {能} 来。|wǒ míngtiān bù néng lái.|Amanhã não vou {poder} ir.|💪|Amanhã não poderei vir.
 大家 都 {叫} 我 小王。|dàjiā dōu jiào wǒ Xiǎo Wáng.|Todo mundo me {chama} de Xiao Wang.|📣|Todos me chamam de Xiao Wang.
 我 也 不 {知道} 啊。|wǒ yě bù zhīdào a.|{Sei} lá.|🧠|Eu não sei.|我 不 {知道}。|wǒ bù zhīdào.
-你 {觉得} 怎么样？|nǐ juéde zěnmeyàng?|O que cê {acha}?|🗯️|O que você acha?`,"💭"],
+你 {觉得} 怎么样？|nǐ juéde zěnmeyàng?|O que você {acha}?|🗯️|`,"💭"],
 ["Números grandes e preços",`我 今年 {十二} 岁。|wǒ jīnnián shí'èr suì.|Tenho {doze} anos.|🔢
 一 个 月 大概 有 {三十} 天。|yí ge yuè dàgài yǒu sānshí tiān.|Um mês tem uns {trinta} dias.|📆|Um mês tem aproximadamente trinta dias.
 这 双 鞋 {一百} 块。|zhè shuāng xié yìbǎi kuài.|Esse sapato tá {cem} conto.|💯|Este par de sapatos custa cem reais.
@@ -1116,7 +1130,7 @@ const DI=[
 一 杯 咖啡 {八} 块 {五}。|yì bēi kāfēi bā kuài wǔ.|Um café sai {oito e cinquenta}.|☕|Um café custa oito reais e cinquenta centavos.
 {零} 下 五 度， 好 冷！|líng xià wǔ dù, hǎo lěng!|Cinco graus abaixo de {zero}, que frio!|🥶
 {两} 杯 咖啡， 谢谢。|liǎng bēi kāfēi, xièxie.|{Dois} cafés, por favor.|✌️`,"💯"],
-["Que horas são?",`你 几 {点} 下班？|nǐ jǐ diǎn xiàbān?|Cê sai do trabalho que {horas}?|🕐|A que horas você sai do trabalho?
+["Que horas são?",`你 几 {点} 下班？|nǐ jǐ diǎn xiàbān?|Você sai do trabalho que {horas}?|🕐|A que horas você sai do trabalho?
 现在 十 点 二十 {分}。|xiànzài shí diǎn èrshí fēn.|São dez e {vinte}.|⏱️|Agora são dez horas e vinte minutos.
 差 一 {刻} 三 点。|chà yí kè sān diǎn.|São {quinze} pras três.|🕒|Faltam quinze minutos para as três.
 我 等 了 两 个 {小时}。|wǒ děng le liǎng ge xiǎoshí.|Esperei duas {horas}.|⌛|Esperei por duas horas.
@@ -1124,44 +1138,44 @@ const DI=[
 我 没有 {时间} 吃 早饭。|wǒ méiyǒu shíjiān chī zǎofàn.|Não tenho {tempo} de tomar café.|⌚|Não tenho tempo para tomar o café da manhã.
 我 的 {钟} 慢 了 五 分钟。|wǒ de zhōng màn le wǔ fēnzhōng.|Meu {relógio} tá cinco minutos atrasado.|⏰|Meu relógio está cinco minutos atrasado.
 {中午} 十二 点 吃 午饭。|zhōngwǔ shí'èr diǎn chī wǔfàn.|O almoço é ao {meio-dia}.|🕛
-你 来 得 好 {早} 啊！|nǐ lái de hǎo zǎo a!|Cê chegou {cedo}, hein!|🐓|Você chegou muito cedo!|你 来 得 真 {早}！|nǐ lái de zhēn zǎo!
+你 来 得 好 {早} 啊！|nǐ lái de hǎo zǎo a!|Você chegou {cedo}, hein!|🐓|Você chegou muito cedo!|你 来 得 真 {早}！|nǐ lái de zhēn zǎo!
 太 {晚} 了， 我 要 睡觉 了。|tài wǎn le, wǒ yào shuìjiào le.|Já tá {tarde}, vou dormir.|🌆|Já está tarde, vou dormir.`,"🕐"],
 ["A semana",`{星期一} 我 很 忙。|xīngqīyī wǒ hěn máng.|Na {segunda} eu fico na correria.|☕|Às segundas-feiras fico muito ocupado.
 我们 {星期二} 有 中文 课。|wǒmen xīngqī'èr yǒu Zhōngwén kè.|A gente tem aula de chinês na {terça}.|📚|Temos aula de chinês na terça-feira.
-{星期三} 晚上 你 有 空 吗？|xīngqīsān wǎnshang nǐ yǒu kòng ma?|Cê tá livre na {quarta} à noite?|🐪|Você está livre na quarta-feira à noite?
+{星期三} 晚上 你 有 空 吗？|xīngqīsān wǎnshang nǐ yǒu kòng ma?|Você tá livre na {quarta} à noite?|🐪|Você está livre na quarta-feira à noite?
 {星期四} 我 去 健身房。|xīngqīsì wǒ qù jiànshēnfáng.|Na {quinta} eu vou pra academia.|🏋️|Na quinta-feira eu vou à academia.
 {星期五} 晚上 我们 出去 玩 吧！|xīngqīwǔ wǎnshang wǒmen chūqu wán ba!|{Sexta} à noite bora sair!|🍕|Vamos sair na sexta-feira à noite!
 {星期六} 我 睡 懒觉。|xīngqīliù wǒ shuì lǎnjiào.|No {sábado} eu durmo até tarde.|😴
 {星期天} 我们 去 奶奶 家。|xīngqītiān wǒmen qù nǎinai jiā.|No {domingo} a gente vai na casa da vó.|👵|No domingo vamos à casa da avó.
-这 个 {周末} 你 做 什么？|zhè ge zhōumò nǐ zuò shénme?|O que cê vai fazer nesse {fim de semana}?|🎡|O que você vai fazer neste fim de semana?
+这 个 {周末} 你 做 什么？|zhè ge zhōumò nǐ zuò shénme?|O que você vai fazer nesse {fim de semana}?|🎡|O que você vai fazer neste fim de semana?
 我 一 {天} 喝 三 杯 咖啡。|wǒ yì tiān hē sān bēi kāfēi.|Tomo três cafés por {dia}.|🌄|Eu tomo três xícaras de café por dia.
 我 {每天} 都 走路 上班。|wǒ měitiān dōu zǒulù shàngbān.|Vou a pé pro trabalho {todo dia}.|🔄|Vou a pé para o trabalho todos os dias.`,"📅"],
 ["Frases do cotidiano",`{你好吗}？ 好 久 不 见！|nǐ hǎo ma? hǎo jiǔ bú jiàn!|{Tudo bem}? Quanto tempo!|🙂|Como vai? Há quanto tempo!
 {我很好}， 就是 有点儿 累。|wǒ hěn hǎo, jiùshì yǒudiǎnr lèi.|{Tô bem}, só um pouco cansado.|😊|Estou bem, só um pouco cansado.
 你好， 我 叫 李明， {你叫什么名字}？|nǐ hǎo, wǒ jiào Lǐ Míng, nǐ jiào shénme míngzi?|Oi, eu sou o Li Ming, e {você, como chama}?|📛|Olá, eu me chamo Li Ming, e você, como se chama?
-小朋友， {你几岁} 了？|xiǎopéngyǒu, nǐ jǐ suì le?|E aí, pequeno, {quantos anos} cê tem?|🎂|Criança, quantos anos você tem?
+小朋友， {你几岁} 了？|xiǎopéngyǒu, nǐ jǐ suì le?|E aí, pequeno, {quantos anos} você tem?|🎂|Criança, quantos anos você tem?
 他 说 得 太 快， {我听不懂}。|tā shuō de tài kuài, wǒ tīng bu dǒng.|Ele fala rápido demais, {não entendo nada}.|🙉|Ele fala rápido demais, não consigo entender.
 请 {慢一点} 说。|qǐng màn yìdiǎn shuō.|Fala mais {devagar}, por favor.|🐌|Por favor, fale mais devagar.
 不好意思， {厕所在哪里}？|bù hǎoyìsi, cèsuǒ zài nǎlǐ?|Com licença, {cadê o banheiro}?|🚻|Com licença, onde fica o banheiro?
 妈妈， {我饿了}！|māma, wǒ è le!|Mãe, {tô com fome}!|🍔|Mãe, estou com fome!
-{加油}！ 你 一定 可以 的！|jiāyóu! nǐ yídìng kěyǐ de!|{Força}! Cê consegue!|🔥|Força! Você consegue!
+{加油}！ 你 一定 可以 的！|jiāyóu! nǐ yídìng kěyǐ de!|{Força}! Você consegue!|🔥|
 {生日快乐}！ 祝 你 天天 开心！|shēngrì kuàilè! zhù nǐ tiāntiān kāixīn!|{Feliz aniversário}! Muitas felicidades!|🥳`,"🗨️"],
 ["Partículas na prática",`这 是 我 {的} 书。|zhè shì wǒ de shū.|Esse livro é {meu}.|🏷️|Este livro é meu.
 我 买 {了} 一 个 新 包。|wǒ mǎi le yí ge xīn bāo.|{Comprei} uma bolsa nova.|☑️
 我 去 超市， 你 {呢}？|wǒ qù chāoshì, nǐ ne?|Vou no mercado, e {você}?|🔄|Vou ao supermercado, e você?
 我 买 了 一{些} 水果。|wǒ mǎi le yìxiē shuǐguǒ.|Comprei {umas} frutas.|🧺|Comprei algumas frutas.
-你 喜欢 {哪} 个 颜色？|nǐ xǐhuan nǎ ge yánsè?|Cê gosta de {qual} cor?|🤷|De qual cor você gosta?
-你 住 在 {哪儿}？|nǐ zhù zài nǎr?|Cê mora {onde}?|🗺️|Onde você mora?
+你 喜欢 {哪} 个 颜色？|nǐ xǐhuan nǎ ge yánsè?|Você gosta de {qual} cor?|🤷|De qual cor você gosta?
+你 住 在 {哪儿}？|nǐ zhù zài nǎr?|Você mora {onde}?|🗺️|Onde você mora?
 这 件 衣服 {怎么样}？|zhè jiàn yīfu zěnmeyàng?|Que {tal} essa roupa?|🤙|O que acha desta roupa?
 他 {已经} 走 了。|tā yǐjīng zǒu le.|Ele {já} foi embora.|✔️
 今天 {非常} 热！|jīntiān fēicháng rè!|Hoje tá um calor {absurdo}!|🔝|Hoje está extremamente quente!
 他 {可能} 不 来 了。|tā kěnéng bù lái le.|{Acho que} ele não vem mais.|🎲|Talvez ele não venha mais.`,"🧩"],
-["No médico",`你 哪儿 不 {舒服}？|nǐ nǎr bù shūfu?|O que cê tá {sentindo}?|🩺|O que você está sentindo?
+["No médico",`你 哪儿 不 {舒服}？|nǐ nǎr bù shūfu?|O que você tá {sentindo}?|🩺|O que você está sentindo?
 我 {生病} 了， 发烧 三十八 度。|wǒ shēngbìng le, fāshāo sānshíbā dù.|Tô {doente}, com febre de trinta e oito.|🤒|Estou doente, com febre de trinta e oito graus.
 我 嗓子 {疼}。|wǒ sǎngzi téng.|Tô com {dor} de garganta.|🤕|Estou com dor de garganta.
-你 {感冒} 几 天 了？|nǐ gǎnmào jǐ tiān le?|Faz quantos dias que cê tá {gripado}?|🤧|Há quantos dias você está resfriado?
+你 {感冒} 几 天 了？|nǐ gǎnmào jǐ tiān le?|Faz quantos dias que você tá {gripado}?|🤧|Há quantos dias você está resfriado?
 一 天 吃 两 次 {药}。|yì tiān chī liǎng cì yào.|Toma o {remédio} duas vezes por dia.|💊|Tome o remédio duas vezes ao dia.
-你 要 多 {休息}。|nǐ yào duō xiūxi.|Cê precisa {descansar} bastante.|🛋️|Você precisa descansar bastante.
+你 要 多 {休息}。|nǐ yào duō xiūxi.|Você precisa {descansar} bastante.|🛋️|
 我 要 去 {医院} 吗？|wǒ yào qù yīyuàn ma?|Preciso ir pro {hospital}?|🏥|Preciso ir ao hospital?
 {医生}， 我 没事 吧？|yīshēng, wǒ méishì ba?|{Doutor}, tá tudo bem comigo?|👨‍⚕️|Doutor, está tudo bem comigo?
 别 {担心}， 不 严重。|bié dānxīn, bù yánzhòng.|{Relaxa}, não é nada grave.|😟|Não se preocupe, não é grave.
@@ -1176,7 +1190,7 @@ const DI=[
 我们 坐 {船} 去 吧。|wǒmen zuò chuán qù ba.|Bora de {barco}.|⛵|Vamos de barco.
 这 是 我 第一 次 来 {中国}。|zhè shì wǒ dì-yī cì lái Zhōngguó.|É minha primeira vez na {China}.|🇨🇳|Esta é a minha primeira vez na China.
 {地铁} 站 离 这儿 远 吗？|dìtiě zhàn lí zhèr yuǎn ma?|A estação de {metrô} é longe daqui?|🚇`,"✈️"],
-["Fazendo planos",`你 {明天} 有 空 吗？|nǐ míngtiān yǒu kòng ma?|Cê tá livre {amanhã}?|🔜|Você está livre amanhã?
+["Fazendo planos",`你 {明天} 有 空 吗？|nǐ míngtiān yǒu kòng ma?|Você tá livre {amanhã}?|🔜|Você está livre amanhã?
 我们 {一起} 去 吃饭 吧！|wǒmen yìqǐ qù chīfàn ba!|Bora comer {juntos}!|👯|Vamos comer juntos!
 我们 {几} 点 见？|wǒmen jǐ diǎn jiàn?|A gente se encontra {que horas}?|⏰|A que horas nos encontramos?
 {下午} 三 点 怎么样？|xiàwǔ sān diǎn zěnmeyàng?|Que tal às três da {tarde}?|🌇
@@ -1200,31 +1214,31 @@ const DI=[
 我 {到} 了， 你 在 哪儿？|wǒ dào le, nǐ zài nǎr?|{Cheguei}, cadê você?|📍|Cheguei, onde você está?
 我 {马上} 到！|wǒ mǎshàng dào!|Chego {já já}!|🏃|Chego em instantes!
 我 {手机} 快 没 电 了。|wǒ shǒujī kuài méi diàn le.|Meu {celular} tá quase sem bateria.|🔋|Meu celular está quase sem bateria.
-你 {看到} 我 的 消息 了 吗？|nǐ kàndào wǒ de xiāoxi le ma?|Cê {viu} minha mensagem?|💬|Você viu a minha mensagem?
+你 {看到} 我 的 消息 了 吗？|nǐ kàndào wǒ de xiāoxi le ma?|Você {viu} minha mensagem?|💬|Você viu a minha mensagem?
 {好} 的， 没问题。|hǎo de, méi wèntí.|{Beleza}, sem problema.|👍|Está bem, sem problema.
 {哈哈}， 太 好笑 了！|hāhā, tài hǎoxiào le!|{Hahaha}, muito engraçado!|😂
 回头 {再} 聊！|huítóu zài liáo!|Depois a gente se {fala}!|👋|Conversamos depois!
-{谢谢} 啦， 你 真 好！|xièxie la, nǐ zhēn hǎo!|{Valeu}, cê é demais!|🙏|Muito obrigado, você é muito gentil!
+{谢谢} 啦， 你 真 好！|xièxie la, nǐ zhēn hǎo!|{Valeu}, você é demais!|🙏|Muito obrigado, você é muito gentil!
 {晚安}， 做 个 好 梦！|wǎn'ān, zuò ge hǎo mèng!|{Boa noite}, sonha com os anjos!|🌜|Boa noite, tenha bons sonhos!`,"📱"],
 ["Festa e aniversário",`明天 是 我 的 {生日}。|míngtiān shì wǒ de shēngrì.|Amanhã é meu {aniversário}.|🎂
-你 来 我 的 {生日} 派对 吗？|nǐ lái wǒ de shēngrì pàiduì ma?|Cê vem na minha festa de {aniversário}?|🎈|Você vem à minha festa de aniversário?
+你 来 我 的 {生日} 派对 吗？|nǐ lái wǒ de shēngrì pàiduì ma?|Você vem na minha festa de {aniversário}?|🎈|Você vem à minha festa de aniversário?
 {生日快乐}！ 这 是 给 你 的 礼物。|shēngrì kuàilè! zhè shì gěi nǐ de lǐwù.|{Parabéns}! Esse presente é pra você.|🎁|Feliz aniversário! Este presente é para você.
 我们 一起 {唱} 生日 歌 吧！|wǒmen yìqǐ chàng shēngrì gē ba!|Bora {cantar} parabéns!|🎤|Vamos cantar parabéns!
-你 {今年} 多 大 了？|nǐ jīnnián duō dà le?|Cê tá fazendo quantos {anos}?|🔢|Quantos anos você está fazendo?
+你 {今年} 多 大 了？|nǐ jīnnián duō dà le?|Você tá fazendo quantos {anos}?|🔢|Quantos anos você está fazendo?
 这 个 蛋糕 太 {好吃} 了！|zhè ge dàngāo tài hǎochī le!|Esse bolo tá muito {bom}!|🍰|Este bolo está delicioso!
 大家 一起 {跳舞} 吧！|dàjiā yìqǐ tiàowǔ ba!|Bora todo mundo {dançar}!|💃|Vamos todos dançar!
 我 今天 {超 开心}！|wǒ jīntiān chāo kāixīn!|Hoje eu tô muito {feliz}!|😁|Hoje estou muito feliz!|我 今天 {很 开心}！|wǒ jīntiān hěn kāixīn!
 为 我们 的 友谊 {干杯}！|wèi wǒmen de yǒuyì gānbēi!|Um {brinde} à nossa amizade!|🥂
 {谢谢} 你们 来！|xièxie nǐmen lái!|{Valeu} por terem vindo, galera!|🙏|Obrigado por terem vindo!`,"🎂"],
-["Pequenos diálogos",`你 是 {老师} 还是 学生？|nǐ shì lǎoshī háishi xuésheng?|Cê é {professor} ou aluno?|👩‍🏫|Você é professor ou aluno?
+["Pequenos diálogos",`你 是 {老师} 还是 学生？|nǐ shì lǎoshī háishi xuésheng?|Você é {professor} ou aluno?|👩‍🏫|
 我 {觉得} 今天 会 下雨。|wǒ juéde jīntiān huì xiàyǔ.|{Acho} que hoje vai chover.|🌧️|Eu acho que hoje vai chover.
-你 {怎么} 知道 的？|nǐ zěnme zhīdào de?|{Como} cê sabe?|🧐|Como você sabe?
+你 {怎么} 知道 的？|nǐ zěnme zhīdào de?|{Como} você sabe?|🧐|
 {因为} 天 很 阴。|yīnwèi tiān hěn yīn.|{Porque} o céu tá bem nublado.|🌥️|Porque o céu está muito nublado.
 那 我们 在 {家} 看 电视 吧。|nà wǒmen zài jiā kàn diànshì ba.|Então bora ficar em {casa} vendo TV.|📺|Então vamos ficar em casa assistindo televisão.
-你 {饿} 不 饿？|nǐ è bu è?|Cê tá com {fome}?|🤤|Você está com fome?
+你 {饿} 不 饿？|nǐ è bu è?|Você tá com {fome}?|🤤|Você está com fome?
 有 一点儿， 我们 {叫} 外卖 吧。|yǒu yìdiǎnr, wǒmen jiào wàimài ba.|Um pouco, bora {pedir} delivery.|🛵|Um pouco, vamos pedir comida por entrega.
-你 想 吃 {什么}？|nǐ xiǎng chī shénme?|Cê quer comer {o quê}?|❓|O que você quer comer?
-{都} 可以， 你 决定 吧。|dōu kěyǐ, nǐ juédìng ba.|{Tanto faz}, cê que sabe.|🤷|Qualquer um está bom, você decide.
+你 想 吃 {什么}？|nǐ xiǎng chī shénme?|Você quer comer {o quê}?|❓|O que você quer comer?
+{都} 可以， 你 决定 吧。|dōu kěyǐ, nǐ juédìng ba.|{Tanto faz}, você que sabe.|🤷|Qualquer um está bom, você decide.
 {好}， 那 吃 饺子！|hǎo, nà chī jiǎozi!|{Fechou}, então vai ser guioza!|🥟|Combinado, então vamos comer guioza!`,"🗣️"]
 ];
 const UI=[["Conversas básicas",...U[0].slice(1)],["Meu dia",...U[1].slice(1)],["Pela cidade",...U[2].slice(1)],["Conversas reais",...U[3].slice(1)],["Revendo o básico",...U[4].slice(1)],["No dia a dia",...U[5].slice(1)],["Números e tempo",...U[6].slice(1)],["Situações reais",...U[7].slice(1)],["Rumo à fluência",...U[8].slice(1)]];
@@ -1267,11 +1281,11 @@ app.innerHTML=h+pathH(UI,list,ik,n,'ilesson',first,false)+`<footer>Youhua Educac
 function iintro(){scrollTo(0,0);
 app.innerHTML=`<div class="card intro"><h2>💬 Antes de começar</h2>
 <p>Nesta classe, as frases em português são do <b>dia a dia do Brasil</b>, do jeito que as pessoas realmente falam, e não só o português formal dos livros. Alguns exemplos:</p>
-<div class="ex"><div><b>tô</b>= estou</div><div><b>cê</b>= você</div><div><b>pra</b>= para</div><div><b>a gente</b>= nós</div><div><b>bora</b>= vamos</div><div><b>cadê?</b>= onde está?</div></div>
+<div class="ex"><div><b>tô</b>= estou</div><div><b>valeu</b>= obrigado</div><div><b>pra</b>= para</div><div><b>a gente</b>= nós</div><div><b>bora</b>= vamos</div><div><b>cadê?</b>= onde está?</div></div>
 <p>Quando a frase é informal, mostramos também a <b>versão formal</b> logo abaixo, marcada com <span class="badge">💬 Coloquial · 口语</span>. As palavras em <span class="hl"><em>vermelho</em></span> são as que você aprendeu na Classe Iniciante.</p>
 <p>O <b>chinês</b> também está no jeito falado do dia a dia, como 啥 (= 什么), 咱们 (= 我们), 挺好的, 超好吃 e 累死了. Nesses casos, o <b>chinês padrão</b> aparece logo abaixo, marcado com <span class="badge">标准 · Padrão</span>, que é o que cai na prova HSK.</p>
 <hr><h2 lang="zh-CN">💬 开始之前</h2>
-<p lang="zh-CN">本课程的葡萄牙语句子采用<b>巴西人日常生活中的口语</b>，也就是大家平时真正说话的方式，而不只是书本上的正式葡萄牙语。例如：tô（= estou，我在/我是）、cê（= você，你）、pra（= para，为了/去）、a gente（= nós，我们）、bora（= vamos，我们走吧）、cadê?（= onde está?，在哪儿？）。</p>
+<p lang="zh-CN">本课程的葡萄牙语句子采用<b>巴西人日常生活中的口语</b>，也就是大家平时真正说话的方式，而不只是书本上的正式葡萄牙语。例如：tô（= estou，我在/我是）、valeu（= obrigado，谢谢）、pra（= para，为了/去）、a gente（= nós，我们）、bora（= vamos，我们走吧）、cadê?（= onde está?，在哪儿？）。</p>
 <p lang="zh-CN">如果句子是口语说法，下方会同时给出<b>正式说法</b>，并标有 <span class="badge">💬 Coloquial · 口语</span>。<span class="hl"><em>红色</em></span>的词是你在初级班学过的词。</p>
 <p lang="zh-CN">中文句子也采用日常口语，例如：啥（= 什么）、咱们（= 我们）、挺好的、超好吃、累死了。这种情况下，下方会给出<b>标准说法</b>，标有 <span class="badge">标准 · Padrão</span>（HSK 考试以标准说法为准）。</p>
 <div class="row" style="justify-content:center"><button class="btn" onclick="S.iintro=true;save();home()">Entendi! 明白了！</button></div></div>`}
@@ -1347,6 +1361,7 @@ function fhome(){let h=tabs();if(!SR)h+=NOSR;
 h+=`<div class="card hero"><div class="txt"><h2>🎤 Treino de fala · 口语练习</h2>
 <p>Ouça a pronúncia, fale no microfone e veja se o site entendeu o que você disse. Cada fala correta (nota ${F_OK}% ou mais) vale <b>1 XP</b>, até 10 por aula.</p>
 <p lang="zh-CN" class="zh">先听发音，再对着麦克风说，看看网站能不能听懂你说的话。每说对一次（${F_OK}分以上）得 <b>1 经验</b>，每课最多 10 经验。</p></div></div>
+<button class="lcard guide" onclick="fguide()">${img('📖')}<span>Aula 0 · Tons e acentos · 声调与重音符号<small>Comece por aqui: como funcionam os tons do chinês e os acentos do português. Sem prova e sem XP. · 从这里开始：没有测验，不计经验。${S.guide?' · ✓ Lida · 已读':''}</small></span></button>
 <p class="q">1. Qual língua você quer praticar? · 你想练习哪种语言？</p>
 <div class="seg"><button class="tab ${F.lang=='zh'?'on':''}" onclick="setF('lang','zh')">${flag('🇨🇳')} Chinês · 中文</button><button class="tab ${F.lang=='pt'?'on':''}" onclick="setF('lang','pt')">${flag('🇧🇷')} Português · 葡萄牙语</button></div>
 <p class="q">2. O que você quer falar? · 你想说什么？</p>
@@ -1357,6 +1372,45 @@ else{const L=F.src=='b'?D.map(d=>[d[0],d[3]]):DI.map(d=>[d[0],d[2]]);
 h+=`<div class="lgrid">`+L.map((d,i)=>{const p=(S.fala||{})[fkey(i)],st=fstars(p);
 return`<button class="lcard" onclick="fstart(${i})">${img(d[1])}<span>Aula ${i+1} · ${d[0]}<small>${p!=null?`<span class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</span> ${p}%`:'Não feita'}</small></span></button>`}).join('')+`</div>`}
 app.innerHTML=h+`<footer>Youhua Educacional · 幼华双语学校 · desde 1992</footer>`}
+
+// ---- Aula 0: tons do chinês e acentos do português (só leitura, sem prova e sem XP) ----
+// Gráfico da melodia do tom: níveis de 1 (grave) a 5 (agudo)
+const pitch=p=>`<svg class="pitch" viewBox="0 0 64 46" aria-hidden="true">${[1,2,3,4,5].map(l=>`<line x1="4" x2="60" y1="${43-(l-1)*9.5}" y2="${43-(l-1)*9.5}"/>`).join('')}
+${p.length>1?`<polyline points="${p.map(([x,l])=>`${x},${43-(l-1)*9.5}`).join(' ')}"/>`:`<circle cx="32" cy="${43-(p[0][1]-1)*9.5}" r="4"/>`}</svg>`;
+const sbtn=(t,l)=>`<button class="snd sm" onclick="say('${t}','${l}')" title="Ouvir">${SPK}</button>`;
+function fguide(){scrollTo(0,0);S.guide=true;save();
+const T=[['1º tom','第一声','ā',[[8,5],[56,5]],'Alto e reto, como cantar uma nota longa.','高而平，像唱一个长音。','妈','mā','mãe'],
+['2º tom','第二声','á',[[8,3],[56,5]],'Sobe, como quando a gente pergunta “Hã?”.','往上升，像惊讶地问“啊？”。','麻','má','cânhamo / dormente'],
+['3º tom','第三声','ǎ',[[8,2],[30,1],[56,4]],'Desce e sobe. Na fala rápida, fica só baixinho.','先降后升；说快时只读低的部分。','马','mǎ','cavalo'],
+['4º tom','第四声','à',[[8,5],[56,1]],'Desce forte e rápido, como uma ordem: “Para!”.','从高快速降下来，像下命令。','骂','mà','xingar'],
+['Tom neutro','轻声','a',[[0,3]],'Curto e leve, sem marca no pinyin.','又短又轻，拼音上不标调号。','吗','ma','(partícula de pergunta)']];
+const P=[['´','Agudo · 尖音符','Vogal <b>aberta</b> e forte.','开口元音，重读。',[['café','咖啡'],['avó','奶奶/外婆'],['pé','脚']]],
+['^','Circunflexo · 长音符','Vogal <b>fechada</b> e forte.','闭口元音，重读。',[['avô','爷爷/外公'],['você','你'],['três','三']]],
+['~','Til · 鼻音符','Som <b>nasal</b>: o ar sai também pelo nariz.','鼻音：气流同时从鼻子出来。',[['mãe','妈妈'],['pão','面包'],['irmã','姐妹']]],
+['`','Crase · 重音符','Junta “a + a”. O som não muda.','“a + a”合在一起，发音不变。',[['Vou à escola','我去学校']]],
+['ç','Cedilha · 软音符','O “c” soa como <b>“s”</b> antes de a, o, u.','在 a、o、u 前，c 读作 “s”。',[['maçã','苹果'],['açúcar','糖']]]];
+const zh=`<div class="card gd"><h2>${flag('🇨🇳')} Os tons do chinês · 汉语的声调</h2>
+<p>No chinês, a mesma sílaba muda de significado conforme o <b>tom</b>, a melodia da voz. O tom aparece no pinyin como um sinal em cima da vogal.</p>
+<p lang="zh-CN" class="zh">汉语里，同一个音节用不同的声调，意思就不一样。声调标在拼音的元音上。</p>
+${T.map(t=>`<div class="trow">${pitch(t[3])}<div><b>${t[0]} · ${t[1]}</b> <span class="mk2">${t[2]}</span><br>${t[4]}<br><small lang="zh-CN">${t[5]}</small></div>
+<div class="ex"><span class="hz2">${t[6]}</span><small>${t[7]} · ${t[8]}</small></div>${sbtn(t[6],'zh-CN')}</div>`).join('')}
+<div class="row" style="justify-content:center"><button class="btn blue" onclick="say('妈，麻，马，骂','zh-CN')">🔊 Ouvir os 4 tons · 听四个声调</button></div>
+<h3>Mudanças de tom · 变调</h3>
+<div class="trow"><div class="rule">3º + 3º</div><div>Dois 3º tons seguidos: o primeiro vira <b>2º tom</b>.<br><small lang="zh-CN">两个第三声连在一起，第一个读成第二声。</small></div><div class="ex"><span class="hz2">你好</span><small>nǐ hǎo → <b>ní</b> hǎo</small></div>${sbtn('你好','zh-CN')}</div>
+<div class="trow"><div class="rule">不</div><div>不 (bù) vira <b>bú</b> antes de um 4º tom.<br><small lang="zh-CN">“不”在第四声前读第二声。</small></div><div class="ex"><span class="hz2">不客气</span><small><b>bú</b> kèqi</small></div>${sbtn('不客气','zh-CN')}</div>
+<div class="trow"><div class="rule">一</div><div>一 (yī) vira <b>yí</b> antes do 4º tom e <b>yì</b> antes dos outros.<br><small lang="zh-CN">“一”在第四声前读 yí，在其他声调前读 yì。</small></div><div class="ex"><span class="hz2">一个 · 一天</span><small><b>yí</b> ge · <b>yì</b> tiān</small></div>${sbtn('一个，一天','zh-CN')}</div>
+<p class="us">💡 No pinyin do site, as mudanças de 不 e 一 já aparecem escritas (ex.: bú kèqi, yí ge). A do 3º + 3º não é marcada: lembre de falar “ní hǎo”. · 本网站的拼音已标出“不”和“一”的变调；第三声连读不标，请记得读成 “ní hǎo”。</p></div>`;
+const pt=`<div class="card gd"><h2>${flag('🇧🇷')} Os acentos do português · 葡萄牙语的重音符号</h2>
+<p>No português, o acento mostra qual sílaba é a <b>mais forte</b> e <b>como a vogal soa</b>. Sem acento, a sílaba forte costuma ser a penúltima: <b>ca</b>sa, <b>me</b>sa.</p>
+<p lang="zh-CN" class="zh">葡萄牙语的重音符号表示哪个音节重读，以及元音怎么发音。没有符号时，通常重读倒数第二个音节：<b>ca</b>sa、<b>me</b>sa。</p>
+${P.map(a=>`<div class="trow"><div class="rule big">${a[0]}</div><div><b>${a[1]}</b><br>${a[2]}<br><small lang="zh-CN">${a[3]}</small></div>
+<div class="exs">${a[4].map(([w,c])=>`<span class="ex2">${sbtn(w,'pt-BR')}<b>${w}</b> <small lang="zh-CN">${c}</small></span>`).join('')}</div></div>`).join('')}
+<h3>Ouça a diferença · 听听区别</h3>
+<div class="pair"><span class="ex2">${sbtn('avó','pt-BR')}<b>avó</b> <small>(aberto · 开口) 奶奶</small></span><span class="ex2">${sbtn('avô','pt-BR')}<b>avô</b> <small>(fechado · 闭口) 爷爷</small></span></div>
+<p class="us">💡 No treino de fala, o site confere o que você <b>pronuncia</b>, não como se escreve. · 口语练习只检查你的发音，不检查书写。</p></div>`;
+app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><p class="tag" style="margin:0">🎤 Fala · Aula 0 · Tons e acentos · 声调与重音符号</p></div>
+${F.lang=='pt'?pt+zh:zh+pt}
+<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="home()">Voltar · 返回</button><button class="btn" onclick="F.src='b';fstart(0)">Começar a aula 1 → · 开始第一课</button></div>`}
 
 let fi=0,fsc=[];
 const fitems=()=>F.src=='b'?A[F.li]:AI[F.li];
