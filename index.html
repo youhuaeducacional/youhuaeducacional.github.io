@@ -155,7 +155,9 @@ html,body{overflow-x:hidden}
 .match{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .match>div{display:flex;flex-direction:column;gap:10px}
 .mt{font:inherit;font-weight:800;font-size:1rem;background:var(--c);color:var(--t);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:12px 8px;cursor:pointer;min-height:58px}
-.mt.zh{font-size:1.5rem}
+.mt.zh{font-size:1.5rem;line-height:1.15}
+.mt.zh small{display:block;font-size:.8rem;font-weight:700;color:var(--brand);margin-top:2px}
+.mt.ok small{color:inherit}
 .mt.sel{border-color:var(--blue);background:rgba(28,176,246,.12)}
 .mt.ok{border-color:var(--ok);background:var(--okbg);color:var(--ok2);opacity:.55;cursor:default}
 .mt.bad{border-color:var(--bad);background:var(--badbg);animation:shake .3s}
@@ -1436,8 +1438,11 @@ return[...sh(pool.filter(len)),...sh(all.filter(x=>len(x)&&x.l!=it.l)),...sh(all
 // Tipos: mcz = ver chinês e escolher o significado · mcp = ver português e escolher o chinês
 // lis = ouvir chinês e escolher · lisp = ouvir português e escolher o chinês · tone = escolher o pinyin com o tom certo
 // tpy = escrever o pinyin · tpt = escrever em português · bpt/bzh = montar a frase com blocos
-function pickType(it,mcOnly){if(mcOnly)return sh(['mcz','mcp'])[0];
-const t=isW(it)?['mcz','mcp','lis','lisp','type',...(toneOK(it)?['tone']:[])]:['mcz','mcp','lis','bpt','bzh'];
+// "Ouça e escolha" (lis/lisp) aparece só na Revisão do dia (rev=true).
+// Exercícios de escrever (tpy = pinyin, tpt = português) estão desligados por enquanto: para religar, troque para true.
+const ESCRITA=false;
+function pickType(it,mcOnly,rev){if(mcOnly)return sh(['mcz','mcp'])[0];
+const t=isW(it)?['mcz','mcp',...(toneOK(it)?['tone']:[]),...(rev?['lis','lisp',...(ESCRITA?['type']:[])]:[])]:['mcz','mcp','bpt','bzh',...(rev?['lis']:[])];
 const x=t[Math.floor(Math.random()*t.length)];return x=='type'?(Math.random()<.5?'tpy':'tpt'):x}
 const QT={mcz:'O que significa? · 什么意思？',mcp:'Como se diz em chinês? · 中文怎么说？',lis:'🎧 Ouça e escolha o que ouviu · 听一听，选出你听到的',
 lisp:'🎧 Ouça em português e escolha o significado · 听葡萄牙语，选意思',tone:'🎵 Qual é a pronúncia certa? · 哪个读音（声调）对？',
@@ -1447,7 +1452,7 @@ bpt:'Monte a frase em português · 用葡萄牙语组句',bzh:'Monte a frase em
 // o = {kind:'b'|'i'|'r', li: aula, pairs: palavras para o aquecimento "Ligue os pares"}
 function qz(items,o){let q=0,sc=0;const wrong=[];
 function show(){idleStop();scrollTo(0,0);if(q>=items.length)return end();
-const it=items[q],ty=pickType(it,o.mcOnly),w=isW(it),u=unitFor(it),zhAns=['mcp','lis','lisp','tone','tpy','bzh'].includes(ty);
+const it=items[q],ty=pickType(it,o.mcOnly,o.kind=='r'),w=isW(it),u=unitFor(it),zhAns=['mcp','lis','lisp','tone','tpy','bzh'].includes(ty);
 const sp=()=>({mcz:sZ,mcp:sP,lis:sZ,lisp:sP,tone:sZ,tpy:sZ,tpt:sZ,bpt:sZ,bzh:sP})[ty](it);
 const ZH=`<div class="${w?'hz':'hzs'}">${zhOf(it)}</div>`,PY=`<div class="py">${it.p}</div>`,PT=`<div class="${w?'pt':'pts'}">${ptOf(it)}</div>`;
 const QS=big=>`<button class="snd${big?'':' sm'}" id="qs" title="Ouvir">${SPK}</button>`;
@@ -1492,7 +1497,7 @@ document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div cl
 <button class="btn ${r?'':'red'}" id="nx">Continuar</button></div></div>`;
 const nx=document.getElementById('nx');nx.focus();nx.onclick=()=>{q++;show()}}}
 function end(){idleStop();scrollTo(0,0);const l0=lvl(),t0=tier();
-if(o.kind=='r'){S.rev=(S.rev||0)+1;bump();save();rankPush();
+if(o.kind=='r'){S.rev=(S.rev||0)+1;S.revDay=dayN();bump();save();rankPush();
 app.innerHTML=`<div class="card end"><img src="${tw(sc>=items.length*.6?'🧠':'💪')}" alt="" style="width:100px"><div class="big">${sc}/${items.length}</div>
 <p>Revisão concluída! · 复习完成！<br><small>${wrong.length?'Estes vão aparecer de novo em breve · 这些很快会再出现：':'Você acertou tudo! Esses itens voltam daqui a alguns dias. · 全对！过几天再复习。'}</small></p>
 ${wrong.length?`<div class="wl">${wrong.map(x=>`<span><b>${zhOf(x)}</b> · ${ptOf(x)}</span>`).join('')}</div>`:''}
@@ -1510,7 +1515,7 @@ show()}
 function matchRound(ws,next){idleStop();scrollTo(0,0);const L=sh(ws),R=sh(ws),bad=new Set(),t0=Date.now();let sel=null,done=0,err=0;
 app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><p class="tag" style="margin:0;flex:1">🔗 Aquecimento · 热身</p><span id="mt">⏱ 0s</span></div>
 <p class="q">🔗 Ligue os pares · 连一连</p><p class="us" style="margin-top:-8px">Toque numa palavra em chinês e depois no significado. · 先点中文，再点它的意思。</p>
-<div class="match"><div>${L.map((x,i)=>`<button class="mt zh" data-s="L" data-i="${i}">${x.h}</button>`).join('')}</div><div>${R.map((x,i)=>`<button class="mt" data-s="R" data-i="${i}">${x.t}</button>`).join('')}</div></div>
+<div class="match"><div>${L.map((x,i)=>`<button class="mt zh" data-s="L" data-i="${i}">${x.h}<small>${x.p}</small></button>`).join('')}</div><div>${R.map((x,i)=>`<button class="mt" data-s="R" data-i="${i}">${x.t}</button>`).join('')}</div></div>
 <div class="row" style="justify-content:center"><button class="lnk" id="mskip">Pular aquecimento · 跳过</button></div><div id="fb"></div>`;
 const tm=setInterval(()=>{const e=document.getElementById('mt');if(!e)return clearInterval(tm);e.textContent='⏱ '+Math.round((Date.now()-t0)/1000)+'s'},500);
 document.getElementById('mskip').onclick=()=>{clearInterval(tm);next()};
@@ -1527,11 +1532,13 @@ else{err++;bad.add(x);bad.add(sel.x);const p=[sel.b,b];p.forEach(c=>{c.classList
 function review(){const items=revPick(10);if(!items.length)return home();
 const words=sh(revPool().filter(isW)).sort((a,b)=>isDue(b)-isDue(a));
 qz(items,{kind:'r',pairs:uniqPairs(words,5)})}
-function revCard(){const pool=revPool();if(!pool.length)return'';const n=pool.filter(isDue).length;
-return`<div class="card hsk rev">${img('🧠')}<div><b>Revisão do dia · 今日复习</b>
-<p>${n?`Você tem <b>${n}</b> ${n==1?'item':'itens'} para revisar hoje. · 今天有 ${n} 个要复习。`:'Tudo revisado por hoje! 🎉 · 今天的复习都完成了！'}</p>
-<p class="us" style="text-align:left;margin-top:4px">O site lembra o que você errou ou não vê há dias. Cada revisão tem até 10 itens, com pares, áudio, tons e escrita. Não vale XP, mas conta para a 🔥 sequência. · 网站会记住你答错的和很久没复习的内容。不计经验，但计入连续天数。</p>
-<button class="btn" onclick="review()">${n?'Começar revisão · 开始复习':'Praticar mesmo assim · 继续练习'}</button></div></div>`}
+// Meta diária: uma revisão de até 10 itens. Depois de feita, o cartão mostra "✓ feita" (dá para fazer mais uma).
+function revCard(){const pool=revPool();if(!pool.length)return'';const due=pool.filter(isDue).length,n=Math.min(due,10),feita=S.revDay==dayN();
+return`<div class="card hsk rev">${img(feita?'✅':'🧠')}<div><b>Revisão do dia · 今日复习</b>
+<p>${feita?'<b>✓ Revisão de hoje feita!</b> Volte amanhã para a próxima. · 今天的复习完成了！明天再来吧。'
+:n?`Sua revisão de hoje: <b>${n} ${n==1?'item':'itens'}</b> · 今天的复习：${n} 个`:'Tudo revisado por hoje! 🎉 · 今天的复习都完成了！'}</p>
+<p class="us" style="text-align:left;margin-top:4px">O site lembra o que você errou ou não vê há dias. Cada revisão tem até 10 itens, com pares, áudio e tons. Não vale XP, mas conta para a 🔥 sequência. · 网站会记住你答错的和很久没复习的内容。不计经验，但计入连续天数。</p>
+<button class="btn ${feita?'ghost':''}" onclick="review()">${feita?'Fazer mais uma · 再复习一次':n?'Começar revisão · 开始复习':'Praticar mesmo assim · 继续练习'}</button></div></div>`}
 
 // ======================= TREINO DE FALA =======================
 // Usa o reconhecimento de voz do navegador (Chrome, Edge, Safari). O site compara o que foi
