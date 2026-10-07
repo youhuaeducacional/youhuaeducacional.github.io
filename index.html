@@ -149,6 +149,14 @@ html,body{overflow-x:hidden}
 .modal .card>img,.modal .card>.emo{width:56px;height:56px;font-size:3rem}
 .code{font-size:2rem;font-weight:900;letter-spacing:6px;background:var(--bg);border:2px dashed var(--line);border-radius:14px;padding:10px;margin:8px 0;font-family:ui-monospace,Consolas,monospace}
 .code.sm{font-size:1rem;letter-spacing:3px;padding:2px 8px;border-radius:8px;display:inline-block;margin:0}
+/* "O que você quer aprender?" */
+.learn{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.9rem;color:var(--m);margin:-4px 0 14px}
+.learn b{color:var(--t)}.learn .lnk{margin:0}
+.learnpick{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:18px 0}
+.lp{font:inherit;display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 16px;border-radius:18px;border:2px solid var(--line);border-bottom-width:5px;background:var(--c);color:var(--t);cursor:pointer}
+.lp:hover,.lp.on{border-color:var(--blue);background:rgba(28,176,246,.08)}
+.lp img{width:54px!important;height:54px!important}.lp b{font-size:1.2rem;font-weight:900}.lp small{color:var(--m);font-weight:700;line-height:1.45}
+html.tech .lp{border:1px solid var(--line)}html.tech .lp:hover,html.tech .lp.on{border-color:#5eead4;background:rgba(94,234,212,.08)}
 /* Exercícios novos: ouvir, ligar pares, escrever */
 .listen{display:flex;flex-direction:column;align-items:center;gap:8px;margin:6px 0 22px;color:var(--m)}
 .snd.big{width:100px;height:100px;border-radius:30px}
@@ -737,6 +745,13 @@ const D=[
 // Unidades (5 aulas cada): nome, cor, cor escura, fundo pastel dos desenhos
 const U=[["Primeiros passos","#58cc02","#46a302","#e9fbd9"],["Dia a dia","#1cb0f6","#1899d6","#ddf4ff"],["Pelo mundo","#ce82ff","#a568cc","#f5e6ff"],["Conversando","#ff9600","#cc7800","#fff0d9"],["Ampliando o vocabulário","#ff4b4b","#d33131","#ffe3e3"],["Construindo frases","#00b8a0","#00917e","#d9f7f2"],["Minha rotina","#ff7ac6","#d65fa3","#ffe5f4"],["Vida real","#7b61ff","#5f48d6","#ebe6ff"],["Rumo ao HSK 1","#e09a00","#b37b00","#fff3d1"]];
 const unitOf=i=>U[Math.floor(i/5)];
+// Nomes em chinês das aulas e unidades do Iniciante (a interface mostra "Português · 中文")
+const DZ=['问候','人物','家人','数字1–10','颜色','动词1','食物和饮料','动物','家里的东西','形容词1','动词2','交通','身体','时间','地点','疑问词','衣服和配饰','形容词2','动词3','大自然','学校和工作','水果和蔬菜','位置和方向','形容词3','常用句','常用动词','连接词','自我介绍','数字11–100和钱','钟点','星期','日常作息','天气','购物','在餐厅','量词','爱好和运动','职业','感受和健康','常用句2','助词和语法','在学校和城市','日常生活'];
+const UZ=['第一步','日常','看世界','聊天','扩充词汇','造句','我的日常','真实生活','冲刺HSK一级'];
+const lname=i=>D[i][0]+' · '+DZ[i];
+const uB=U.map((u,i)=>[u[0]+' · '+UZ[i],...u.slice(1)]);
+// Quem está aprendendo o quê: 'zh' = brasileiro aprendendo chinês · 'pt' = chinês aprendendo português
+const LP=()=>S.learn=='pt';
 // Acesso ao Intermediário: level mínimo e prova de graduação (70% de acertos)
 const LV_INTER=25,TEST_N=40,TEST_OK=28;
 const A=D.map((d,i)=>d[2].split('\n').map((l,k)=>{const[h,p,t,e,x]=l.split('|');let u=x||'';
@@ -789,7 +804,7 @@ const XPM=()=>(D.length+DI.length)*10*2;
 const tierXP=i=>Math.ceil(XPM()*TIERS[i][3]);
 const tierFor=x=>{let t=0;TIERS.forEach((_,i)=>{if(x>=tierXP(i))t=i});return t};
 const tier=()=>tierFor(xpT());
-const tierUp=t0=>tier()>t0?`<br>${medal(tier())} Nova medalha: <b>${TIERS[tier()][0]} · ${TIERS[tier()][1]}</b>!`:'';
+const tierUp=t0=>tier()>t0?`<br>${medal(tier())} Nova medalha · 新奖牌: <b>${TIERS[tier()][0]} · ${TIERS[tier()][1]}</b>!`:'';
 function tierCard(){const t=tier(),x=xpT(),T=TIERS[t],nx=TIERS[t+1];
 const pct=nx?(x-tierXP(t))/(tierXP(t+1)-tierXP(t))*100:100;
 return`<div class="card tier">${medal(t)}<div class="tx"><b>Medalha ${T[0]} · ${T[1]}</b> <small>${x} / ${XPM()} XP</small>
@@ -810,13 +825,22 @@ function hud(){document.getElementById('stats').innerHTML=`<span title="Dias seg
 const ZZ=[0,70,100,70,0,-70,-100,-70];
 // Trilha de aulas (usada pelas duas classes). list = [[nome, desenho]], key = chave do progresso
 function pathH(units,list,key,n,fn,first,locked){let h='';
-units.forEach((u,ui)=>{h+=`<div class="unit" style="background:${u[1]}"><b>Unidade ${ui+1}</b><span>${u[0]}</span></div><div class="path">`;
+units.forEach((u,ui)=>{h+=`<div class="unit" style="background:${u[1]}"><b>Unidade ${ui+1} · 第${ui+1}单元</b><span>${u[0]}</span></div><div class="path">`;
 for(let i=ui*5;i<ui*5+5&&i<list.length;i++){const b=S.best[key(i)],st=starsOf(b),nx=!locked&&i==n,cls=b==null&&!nx?'new':'';
-h+=`<div class="node ${cls} ${nx?'next':''}" style="--o:${ZZ[i%8]};--uc:${u[1]};--ud:${u[2]}" ${locked?'':`onclick="${fn}(${i})"`}>${nx?`<div class="bubble">${first?'Começar':'Próxima'}</div>`:''}
-<div class="dot">${img(list[i][1])}</div><div class="lb">Aula ${i+1} · ${list[i][0]}<small>${locked?'🔒 Bloqueada':b!=null?`<span class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</span> ${b}/10`:'Não feita'}</small></div></div>`}
+h+=`<div class="node ${cls} ${nx?'next':''}" style="--o:${ZZ[i%8]};--uc:${u[1]};--ud:${u[2]}" ${locked?'':`onclick="${fn}(${i})"`}>${nx?`<div class="bubble">${first?'Começar · 开始':'Próxima · 下一课'}</div>`:''}
+<div class="dot">${img(list[i][1])}</div><div class="lb">Aula ${i+1} · ${list[i][0]}<small>${locked?'🔒 Bloqueada · 未解锁':b!=null?`<span class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</span> ${b}/10`:'Não feita · 未完成'}</small></div></div>`}
 h+=`</div>`});return h}
 const tabs=()=>`<div class="tabs"><button class="tab ${!['i','f','r'].includes(S.tab)?'on':''}" onclick="setTab('b')">🌱 Iniciante <small>初级</small></button><button class="tab ${S.tab=='i'?'on':''}" onclick="setTab('i')">🌳 Intermediário <small>中级</small>${iOpen()?'':' 🔒'}</button><button class="tab ${S.tab=='f'?'on':''}" onclick="setTab('f')">🎤 Fala <small>口语</small></button><button class="tab ${S.tab=='r'?'on':''}" onclick="setTab('r')">🏆 Ranking <small>排行榜</small></button></div>`;
 function setTab(t){S.tab=t;save();if(t=='r'){RK=null;RKerr=false}home()}
+// "O que você quer aprender?" — aparece na primeira entrada e pode ser trocado no topo das páginas das classes
+function chooseLearn(edit){scrollTo(0,0);
+app.innerHTML=`<div class="card intro" style="text-align:center"><h2>O que você quer aprender? · 你想学什么？</h2>
+<p class="us">Assim o site escolhe os exercícios e o áudio certos para você. Dá para mudar quando quiser. · 网站会根据你的选择安排练习和音频，以后可以随时更改。</p>
+<div class="learnpick"><button class="lp ${S.learn=='zh'?'on':''}" onclick="setLearn('zh')">${flag('🇨🇳')}<b>Chinês · 中文</b><small>Falo português e quero aprender chinês<br>我说葡萄牙语，想学中文</small></button>
+<button class="lp ${S.learn=='pt'?'on':''}" onclick="setLearn('pt')">${flag('🇧🇷')}<b>Português · 葡萄牙语</b><small>我说中文，想学葡萄牙语<br>Falo chinês e quero aprender português</small></button></div>
+${edit?'<button class="lnk" onclick="home()">Cancelar · 取消</button>':''}</div>`}
+function setLearn(x){S.learn=x;if(!S.f)F.lang=x;save();rankPush();home()}
+const learnPill=()=>`<div class="learn">${flag(LP()?'🇧🇷':'🇨🇳')} Estou aprendendo · 我在学：<b>${LP()?'Português · 葡萄牙语':'Chinês · 中文'}</b><button class="lnk" onclick="chooseLearn(true)">trocar · 切换</button></div>`;
 // Alternativa da prova com botão 🔊 ao lado (ouvir não conta como resposta)
 const oRow=(inner,cls,j)=>`<div class="orow"><button class="o ${cls}">${inner}</button><button class="snd sm oa" data-j="${j}" title="Ouvir · 听">${SPK}</button></div>`;
 // Prova: depois de 15 segundos sem resposta, oferece repetir o áudio da pergunta
@@ -829,24 +853,28 @@ document.getElementById('idr').onclick=()=>{sp();idleStart(sp)};document.getElem
 function home(){hud();idleStop();window.speechSynthesis&&speechSynthesis.cancel();scrollTo(0,0);
 if(!S.name)return askName();
 if(S.taken&&S.taken==S.name)return askName(true);
+if(!S.learn)return chooseLearn();
 if(S.tab=='i')return ihome();
 if(S.tab=='f')return fhome();
 if(S.tab=='r')return rhome();
 const n=nextL(),nd=D.filter((_,i)=>done(i)).length,L=lvl(),first=xpT()==0;
-let h=tabs()+`<div class="card hero"><img class="banner" src="${PANDA}" alt="Panda lendo um livro"><div class="txt">
-<h2>${first?'你好! Bem-vindo!':'加油! Continue assim!'}</h2>
-<p>${first?'Aprenda chinês com desenhos, áudio e provinhas rápidas.':'Você já concluiu '+nd+' de '+D.length+' aulas.'}</p>
+let h=tabs()+learnPill()+`<div class="card hero"><img class="banner" src="${PANDA}" alt="Panda lendo um livro"><div class="txt">
+<h2>${first?'你好! Bem-vindo! · 欢迎！':'加油! Continue assim! · 继续加油！'}</h2>
+<p>${first?(LP()?'Aprenda português com desenhos, áudio e provinhas rápidas. · 用图片、音频和小测验学葡萄牙语。':'Aprenda chinês com desenhos, áudio e provinhas rápidas. · 用图片、音频和小测验学中文。'):`Você já concluiu ${nd} de ${D.length} aulas. · 已完成 ${nd}/${D.length} 课。`}</p>
 <div class="prog"><i style="width:${nd/D.length*100}%"></i></div>
-<button class="btn" onclick="lesson(${n})">${first?'Começar a aula 1':'Continuar · Aula '+(n+1)}</button></div></div>`;
-h+=revCard()+tierCard()+`<div class="card hsk">${img('🎓')}<div><b>Classe Iniciante · ${D.length} aulas · ${ALL.length} palavras</b>
+<button class="btn" onclick="lesson(${n})">${first?'Começar a aula 1 · 开始第一课':`Continuar · Aula ${n+1} · 继续第${n+1}课`}</button></div></div>`;
+h+=revCard()+tierCard()+(LP()?`<div class="card hsk">${img('🎓')}<div><b>Classe Iniciante · 初级班 · ${D.length} aulas · ${ALL.length} palavras</b>
+<p>As palavras essenciais do português do Brasil para o dia a dia, com áudio e desenhos. Um primeiro passo para quem quer, no futuro, fazer o Celpe-Bras, o exame oficial de português do Brasil para estrangeiros.</p>
+<p lang="zh-CN" class="zh">初级班 · ${D.length}课 · ${ALL.length}个词。学习巴西葡萄牙语日常生活中最常用的词语，配有音频和图片。是将来准备巴西官方葡萄牙语水平考试（Celpe-Bras）的第一步。</p></div></div>`
+:`<div class="card hsk">${img('🎓')}<div><b>Classe Iniciante · 初级班 · ${D.length} aulas · ${ALL.length} palavras</b>
 <p>Cobre todas as 150 palavras do HSK 1, a prova oficial de proficiência em chinês para iniciantes, e ainda traz palavras extras do dia a dia.</p>
-<p lang="zh-CN" class="zh">初级班 · ${D.length}课 · ${ALL.length}个词。涵盖HSK一级（汉语水平考试入门级）全部150个词汇，并补充了日常生活常用词。</p></div></div>`;
-if(first)h+=`<div class="how"><div>${img('🃏')}<span>1. Veja os cartões com desenhos</span></div><div>${img('🔊')}<span>2. Ouça a pronúncia em chinês e português</span></div><div>${img('✍️')}<span>3. Faça a prova e ganhe XP</span></div></div>`;
-h+=pathH(U,D.map(d=>[d[0],d[3]]),i=>i,n,'lesson',first,false);
-h+=`<div class="unit" style="background:#777"><b>Próximo nível</b><span>Classe Intermediário</span></div><div class="card ${S.inter?'':'lock'}">`;
-if(S.inter)h+=`✅ Acesso liberado!<br><br><button class="btn" onclick="setTab('i')">Ir para o Intermediário →</button>`;
-else if(L>=LV_INTER)h+=`Você chegou ao level ${LV_INTER}! Faça a prova de ${TEST_N} palavras (mínimo ${TEST_OK} acertos) para liberar.<br><br><button class="btn" onclick="quiz(sh(ALL).slice(0,TEST_N),'t')">Fazer a prova de acesso</button>`;
-else h+=`🔒 Requer level ${LV_INTER} (você está no ${L}) e a prova de ${TEST_N} palavras (mínimo ${TEST_OK} acertos).`;
+<p lang="zh-CN" class="zh">初级班 · ${D.length}课 · ${ALL.length}个词。涵盖HSK一级（汉语水平考试入门级）全部150个词汇，并补充了日常生活常用词。</p></div></div>`);
+if(first)h+=`<div class="how"><div>${img('🃏')}<span>1. Veja os cartões com desenhos · 看图片卡片</span></div><div>${img('🔊')}<span>2. Ouça a pronúncia em chinês e português · 听中文和葡萄牙语发音</span></div><div>${img('✍️')}<span>3. Faça a prova e ganhe XP · 做测验，得经验</span></div></div>`;
+h+=pathH(uB,D.map((d,i)=>[lname(i),d[3]]),i=>i,n,'lesson',first,false);
+h+=`<div class="unit" style="background:#777"><b>Próximo nível · 下一级</b><span>Classe Intermediário · 中级班</span></div><div class="card ${S.inter?'':'lock'}">`;
+if(S.inter)h+=`✅ Acesso liberado! · 已解锁！<br><br><button class="btn" onclick="setTab('i')">Ir para o Intermediário → · 去中级班</button>`;
+else if(L>=LV_INTER)h+=`Você chegou ao level ${LV_INTER}! Faça a prova de ${TEST_N} palavras (mínimo ${TEST_OK} acertos) para liberar.<br><span lang="zh-CN">你已达到${LV_INTER}级！完成${TEST_N}题结业考试（至少答对${TEST_OK}题）即可解锁。</span><br><br><button class="btn" onclick="qz(sh(ALL).slice(0,TEST_N),{kind:'t',mcOnly:true})">Fazer a prova de acesso · 参加结业考试</button>`;
+else h+=`🔒 Requer level ${LV_INTER} (você está no ${L}) e a prova de ${TEST_N} palavras (mínimo ${TEST_OK} acertos).<br><span lang="zh-CN">需要达到${LV_INTER}级（你现在${L}级），并通过${TEST_N}题结业考试（至少答对${TEST_OK}题）。</span>`;
 app.innerHTML=h+`</div><footer>Youhua Educacional · 幼华双语学校 · desde 1992</footer>`}
 
 // ---------- Aula (cartões) ----------
@@ -854,45 +882,13 @@ let cur=0,k=0;
 function lesson(i){cur=i;k=0;card()}
 function card(){const w=A[cur][k],u=unitOf(cur);scrollTo(0,0);
 app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${(k+1)*10}%;background:${u[1]}"></i></div><span>${k+1}/10</span></div>
-<p class="tag">Aula ${cur+1} · ${D[cur][0]}</p>
+<p class="tag">Aula ${cur+1} · 第${cur+1}课 · ${lname(cur)}</p>
 <div class="card flash"><div class="pic" style="background:${u[3]}">${img(w.e)}</div>
 <div class="wrow"><button class="snd" onclick="sayZh(A[cur][k])" title="Ouvir em chinês">${SPK}</button><div><div class="hz">${w.h}</div><div class="py">${w.p}</div></div></div>
 <div class="wrow"><button class="snd sm" onclick="sayPt(A[cur][k])" title="Ouvir em português">${SPK}</button><div class="pt">${w.t}</div></div>
 ${w.u?`<div class="us">${w.u}</div>`:''}</div>
-<div class="row"><button class="btn ghost" ${k?'':'disabled'} onclick="k--;card()">← Anterior</button>${k<9?'<button class="btn" onclick="k++;card()">Próxima →</button>':'<button class="btn" onclick="qz(sh(A[cur]),{kind:\'b\',li:cur,pairs:uniqPairs(sh(A[cur]),5)})">Fazer a prova ✍️</button>'}</div>`;
-sayZh(w)}
-
-// ---------- Prova ----------
-function quiz(ws,mode){let q=0,sc=0;
-function show(){scrollTo(0,0);if(q>=ws.length)return end();const w=ws[q],zh=Math.random()<.5,u=unitOf(w.l);
-// Alternativas: mesmo nº de caracteres chineses, de preferência da mesma aula
-const pool=ALL.filter(x=>x.t!=w.t&&x.h!=w.h),len=x=>[...x.h].length==[...w.h].length;
-const ds=[...sh(pool.filter(x=>len(x)&&x.l==w.l)),...sh(pool.filter(x=>len(x)&&x.l!=w.l)),...sh(pool.filter(x=>!len(x)))].slice(0,3),op=sh([w,...ds]);
-let h=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${q/ws.length*100}%"></i></div><span>${q+1}/${ws.length}</span></div>`;
-if(zh)h+=`<p class="q">O que significa?</p><div class="qbox"><button class="snd" id="qs" title="Ouvir">${SPK}</button><div><div class="hz">${w.h}</div><div class="py">${w.p}</div></div></div>
-<div class="opts g2" id="o">`+op.map((o,j)=>oRow(o.t,'pc',j)).join('');
-else h+=`<p class="q">Como se diz em chinês?</p><div class="qbox"><div class="pic" style="background:${u[3]}">${img(w.e)}</div><div class="wrow"><button class="snd sm" id="qs" title="Ouvir">${SPK}</button><div class="pt">${w.t}</div></div></div>
-<div class="opts" id="o">`+op.map((o,j)=>oRow(`<span class="ohz">${o.h}</span> <small>${o.p}</small>`,'',j)).join('');
-app.innerHTML=h+`</div><div id="fb"></div>`;
-const sp=()=>zh?sayZh(w):sayPt(w);document.getElementById('qs').onclick=sp;sp();idleStart(sp);
-const bs=[...document.querySelectorAll('#o .o')];
-document.querySelectorAll('#o .oa').forEach(b=>b.onclick=()=>{const o=op[+b.dataset.j];zh?sayPt(o):sayZh(o);idleStart(sp)});
-bs.forEach((b,j)=>b.onclick=()=>{idleStop();const r=op[j]==w;if(r)sc++;
-bs.forEach((c,m)=>{c.onclick=null;if(op[m]==w)c.classList.add('ok')});if(!r)b.classList.add('bad');
-sayZh(w);
-document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div class="in"><div><h3>${r?'Muito bem! 太棒了!':'Resposta correta:'}</h3><p>${w.h} (${w.p}) = ${w.t}</p></div><button class="btn ${r?'':'red'}" id="nx">Continuar</button></div></div>`;
-const nx=document.getElementById('nx');nx.focus();nx.onclick=()=>{q++;show()}})}
-function end(){let m='',ok=true;scrollTo(0,0);
-if(mode=='t'){ok=sc>=TEST_OK;if(ok){S.inter=true;save()}m=ok?`🎉 Aprovado! Classe Intermediário liberada.<br><br><button class="btn" onclick="setTab('i')">Ir para o Intermediário →</button>`:`Você precisa de ${TEST_OK} acertos. Tente novamente!`}
-else{const g=Math.max(0,sc-(S.best[mode]||0)),l0=lvl(),t0=tier();S.best[mode]=Math.max(sc,S.best[mode]||0);
-bump();save();rankPush();
-m=`+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}`+(lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:'')+tierUp(t0);ok=sc>=6}
-const st=mode=='t'?0:starsOf(sc);
-app.innerHTML=`<div class="card end"><img src="${tw(ok?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${ws.length}</div>
-${mode!='t'?`<div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div>`:''}<p>${m}</p>
-<div class="row" style="justify-content:center;flex-wrap:wrap">${mode!='t'?`<button class="btn ghost" onclick="lesson(${mode})">Revisar aula</button>`:''}
-${mode!='t'&&mode<D.length-1?`<button class="btn" onclick="lesson(${mode+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
-show()}
+<div class="row"><button class="btn ghost" ${k?'':'disabled'} onclick="k--;card()">← Anterior · 上一个</button>${k<9?'<button class="btn" onclick="k++;card()">Próxima → · 下一个</button>':'<button class="btn" onclick="qz(sh(A[cur]),{kind:\'b\',li:cur,pairs:uniqPairs(sh(A[cur]),5)})">Fazer a prova ✍️ · 开始测验</button>'}</div>`;
+LP()?sayPt(w):sayZh(w)}
 
 // ======================= CLASSE INTERMEDIÁRIO =======================
 // Cada linha: chinês (palavras separadas por espaço, palavra da aula entre {}) | pinyin |
@@ -1330,6 +1326,10 @@ const DI=[
 {好}， 那 吃 饺子！|hǎo, nà chī jiǎozi!|{Fechou}, então vai ser guioza!|🥟|Combinado, então vamos comer guioza!`,"🗣️"]
 ];
 const UI=[["Conversas básicas",...U[0].slice(1)],["Meu dia",...U[1].slice(1)],["Pela cidade",...U[2].slice(1)],["Conversas reais",...U[3].slice(1)],["Revendo o básico",...U[4].slice(1)],["No dia a dia",...U[5].slice(1)],["Números e tempo",...U[6].slice(1)],["Situações reais",...U[7].slice(1)],["Rumo à fluência",...U[8].slice(1)]];
+const DIZ=['问候与礼貌','介绍自己','我的家人','吃吃喝喝','购物与付钱','我的日常','时间与日期','在家里','天气与自然','我的感受','去各个地方','问路','在学校','工作','打电话','喜好与爱好','动物与东西','穿着与外表','日常提问','关联词','生活中的数字','颜色','日常动作','描述事物','更多动作','身体','感情与关系','在市场','比较','常用表达','想要与能够','大数字与价格','现在几点？','一周','日常用语','助词练习','看医生','旅行','做计划','去朋友家','手机消息','聚会与生日','小对话'];
+const UIZ=['基础对话','我的一天','在城里','真实对话','复习基础','日常生活','数字与时间','真实场景','走向流利'];
+const iname=i=>DI[i][0]+' · '+DIZ[i];
+const uIB=UI.map((u,i)=>[u[0]+' · '+UIZ[i],...u.slice(1)]);
 const PUN=/[。？！，、,.!?]/g;
 const hlt=s=>s.replace(/\{(.*?)\}/g,'<em>$1</em>');
 const toks=s=>s.replace(/[{}]/g,'').split(/\s+/).map(t=>t.replace(PUN,'')).filter(Boolean);
@@ -1345,26 +1345,26 @@ const inextL=()=>{const i=DI.findIndex((_,j)=>!idone(j));return i<0?0:i};
 const zhS=s=>say(s.zh,'zh-CN'),ptS=s=>say(s.pt,'pt-BR');
 const iUnit=i=>UI[Math.floor(i/5)];
 
-function ihome(){let h=tabs();
-const list=DI.map(d=>[d[0],d[2]]);
+function ihome(){let h=tabs()+learnPill();
+const list=DI.map((d,i)=>[iname(i),d[2]]);
 if(!iOpen()){
 h+=`<div class="card hsk">${img('🔒')}<div><b>Classe Intermediário · 中级班</b>
 <p>Frases curtas do dia a dia usando as palavras da Classe Iniciante.</p>
 <p>Para liberar: chegue ao level ${LV_INTER} (você está no ${lvl()}) e passe na prova de graduação do Iniciante (${TEST_OK} acertos em ${TEST_N}).</p>
 <p lang="zh-CN" class="zh">用初级班学过的词，学习日常生活中的简短句子。解锁条件：达到${LV_INTER}级，并通过初级班结业考试（${TEST_N}题答对${TEST_OK}题）。</p>
-<button class="btn blue" style="margin-top:10px" onclick="setTab('b')">Ir para o Iniciante</button></div></div>`;
-app.innerHTML=h+pathH(UI,list,ik,-1,'ilesson',false,true);return}
+<button class="btn blue" style="margin-top:10px" onclick="setTab('b')">Ir para o Iniciante · 去初级班</button></div></div>`;
+app.innerHTML=h+pathH(uIB,list,ik,-1,'ilesson',false,true);return}
 if(!S.iintro)return iintro();
 const n=inextL(),nd=DI.filter((_,i)=>idone(i)).length,first=!DI.some((_,i)=>S.best[ik(i)]!=null);
 h+=`<div class="card hero"><div class="txt"><h2>中级班 · Classe Intermediário</h2>
-<p>${first?'Frases curtas do dia a dia com as palavras que você já aprendeu.':'Você já concluiu '+nd+' de '+DI.length+' aulas.'}</p>
+<p>${first?'Frases curtas do dia a dia com as palavras que você já aprendeu. · 用学过的词，学习日常生活中的简短句子。':`Você já concluiu ${nd} de ${DI.length} aulas. · 已完成 ${nd}/${DI.length} 课。`}</p>
 <div class="prog"><i style="width:${nd/DI.length*100}%"></i></div>
-<button class="btn" onclick="ilesson(${n})">${first?'Começar a aula 1':'Continuar · Aula '+(n+1)}</button></div></div>
+<button class="btn" onclick="ilesson(${n})">${first?'Começar a aula 1 · 开始第一课':`Continuar · Aula ${n+1} · 继续第${n+1}课`}</button></div></div>
 ${revCard()}${tierCard()}<div class="card hsk">${img('💬')}<div><b>Linguagem do dia a dia · 日常口语</b>
 <p>As frases usam o jeito que brasileiros e chineses falam no dia a dia. Quando a frase é informal, mostramos também a versão formal (português) ou padrão (chinês).</p>
 <p lang="zh-CN" class="zh">葡萄牙语和中文句子都采用日常口语；口语句子会同时给出正式/标准说法。</p>
 <button class="lnk" onclick="iintro()">Ver o aviso completo · 查看完整说明</button></div></div>`;
-app.innerHTML=h+pathH(UI,list,ik,n,'ilesson',first,false)+`<footer>Youhua Educacional · 幼华双语学校 · desde 1992</footer>`}
+app.innerHTML=h+pathH(uIB,list,ik,n,'ilesson',first,false)+`<footer>Youhua Educacional · 幼华双语学校 · desde 1992</footer>`}
 
 function iintro(){scrollTo(0,0);
 app.innerHTML=`<div class="card intro"><h2>💬 Antes de começar</h2>
@@ -1382,14 +1382,14 @@ let icur=0,ii=0;
 function ilesson(i){icur=i;ii=0;icard()}
 function icard(){const s=AI[icur][ii],u=iUnit(icur);scrollTo(0,0);
 app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${(ii+1)*10}%;background:${u[1]}"></i></div><span>${ii+1}/10</span></div>
-<p class="tag">Intermediário · Aula ${icur+1} · ${DI[icur][0]}</p>
+<p class="tag">Intermediário · 中级 · Aula ${icur+1} · 第${icur+1}课 · ${iname(icur)}</p>
 <div class="card flash"><div class="pic sm" style="background:${u[3]}">${img(s.e)}</div>
 <div class="wrow"><button class="snd" onclick="zhS(AI[icur][ii])" title="Ouvir em chinês">${SPK}</button><div class="sent"><div class="hzs hl">${s.zhH}</div><div class="py">${s.p}</div></div></div>
 ${s.zs?`<div class="formal" style="margin:4px 0 14px"><span class="badge">标准 · Padrão</span><div class="wrow" style="justify-content:flex-start"><button class="snd sm" onclick="say(AI[icur][ii].zs,'zh-CN')" title="Ouvir o chinês padrão">${SPK}</button><div class="hl"><b>${s.zsH}</b><br><small>${s.ps}</small></div></div></div><br>`:''}
 <div class="wrow"><button class="snd sm" onclick="ptS(AI[icur][ii])" title="Ouvir em português">${SPK}</button><div class="pts hl">${s.ptH}</div></div>
 ${s.f?`<div class="formal"><span class="badge">💬 Coloquial · 口语</span><div class="wrow" style="justify-content:flex-start"><button class="snd sm" onclick="say(AI[icur][ii].f,'pt-BR')" title="Ouvir a forma formal">${SPK}</button><div>Formal · 正式: <b>${s.f}</b></div></div></div>`:''}</div>
-<div class="row"><button class="btn ghost" ${ii?'':'disabled'} onclick="ii--;icard()">← Anterior</button>${ii<9?'<button class="btn" onclick="ii++;icard()">Próxima →</button>':'<button class="btn" onclick="qz(sh(AI[icur]),{kind:\'i\',li:icur})">Fazer a prova ✍️</button>'}</div>`;
-zhS(s)}
+<div class="row"><button class="btn ghost" ${ii?'':'disabled'} onclick="ii--;icard()">← Anterior · 上一个</button>${ii<9?'<button class="btn" onclick="ii++;icard()">Próxima → · 下一个</button>':'<button class="btn" onclick="qz(sh(AI[icur]),{kind:\'i\',li:icur})">Fazer a prova ✍️ · 开始测验</button>'}</div>`;
+LP()?ptS(s):zhS(s)}
 
 // ======================= MOTOR DE EXERCÍCIOS (provas das aulas e Revisão do dia) =======================
 const isW=it=>it.h!=null;                                   // palavra do Iniciante (frase do Intermediário = false)
@@ -1422,6 +1422,13 @@ function toneVars(py){const ch=[...py],pos=ch.map((c,i)=>TREV[c]?i:-1).filter(i=
 pos.forEach(i=>{const[b,t]=TREV[ch[i]];for(let n=0;n<4;n++)if(n!=t){const c2=[...ch];c2[i]=TONES[b][n];out.add(c2.join(''))}});
 return sh([...out]).slice(0,3)}
 const toneOK=it=>isW(it)&&[...it.h].length<=3&&[...it.p].some(c=>TREV[c])&&toneVars(it.p).length>=3;
+// ---- Acentos do português: gera grafias com o acento trocado (para "Qual é a escrita certa?") ----
+const ACC={'á':'aâã','à':'aá','â':'aáã','ã':'aáâ','é':'eê','ê':'eé','í':'iì','ó':'oôõ','ô':'oóõ','õ':'oóô','ú':'uù','ç':'c'};
+function accVars(wd){const ch=[...wd],out=new Set();
+ch.forEach((c,i)=>{const lo=c.toLowerCase(),alt=ACC[lo];if(!alt)return;[...alt].forEach(a=>{const c2=[...ch];c2[i]=c==lo?a:a.toUpperCase();out.add(c2.join(''))})});
+out.add(ch.map(c=>{const lo=c.toLowerCase();return ACC[lo]?(c==lo?ACC[lo][0]:ACC[lo][0].toUpperCase()):c}).join(''));out.delete(wd);return sh([...out]).slice(0,3)}
+const accWord=it=>ptTxt(it.t);
+const accOK=it=>isW(it)&&accWord(it).length<=22&&accVars(accWord(it)).length>=3;
 
 // ---- Escrita: compara sem tons, sem acentos, sem espaços ----
 const CMB=new RegExp('['+String.fromCharCode(0x300)+'-'+String.fromCharCode(0x36f)+']','g');
@@ -1441,10 +1448,12 @@ return[...sh(pool.filter(len)),...sh(all.filter(x=>len(x)&&x.l!=it.l)),...sh(all
 // "Ouça e escolha" (lis/lisp) aparece só na Revisão do dia (rev=true).
 // Exercícios de escrever (tpy = pinyin, tpt = português) estão desligados por enquanto: para religar, troque para true.
 const ESCRITA=false;
-function pickType(it,mcOnly,rev){if(mcOnly)return sh(['mcz','mcp'])[0];
-const t=isW(it)?['mcz','mcp',...(toneOK(it)?['tone']:[]),...(rev?['lis','lisp',...(ESCRITA?['type']:[])]:[])]:['mcz','mcp','bpt','bzh',...(rev?['lis']:[])];
+// O aluno de chinês treina tons e ouve mais chinês; o aluno de português treina acentos e ouve mais português.
+function pickType(it,mcOnly,rev){if(mcOnly)return sh(['mcz','mcp'])[0];const pt=LP();
+const t=isW(it)?['mcz','mcp',...(pt?(accOK(it)?['acc']:[]):(toneOK(it)?['tone']:[])),...(rev?(pt?['lisp','lisp','lis']:['lis','lis','lisp']):[]),...(rev&&ESCRITA?['type']:[])]
+:['mcz','mcp',...(pt?['bpt','bpt','bzh']:['bzh','bzh','bpt']),...(rev?[pt?'lisp':'lis']:[])];
 const x=t[Math.floor(Math.random()*t.length)];return x=='type'?(Math.random()<.5?'tpy':'tpt'):x}
-const QT={mcz:'O que significa? · 什么意思？',mcp:'Como se diz em chinês? · 中文怎么说？',lis:'🎧 Ouça e escolha o que ouviu · 听一听，选出你听到的',
+const QT={mcz:'O que significa? · 用葡萄牙语怎么说？',mcp:'Como se diz em chinês? · 这是什么意思？',acc:'✍️ Qual é a escrita certa? · 哪个拼写是对的？',lis:'🎧 Ouça e escolha o que ouviu · 听一听，选出你听到的',
 lisp:'🎧 Ouça em português e escolha o significado · 听葡萄牙语，选意思',tone:'🎵 Qual é a pronúncia certa? · 哪个读音（声调）对？',
 tpy:'⌨️ Escreva o pinyin (sem tons também vale) · 写出拼音（可以不标声调）',tpt:'⌨️ Escreva em português (sem acento também vale) · 用葡萄牙语写出来',
 bpt:'Monte a frase em português · 用葡萄牙语组句',bzh:'Monte a frase em chinês · 用中文组句'};
@@ -1452,20 +1461,21 @@ bpt:'Monte a frase em português · 用葡萄牙语组句',bzh:'Monte a frase em
 // o = {kind:'b'|'i'|'r', li: aula, pairs: palavras para o aquecimento "Ligue os pares"}
 function qz(items,o){let q=0,sc=0;const wrong=[];
 function show(){idleStop();scrollTo(0,0);if(q>=items.length)return end();
-const it=items[q],ty=pickType(it,o.mcOnly,o.kind=='r'),w=isW(it),u=unitFor(it),zhAns=['mcp','lis','lisp','tone','tpy','bzh'].includes(ty);
-const sp=()=>({mcz:sZ,mcp:sP,lis:sZ,lisp:sP,tone:sZ,tpy:sZ,tpt:sZ,bpt:sZ,bzh:sP})[ty](it);
+const it=items[q],ty=pickType(it,o.mcOnly,o.kind=='r'),w=isW(it),u=unitFor(it),zhAns=['mcp','lis','lisp','tone','tpy','bzh'].includes(ty),AW=w?accWord(it):'';
+const sp=()=>({mcz:sZ,mcp:sP,lis:sZ,lisp:sP,tone:sZ,acc:sP,tpy:sZ,tpt:sZ,bpt:sZ,bzh:sP})[ty](it);
 const ZH=`<div class="${w?'hz':'hzs'}">${zhOf(it)}</div>`,PY=`<div class="py">${it.p}</div>`,PT=`<div class="${w?'pt':'pts'}">${ptOf(it)}</div>`;
 const QS=big=>`<button class="snd${big?'':' sm'}" id="qs" title="Ouvir">${SPK}</button>`;
 let h=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${q/items.length*100}%"></i></div><span>${q+1}/${items.length}</span></div><p class="q">${QT[ty]}</p>`;
 if(ty=='mcz'||ty=='bpt'||ty=='tpt')h+=`<div class="qbox">${QS(1)}<div class="sent">${ZH}${PY}</div></div>`;
 else if(ty=='tone'||ty=='tpy')h+=`<div class="qbox">${QS(1)}<div class="sent">${ZH}</div></div>`;
+else if(ty=='acc')h+=`<div class="qbox"><div class="pic" style="background:${u[3]}">${img(it.e)}</div><div class="wrow">${QS(0)}<div class="sent">${ZH}${PY}</div></div></div>`;
 else if(ty=='mcp'||ty=='bzh')h+=`<div class="qbox"><div class="pic" style="background:${u[3]}">${img(it.e)}</div><div class="wrow">${QS(0)}${PT}</div></div>`;
 else h+=`<div class="listen"><button class="snd big" id="qs" title="Ouvir de novo">${SPK}</button><small>Toque para ouvir de novo · 点击再听一遍</small></div>`;
 
-if(['mcz','mcp','lis','lisp','tone'].includes(ty)){
-const op=ty=='tone'?sh([it.p,...toneVars(it.p)]):sh([it,...distract(it,3)]),right=ty=='tone'?it.p:it;
-const lab=ty=='tone'?(x=>`<span class="ohz">${x}</span>`):ty=='mcz'?(x=>ptOf(x)):(x=>`<span class="ohz">${zhOf(x)}</span>${w?' ':'<br>'}<small>${x.p}</small>`);
-const spk=ty=='mcz'||ty=='mcp'||ty=='lisp',grid=(w&&ty=='mcz')||ty=='tone';     // em "Ouça e escolha" não há 🔊 nas opções
+if(['mcz','mcp','lis','lisp','tone','acc'].includes(ty)){
+const op=ty=='tone'?sh([it.p,...toneVars(it.p)]):ty=='acc'?sh([AW,...accVars(AW)]):sh([it,...distract(it,3)]),right=ty=='tone'?it.p:ty=='acc'?AW:it;
+const lab=ty=='tone'||ty=='acc'?(x=>`<span class="ohz">${x}</span>`):ty=='mcz'?(x=>ptOf(x)):(x=>`<span class="ohz">${zhOf(x)}</span>${w?' ':'<br>'}<small>${x.p}</small>`);
+const spk=ty=='mcz'||ty=='mcp'||ty=='lisp',grid=(w&&ty=='mcz')||ty=='tone'||ty=='acc';     // em "Ouça e escolha" não há 🔊 nas opções
 h+=`<div class="opts ${grid?'g2':''}" id="o">`+op.map((x,j)=>spk?oRow(lab(x),grid?'pc':'',j):`<div class="orow"><button class="o ${grid?'pc':''}">${lab(x)}</button></div>`).join('')+`</div>`;
 app.innerHTML=h+`<div id="fb"></div>`;
 const bs=[...document.querySelectorAll('#o .o')];
@@ -1491,23 +1501,27 @@ C_.disabled=!sel.length}
 rt();
 C_.onclick=()=>{lock=true;C_.disabled=true;const j=zh?'':' ';fb(lc(sel.map(i=>tiles[i].t).join(j))==lc(ans.join(j)))}}
 document.getElementById('qs').onclick=sp;sp();idleStart(sp);
-function fb(r,typed){idleStop();if(r)sc++;else wrong.push(it);srsHit(it,r);save();zhAns?sZ(it):sP(it);
+function fb(r,typed){idleStop();if(r)sc++;else wrong.push(it);if(o.kind!='t')srsHit(it,r);save();zhAns?sZ(it):sP(it);
 document.getElementById('fb').innerHTML=`<div class="fb ${r?'ok':'bad'}"><div class="in"><div><h3>${r?'Muito bem! 太棒了!':'Resposta correta · 正确答案:'}</h3>
 <p>${zhOf(it)} (${it.p})${!w&&it.zs?`<br><small>标准 · Padrão: ${it.zs}</small>`:''}<br>${ptOf(it)}${!w&&it.f?`<br><small>Formal: ${it.f}</small>`:''}${!r&&typed?`<br><small>Você escreveu · 你写的: ${esc(typed)}</small>`:''}</p></div>
-<button class="btn ${r?'':'red'}" id="nx">Continuar</button></div></div>`;
+<button class="btn ${r?'':'red'}" id="nx">Continuar · 继续</button></div></div>`;
 const nx=document.getElementById('nx');nx.focus();nx.onclick=()=>{q++;show()}}}
 function end(){idleStop();scrollTo(0,0);const l0=lvl(),t0=tier();
+if(o.kind=='t'){const ok=sc>=TEST_OK;if(ok)S.inter=true;bump();save();rankPush();
+app.innerHTML=`<div class="card end"><img src="${tw(ok?'🎉':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${items.length}</div>
+<p>${ok?'Aprovado! Classe Intermediário liberada. · 恭喜通过！中级班已解锁。':`Você precisa de ${TEST_OK} acertos. Tente novamente! · 需要答对${TEST_OK}题，再试一次吧！`}</p>
+<div class="row" style="justify-content:center;flex-wrap:wrap">${ok?`<button class="btn" onclick="setTab('i')">Ir para o Intermediário → · 去中级班</button>`:`<button class="btn" onclick="qz(sh(ALL).slice(0,TEST_N),{kind:'t',mcOnly:true})">Tentar de novo · 再试一次</button>`}<button class="btn blue" onclick="home()">Início · 首页</button></div></div>`;hud();return}
 if(o.kind=='r'){S.rev=(S.rev||0)+1;S.revDay=dayN();bump();save();rankPush();
 app.innerHTML=`<div class="card end"><img src="${tw(sc>=items.length*.6?'🧠':'💪')}" alt="" style="width:100px"><div class="big">${sc}/${items.length}</div>
 <p>Revisão concluída! · 复习完成！<br><small>${wrong.length?'Estes vão aparecer de novo em breve · 这些很快会再出现：':'Você acertou tudo! Esses itens voltam daqui a alguns dias. · 全对！过几天再复习。'}</small></p>
 ${wrong.length?`<div class="wl">${wrong.map(x=>`<span><b>${zhOf(x)}</b> · ${ptOf(x)}</span>`).join('')}</div>`:''}
-<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="review()">Mais uma revisão · 再复习一次</button><button class="btn blue" onclick="home()">Início</button></div></div>`;hud();return}
+<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="review()">Mais uma revisão · 再复习一次</button><button class="btn blue" onclick="home()">Início · 首页</button></div></div>`;hud();return}
 const key=o.kind=='i'?ik(o.li):o.li,g=Math.max(0,sc-(S.best[key]||0));S.best[key]=Math.max(sc,S.best[key]||0);bump();save();rankPush();
 const st=starsOf(sc),go=o.kind=='i'?'ilesson':'lesson',n=o.kind=='i'?DI.length:D.length;
 app.innerHTML=`<div class="card end"><img src="${tw(sc>=6?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${sc}/${items.length}</div>
-<div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta)':''}${lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:''}${tierUp(t0)}</p>
-<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="${go}(${o.li})">Revisar aula</button>
-${o.li<n-1?`<button class="btn" onclick="${go}(${o.li+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
+<div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>+${g} XP${g<sc?' (só melhora sobre sua melhor nota conta · 只计算超过最好成绩的部分)':''}${lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}! · 升到${lvl()}级！`:''}${tierUp(t0)}</p>
+<div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="${go}(${o.li})">Revisar aula · 复习本课</button>
+${o.li<n-1?`<button class="btn" onclick="${go}(${o.li+1})">Próxima aula → · 下一课</button>`:''}<button class="btn blue" onclick="home()">Início · 首页</button></div></div>`;hud()}
 if(o.pairs&&o.pairs.length>=3)return matchRound(o.pairs,show);
 show()}
 
@@ -1520,11 +1534,11 @@ app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">
 const tm=setInterval(()=>{const e=document.getElementById('mt');if(!e)return clearInterval(tm);e.textContent='⏱ '+Math.round((Date.now()-t0)/1000)+'s'},500);
 document.getElementById('mskip').onclick=()=>{clearInterval(tm);next()};
 document.querySelectorAll('.mt').forEach(b=>b.onclick=()=>{if(b.classList.contains('ok'))return;const s=b.dataset.s,x=(s=='L'?L:R)[+b.dataset.i];
-if(s=='L')sZ(x);
+s=='L'?sZ(x):sP(x);
 if(!sel||sel.s==s){document.querySelectorAll('.mt.sel').forEach(c=>c.classList.remove('sel'));b.classList.add('sel');sel={s,x,b};return}
 if(sel.x===x){[sel.b,b].forEach(c=>{c.classList.remove('sel');c.classList.add('ok')});srsHit(x,!bad.has(x));done++;sel=null;
 if(done==ws.length){clearInterval(tm);save();const secs=Math.round((Date.now()-t0)/1000);
-document.getElementById('fb').innerHTML=`<div class="fb ok"><div class="in"><div><h3>Pares completos! 全部连对！</h3><p>⏱ ${secs}s · ${err} ${err==1?'erro':'erros'} · ${err}个错误</p></div><button class="btn" id="nx">Continuar</button></div></div>`;
+document.getElementById('fb').innerHTML=`<div class="fb ok"><div class="in"><div><h3>Pares completos! 全部连对！</h3><p>⏱ ${secs}s · ${err} ${err==1?'erro':'erros'} · ${err}个错误</p></div><button class="btn" id="nx">Continuar · 继续</button></div></div>`;
 const nx=document.getElementById('nx');nx.focus();nx.onclick=next}}
 else{err++;bad.add(x);bad.add(sel.x);const p=[sel.b,b];p.forEach(c=>{c.classList.remove('sel');c.classList.add('bad')});setTimeout(()=>p.forEach(c=>c.classList.remove('bad')),500);sel=null}})}
 
@@ -1537,14 +1551,14 @@ function revCard(){const pool=revPool();if(!pool.length)return'';const due=pool.
 return`<div class="card hsk rev">${img(feita?'✅':'🧠')}<div><b>Revisão do dia · 今日复习</b>
 <p>${feita?'<b>✓ Revisão de hoje feita!</b> Volte amanhã para a próxima. · 今天的复习完成了！明天再来吧。'
 :n?`Sua revisão de hoje: <b>${n} ${n==1?'item':'itens'}</b> · 今天的复习：${n} 个`:'Tudo revisado por hoje! 🎉 · 今天的复习都完成了！'}</p>
-<p class="us" style="text-align:left;margin-top:4px">O site lembra o que você errou ou não vê há dias. Cada revisão tem até 10 itens, com pares, áudio e tons. Não vale XP, mas conta para a 🔥 sequência. · 网站会记住你答错的和很久没复习的内容。不计经验，但计入连续天数。</p>
+<p class="us" style="text-align:left;margin-top:4px">O site lembra o que você errou ou não vê há dias. Cada revisão tem até 10 itens, com pares, áudio e ${LP()?'acentos':'tons'}. Não vale XP, mas conta para a 🔥 sequência. · 网站会记住你答错的和很久没复习的内容。不计经验，但计入连续天数。</p>
 <button class="btn ${feita?'ghost':''}" onclick="review()">${feita?'Fazer mais uma · 再复习一次':n?'Começar revisão · 开始复习':'Praticar mesmo assim · 继续练习'}</button></div></div>`}
 
 // ======================= TREINO DE FALA =======================
 // Usa o reconhecimento de voz do navegador (Chrome, Edge, Safari). O site compara o que foi
 // entendido com o texto certo e dá uma nota de 0 a 100%.
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-let F=Object.assign({lang:'zh',src:'b',li:0},S.f||{});
+let F=Object.assign({lang:S.learn=='pt'?'pt':'zh',src:'b',li:0},S.f||{});
 const setF=(k,v)=>{F[k]=v;S.f=F;save();fhome()};
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fkey=li=>'f'+F.lang+F.src+li;
@@ -1565,7 +1579,7 @@ h+=`<div class="card hero"><div class="txt"><h2>🎤 Treino de fala · 口语练
 <div class="seg"><button class="tab ${F.src=='b'?'on':''}" onclick="setF('src','b')">Palavras · 词语 <small>(Iniciante)</small></button><button class="tab ${F.src=='i'?'on':''}" onclick="setF('src','i')">Frases · 句子 <small>(Intermediário)</small>${iOpen()?'':' 🔒'}</button></div>
 <p class="q">3. Escolha a aula · 选择课程</p>`;
 if(F.src=='i'&&!iOpen())h+=`<div class="card lock">🔒 As frases ficam liberadas junto com a Classe Intermediário. · 句子练习在解锁中级班后开放。</div>`;
-else{const L=F.src=='b'?D.map(d=>[d[0],d[3]]):DI.map(d=>[d[0],d[2]]);
+else{const L=F.src=='b'?D.map((d,i)=>[lname(i),d[3]]):DI.map((d,i)=>[iname(i),d[2]]);
 h+=`<div class="lgrid">`+L.map((d,i)=>{const p=(S.fala||{})[fkey(i)],st=fstars(p);
 return`<button class="lcard" onclick="fstart(${i})">${img(d[1])}<span>Aula ${i+1} · ${d[0]}<small>${p!=null?`<span class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</span> ${p}%`:'Não feita'}</small></span></button>`}).join('')+`</div>`}
 app.innerHTML=h+`<footer>Youhua Educacional · 幼华双语学校 · desde 1992</footer>`}
@@ -1618,7 +1632,7 @@ function fcard(){const it=fitems(),w=it[fi],zh=F.lang=='zh',b=F.src=='b',u=(b?un
 const main=b?(zh?w.h:w.t):(zh?w.zh:w.pt),cls=b?(zh?'hz':'pt'):(zh?'hzs':'pts');
 const sub=zh?`<div class="py">${w.p}</div>${!b&&w.zs?`<div class="us">标准 · Padrão: ${w.zs}</div>`:''}<div class="us">${b?w.t:w.pt}</div>`:`<div class="us" lang="zh-CN">${b?w.h:w.zh}</div>${!b&&w.f?`<div class="us">Formal · 正式: ${w.f}</div>`:''}`;
 app.innerHTML=`<div class="top"><button class="x" onclick="home()" title="Sair">✕</button><div class="prog"><i style="width:${(fi+1)/it.length*100}%;background:var(--bad)"></i></div><span>${fi+1}/${it.length}</span></div>
-<p class="tag">🎤 Fala · ${zh?'Chinês 中文':'Português 葡萄牙语'} · Aula ${F.li+1} · ${b?D[F.li][0]:DI[F.li][0]}</p>
+<p class="tag">🎤 Fala · ${zh?'Chinês 中文':'Português 葡萄牙语'} · Aula ${F.li+1} · ${b?lname(F.li):iname(F.li)}</p>
 <div class="card flash"><div class="pic sm" style="background:${u[3]}">${img(w.e)}</div>
 <div class="${cls}" style="text-align:center">${main}</div>${sub}
 <div class="row" style="justify-content:center;gap:14px;flex-wrap:wrap"><button class="btn blue" onclick="say(ftargets(fitems()[fi])[0],F.lang=='zh'?'zh-CN':'pt-BR')">🔊 Ouvir · 听</button><button class="btn mic" id="mic" onclick="listen()" ${SR?'':'disabled'}>🎤 Falar · 说</button></div>
@@ -1669,10 +1683,10 @@ S.best[xk]=Math.max(ok,S.best[xk]||0);
 S.fala=S.fala||{};S.fala[k]=Math.max(avg,S.fala[k]||0);bump();save();rankPush();const st=fstars(avg),n=F.src=='b'?D.length:DI.length;
 app.innerHTML=`<div class="card end"><img src="${tw(avg>=60?'🏆':'💪')}" alt="" style="width:110px"><div class="big">${ok}/${it.length}</div>
 <div class="stars">${'★'.repeat(st)}${'☆'.repeat(3-st)}</div><p>Falas corretas · 正确次数 — média de pronúncia ${avg}%<br>
-+${g} XP${g<ok?' (só melhora sobre sua melhor nota conta)':''}${lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}!`:''}${tierUp(t0)}<br>
++${g} XP${g<ok?' (só melhora sobre sua melhor nota conta · 只计算超过最好成绩的部分)':''}${lvl()>l0?`<br>⬆️ Subiu para o level ${lvl()}! · 升到${lvl()}级！`:''}${tierUp(t0)}<br>
 <small>Itens que você pulou contam como 0%. · 跳过的题目按0分计算。</small></p>
 <div class="row" style="justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="fstart(${F.li})">Repetir · 再练一次</button>
-${F.li<n-1?`<button class="btn" onclick="fstart(${F.li+1})">Próxima aula →</button>`:''}<button class="btn blue" onclick="home()">Início</button></div></div>`;hud()}
+${F.li<n-1?`<button class="btn" onclick="fstart(${F.li+1})">Próxima aula → · 下一课</button>`:''}<button class="btn blue" onclick="home()">Início · 首页</button></div></div>`;hud()}
 
 // ======================= NOME E RANKING =======================
 // Cole entre as aspas o link do "App da Web" da Planilha Google (termina em /exec).
@@ -1690,11 +1704,11 @@ rankPush().then(()=>fetch(RANK_URL)).then(r=>r.json()).then(d=>{RK=d.list||[]}).
 .finally(()=>{RKbusy=false;if(S.tab=='r'&&document.getElementById('rk'))rhome()})}
 
 // Progresso completo salvo na planilha, para recuperar a conta em outro aparelho (ou no app do iPhone)
-const progData=()=>JSON.stringify({best:S.best,fala:S.fala||{},inter:!!S.inter,iintro:!!S.iintro,streak:S.streak||0,last:S.last||'',srs:S.srs||{}});
+const progData=()=>JSON.stringify({best:S.best,fala:S.fala||{},inter:!!S.inter,iintro:!!S.iintro,streak:S.streak||0,last:S.last||'',srs:S.srs||{},learn:S.learn||''});
 function mergeProg(p){try{p=JSON.parse(p)}catch(e){return}if(!p)return;
 for(const k in p.best||{})S.best[k]=Math.max(S.best[k]||0,+p.best[k]||0);
 S.fala=S.fala||{};for(const k in p.fala||{})S.fala[k]=Math.max(S.fala[k]||0,+p.fala[k]||0);
-S.inter=S.inter||!!p.inter;S.iintro=S.iintro||!!p.iintro;if((p.streak||0)>(S.streak||0)){S.streak=p.streak;S.last=p.last}
+S.inter=S.inter||!!p.inter;S.iintro=S.iintro||!!p.iintro;if(p.learn&&!S.learn)S.learn=p.learn;if((p.streak||0)>(S.streak||0)){S.streak=p.streak;S.last=p.last}
 // Revisão: fica com o registro mais avançado de cada item
 S.srs=S.srs||{};for(const k in p.srs||{}){const a=S.srs[k],b=p.srs[k];if(Array.isArray(b)&&(!a||b[1]>a[1]))S.srs[k]=b}}
 
